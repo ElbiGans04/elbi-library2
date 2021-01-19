@@ -9,13 +9,23 @@ module.exports = async function (sequelize) {
 
         email: {
             type: DataTypes.STRING,
-            isEmail: true,
+            validate: {
+                isEmail: true,
+            },
             allowNull: false
         },
 
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            validate : {
+                isAlphanumeric: true,
+            }
+        },
+
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
         }
     });
 
