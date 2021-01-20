@@ -2,32 +2,45 @@ let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
 
+async function auth(req, who) {
+    // Verify TOken
+    let token = req.cookies.token;
+    if(!token) throw {code: 404, message: new Error('token not found')}
+
+    let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
+        algorithms: 'RS256'
+    });
+
+    const {id} = tokenVerify;
+    let {member} = await model();
+    
+    let checkUser = await member.findAll({where: id});
+    if(checkUser.length <= 0) throw {code: 403,message: new Error('unregistered user')}
+
+    if(who == 'admin') if(!tokenVerify.isAdmin) throw {code: 403, message: new Error('only for admin')};
+
+    return true
+}
+
 obj.get = async function(req, res) {
     try {
-
-        // Verify TOken
-        let token = req.cookies.token;
-        if(!token) throw {code: 404, message: new Error('token not found')}
-
-        let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
-            algorithms: 'RS256'
-        });
-
-        if(!tokenVerify.isAdmin) throw {code: 401, message: new Error('only for admin')}
-
         let { member } = await model();
         const id = req.params.id;
+        
+        // Auth
+        if(await auth(req, 'admin') == true) {
+            let result = await member.findAll({
+                where: {
+                    id
+                }
+            });
+        
+            if(result.length <= 0) throw {code: 404, message: new Error('member not found')};
     
-        let result = await member.findAll({
-            where: {
-                id
-            }
-        });
-    
-        if(result.length <= 0) throw {code: 404, message: new Error('member not found')};
+            // Jika Ada maka Kirimkan
+            res.json(result);
+        }
 
-        // Jika Ada maka Kirimkan
-        res.json(result);
         
     } catch ( err ) {
         const code = err.code || 500;
@@ -41,18 +54,10 @@ obj.getAll = async function (req, res) {
     try {
         let { member } = await model();
     
-        // Verify
-        let token = req.cookies.token;
-        if(!token) throw {code: 404, message: new Error('token not found')}
-    
-        let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
-            algorithms: 'RS256'
-        });
-    
-        if(!tokenVerify.isAdmin) throw {code: 401, message: new Error('only for admin')}
-        
-        let allMember = await member.findAll();
-        res.json(allMember)
+        if(await auth(req, 'admin') == true) {
+            let allMember = await member.findAll();
+            res.json(allMember)
+        }
 
     } catch (err) {
         const code = err.code || 500;
@@ -66,28 +71,26 @@ obj.post = async function(req, res){
         let { member } = await model();
 
         // Verification
-        let token = req.cookies.token;
-        if(!token) throw {code: 404, message: new Error('token not found')}
-         
-        let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
-            algorithms: 'RS256'
-        });
+        if(await auth(req, 'admin') == true) {
+            // Vadidation 
+            let validation = await member.findAll({
+                where : {
+                    email : req.body.email
+                },
+                raw: true
+            });
+    
+            // Jika Tidak Ada
+            if (validation.length > 0) throw {code: 409, message: new Error('email already register')};
+            let result = await member.create(req.body, {
+                attribute: {
+                    excludes: ['isAdmin']
+                }
+            });
+            
+            res.sendStatus(200)
+        }
 
-        if(!tokenVerify.isAdmin) throw {code: 401, message: new Error('only for admin')}
-
-        // Vadidation 
-        let validation = await member.findAll({
-            where : {
-                email : req.body.email
-            },
-            raw: true
-        });
-
-        // Jika Tidak Ada
-        if (validation.length > 0) throw {code: 409, message: new Error('email already register')};
-        let result = await member.create(req.body);
-        
-        res.sendStatus(200)
     } catch (err) {
         const code = err.code || 500;
         const message = err.message.message || err.message
@@ -101,35 +104,29 @@ obj.put = async function (req, res) {
         let entitasId = req.params.id;
 
         // Verify
-        let token = req.cookies.token;
-        if(!token) throw {code: 404, message: new Error('token not found')}
-         
-        let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
-            algorithms: 'RS256'
-        });
-        
-        if(!tokenVerify.isAdmin) throw {code: 401, message: new Error('only for admin')}
+        if(await auth(req, 'admin') == true) {
+            // Validation
+            let validation = await member.findAll({
+                where: {
+                    id: entitasId
+                },
+                raw: true
+            });
+    
+            // Jika member tidak ditemukan
+            if(validation.length <= 0) throw new Error('member not found')
+            
+            // Jika Ditemukan maka lanjutkan
+            await member.update(req.body, {
+                where: {
+                    id: entitasId
+                }
+            })
+    
+    
+            res.sendStatus(200)
+        }
 
-        // Validation
-        let validation = await member.findAll({
-            where: {
-                id: entitasId
-            },
-            raw: true
-        });
-
-        // Jika member tidak ditemukan
-        if(validation.length <= 0) throw new Error('member not found')
-        
-        // Jika Ditemukan maka lanjutkan
-        await member.update(req.body, {
-            where: {
-                id: entitasId
-            }
-        })
-
-
-        res.sendStatus(200)
     } catch (err) {
         const code = err.code || 500;
         const message = err.message.message || err.message
@@ -143,33 +140,27 @@ obj.delete = async function (req, res) {
         let id = req.params.id;
 
         // Verify
-        let token = req.cookies.token;
-        if(!token) throw {code: 404, message: new Error('token not found')}
-         
-        let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
-            algorithms: 'RS256'
-        });
-
-        if(!tokenVerify.isAdmin) throw {code: 401, message: new Error('only for admin')}
+        if(await auth(req, 'admin') == true) {
+            // Validation
+            let validation = await member.findAll({
+                where: {
+                    id
+                },
+                raw: true
+            });
+    
+            // Jika TIdak terdapat user
+            if ( validation.length <= 0 ) throw new Error('member not found');
+    
+            // Hapus member
+            await member.destroy({
+                where: {
+                    id
+                }
+            })
+            res.send('okay')
+        }
         
-        // Validation
-        let validation = await member.findAll({
-            where: {
-                id
-            },
-            raw: true
-        });
-
-        // Jika TIdak terdapat user
-        if ( validation.length <= 0 ) throw new Error('member not found');
-
-        // Hapus member
-        await member.destroy({
-            where: {
-                id
-            }
-        })
-        res.send('okay')
     } catch (err) {
         const code = err.code || 500;
         const message = err.message.message || err.message
@@ -214,5 +205,54 @@ obj.register = async function(req, res){
         res.status(code).send(message)
     }
 };
+
+obj.login = async function (req, res) {
+    try {
+        const { member } = await model();
+        const { email, password } = req.body;
+        const { Op } = require('sequelize');
+    
+        console.log(`Email : ${email}, Password: ${password}`);
+    
+        let result = await member.findAll({
+            where: {
+                [Op.and] : {
+                    email,
+                    password
+                }
+            },
+            raw: true
+        });
+    
+        if(result.length <= 0) throw {code: 404, message: new Error('member not found')};
+
+        let {id, isAdmin} = result[0];
+        isAdmin = isAdmin === 1 ? true : false;
+        
+        const token = jwt.sign({isAdmin, id}, process.env.APP_PRIVATE_KEY, {
+            algorithm: 'RS256',
+            expiresIn: '1d'
+        })
+        res.cookie('token', token, {
+            maxAge: process.env.APP_MAX_AGE * 1000
+        })
+        res.status(200).send('sucess login')
+        
+    } catch (err) {
+        const code = err.code || 500;
+        const message = err.message.message || err.message
+        res.status(code).send(message)
+    }
+    
+};
+
+obj.logout = function(req, res){
+    res.cookie('token', {}, {
+        maxAge: -1000000
+    });
+
+    console.log("Cookie Telah Dihapus");
+    res.sendStatus(200)
+}
 
 module.exports = obj;
