@@ -30,7 +30,7 @@ head
     hr.sidebar-divider
     // Heading
     .sidebar-heading Data
-    li.nav-item(name="member")
+    li.active.nav-item(name="member")
       a.nav-link(href='/member')
         i.fas.fa-users
         span Member
@@ -172,13 +172,19 @@ head
                 i.fas.fa-list.fa-sm.fa-fw.mr-2.text-gray-400
                 |                     Activity Log
               .dropdown-divider
-              a.dropdown-item(href='#', data-toggle='modal', data-target='#logoutModal')
+              a.dropdown-item(href='/logout', data-toggle='modal', data-target='#logoutModal')
                 i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
                 |                     Logout
       // End of Topbar
       // Begin Page Content
       .container-fluid 
-        h3.mb-4.text-gray-800 Members
+        .row.justify-content-between.mb-4
+          .col-sm-4
+            h3.mb-4.text-gray-800 Members
+          .col-sm-8.d-flex.justify-content-end
+            button.btn.btn-primary(type="button", data-toggle='modal', data-target='#addModal')
+              i.fas.fa-user.mr-2 
+              span add Member
         .card.shadow.mb-4
             .card-header.py-3
                 h6.m-0.font-weight-bold.text-primary 
@@ -254,8 +260,26 @@ a.scroll-to-top.rounded(href='#page-top')
           span(aria-hidden='true') &times;
       .modal-body Please select a row first 
       .modal-footer
-        
-
+// Modal Multiguna
+#addModal.modal.fade(tabindex='-1', role='dialog', aria-labelledby='alert', aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#multigunaHeader.modal-title Add Member
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body 
+        form(action="")
+          .form-group
+            label(for="inputEmail") Email :
+            input#inputEmail.form-control(type="email", aria-describedby="emailHelp", placeholder="Enter email" name="email" autocomplate="off")
+          .form-group
+            label(for="inputPassword") Password :
+            input#inputPassword.form-control(type="password", aria-describedby="passwordHelp", placeholder="Enter password" name="password" autocomplate="off")
+          
+      .modal-footer
+        button.btn.btn-secondary(type='button', data-dismiss='modal', aria-label='Close') Close
+        button#addMemberButton.btn.btn-primary(type='button', aria-label='add button') Add
 
 // Script Dasar
 script(src='/assets/template/vendor/jquery/jquery.min.js')
@@ -267,3 +291,36 @@ script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")
 script.
     const tableUtama = document.getElementById('tableUtama');
     $(tableUtama).DataTable()
+
+    $('#addMemberButton').on('click', function(event){
+      event.preventDefault();
+
+      const formElement = $('#addModal .modal-body form')[0];
+      const form = new FormData(formElement);
+      const url = window.location.pathname;
+
+      fetch(url, {
+        method: 'post',
+        body: form
+      })
+        .then(result => {
+            if(!result.ok) {
+                alert(result.statusText)
+                return false
+            } else {
+                return result.json()
+            }
+        })
+        .then(result => {
+            if(result) {
+                const { message, redirect, type } = result;
+                alert(message)
+                window.location.reload()
+            }
+        })
+
+
+
+
+
+    })

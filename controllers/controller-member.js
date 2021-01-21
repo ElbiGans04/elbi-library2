@@ -58,7 +58,7 @@ obj.getAll = async function (req, res) {
         if(await auth(req, 'admin') == true) {
             let allMember = await member.findAll();
             let coloumn = Object.keys(await member.rawAttributes);
-            res.render('index', {
+            res.render('member', {
                 data: allMember,
                 coloumn,
                 without: ['id', 'createdat', 'updatedat', 'isadmin']
@@ -76,7 +76,7 @@ obj.getAll = async function (req, res) {
 obj.post = async function(req, res){
     try {
         let { member } = await model();
-
+        console.log(req.body)
         // Verification
         if(await auth(req, 'admin') == true) {
             // Vadidation 
@@ -88,20 +88,20 @@ obj.post = async function(req, res){
             });
     
             // Jika Tidak Ada
-            if (validation.length > 0) throw {code: 409, message: new Error('email already register')};
+            if (validation.length > 0) return res.json(respon({message: 'email already register'}));
             let result = await member.create(req.body, {
                 attribute: {
                     excludes: ['isAdmin']
                 }
             });
             
-            res.sendStatus(200)
+            res.json(respon({message: 'successfully added members'}))
         }
 
     } catch (err) {
+        const message = err.err.message 
         const code = err.code || 500;
-        const message = err.message.message || err.message
-        res.status(code).send(message)
+        res.sendStatus(code)
     }
 };
 
@@ -258,7 +258,7 @@ obj.logout = function(req, res){
     });
 
     console.log("Cookie Telah Dihapus");
-    res.sendStatus(200)
+    res.redirect('/login')
 }
 
 module.exports = obj;
