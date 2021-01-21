@@ -3,7 +3,7 @@ module.exports = function (app) {
     const controllersMember = require('../controllers/controller-member')
     const tabel = require('../models/model-index');
     app.get('/', function(req, res){
-        res.send("Hello, THis is my home page")
+        res.render('login')
     });
 
     app.get('/member', controllersMember.getAll);

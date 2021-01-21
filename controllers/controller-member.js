@@ -1,6 +1,7 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
+const respon = require('../controllers/respon')
 
 async function auth(req, who) {
     // Verify TOken
@@ -54,7 +55,7 @@ obj.getAll = async function (req, res) {
     try {
         let { member } = await model();
     
-        // if(await auth(req, 'admin') == true) {
+        if(await auth(req, 'admin') == true) {
             let allMember = await member.findAll();
             let coloumn = Object.keys(await member.rawAttributes);
             res.render('index', {
@@ -63,7 +64,7 @@ obj.getAll = async function (req, res) {
                 without: ['id', 'createdat', 'updatedat', 'isadmin']
             })
             // res.json(allMember)
-        // }
+        }
 
     } catch (err) {
         const code = err.code || 500;
@@ -215,37 +216,38 @@ obj.register = async function(req, res){
 obj.login = async function (req, res) {
     try {
         const { member } = await model();
-        const { email, password } = req.body;
-        const { Op } = require('sequelize');
+        const { email } = req.body;
+        const password2 = req.body.password
     
         let result = await member.findAll({
             where: {
-                [Op.and] : {
-                    email,
-                    password
-                }
+                email
             },
             raw: true
         });
-    
-        if(result.length <= 0) throw {code: 404, message: new Error('member not found')};
-
-        let {id, isAdmin} = result[0];
+        
+        if(result.length <= 0) return res.json(respon({message: 'member not found', type: false}));
+        
+        let {id, isAdmin, password} = result[0];
         isAdmin = isAdmin === 1 ? true : false;
+        
+        if(password !== password2) return res.json(respon({message: 'wrong password'}))
+
         
         const token = jwt.sign({isAdmin, id}, process.env.APP_PRIVATE_KEY, {
             algorithm: 'RS256',
             expiresIn: '1d'
-        })
+        });
+
         res.cookie('token', token, {
             maxAge: process.env.APP_MAX_AGE * 1000
         })
-        res.status(200).send('sucess login')
+        res.status(200).json(respon({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/member'}))
         
     } catch (err) {
+        console.log(err);
         const code = err.code || 500;
-        const message = err.message.message || err.message
-        res.status(code).send(message)
+        return res.sendStatus(code)
     }
     
 };
