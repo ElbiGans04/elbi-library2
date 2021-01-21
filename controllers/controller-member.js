@@ -54,10 +54,16 @@ obj.getAll = async function (req, res) {
     try {
         let { member } = await model();
     
-        if(await auth(req, 'admin') == true) {
+        // if(await auth(req, 'admin') == true) {
             let allMember = await member.findAll();
-            res.json(allMember)
-        }
+            let coloumn = Object.keys(await member.rawAttributes);
+            res.render('index', {
+                data: allMember,
+                coloumn,
+                without: ['id', 'createdat', 'updatedat', 'isadmin']
+            })
+            // res.json(allMember)
+        // }
 
     } catch (err) {
         const code = err.code || 500;
@@ -211,8 +217,6 @@ obj.login = async function (req, res) {
         const { member } = await model();
         const { email, password } = req.body;
         const { Op } = require('sequelize');
-    
-        console.log(`Email : ${email}, Password: ${password}`);
     
         let result = await member.findAll({
             where: {

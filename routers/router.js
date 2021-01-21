@@ -1,9 +1,9 @@
 module.exports = function (app) {
     const port = process.env.APP_PORT || 3000;
     const controllersMember = require('../controllers/controller-member')
-
+    const tabel = require('../models/model-index');
     app.get('/', function(req, res){
-        res.render('index')
+        res.send("Hello, THis is my home page")
     });
 
     app.get('/member', controllersMember.getAll);

@@ -178,6 +178,41 @@ head
       // End of Topbar
       // Begin Page Content
       .container-fluid 
+        h3.mb-4.text-gray-800 Members
+        .card.shadow.mb-4
+            .card-header.py-3
+                h6.m-0.font-weight-bold.text-primary 
+            .card-body
+                .table-responsive
+                    table#tableUtama.table.table-bordered.display(cellspacing="0")
+                        thead
+                            tr
+                                each value in coloumn
+                                    if(hello(value))
+                                        td=value
+                        tfoot
+                            tr
+                                each value in coloumn
+                                    if(hello(value))
+                                        td=value
+                        tbody
+                          each entri in data
+                            tr
+                              each rows, index in entri.dataValues
+                                    if(hello(index)) 
+                                        td= rows
+
+                                
+                            
+            - function hello(value) {
+            -   for (let e in without) {
+            -       if(without[e].toLowerCase() == value.toLowerCase()) {
+            -           return false
+            -       } 
+            -   }
+            -   return true
+            - }
+                        tbody
 
 
         
@@ -228,3 +263,8 @@ script(src='/assets/template/vendor/jquery/jquery.min.js')
 script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')
 script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
 script(src='/assets/template/js/sb-admin-2.min.js')
+script(src="/assets/template/vendor/datatables/jquery.dataTables.min.js")
+script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")
+script.
+    const tableUtama = document.getElementById('tableUtama');
+    $(tableUtama).DataTable()
