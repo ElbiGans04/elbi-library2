@@ -191,7 +191,7 @@ obj.register = async function(req, res){
         });
 
         // Jika Tidak Ada
-        if (validation.length > 0) throw new Error('email already register');
+        if (validation.length > 0) return res.json(respon({message: 'email already register'}))
         let result = await member.create(req.body);
         const resultId = result.dataValues.id;
         const isAdmin = result.dataValues.isAdmin;
@@ -205,11 +205,11 @@ obj.register = async function(req, res){
             maxAge: process.env.APP_MAX_AGE * 1000
         });
 
-        res.sendStatus(200);
+        res.json(respon({message: 'Register successfully', type: true, redirect: '/'}))
     } catch (err) {
         const code = err.code || 500;
-        const message = err.message.message || err.message
-        res.status(code).send(message)
+        console.log(err)
+        res.sendStatus(code)
     }
 };
 
@@ -230,7 +230,7 @@ obj.login = async function (req, res) {
         
         let {id, isAdmin, password} = result[0];
         isAdmin = isAdmin === 1 ? true : false;
-        
+
         if(password !== password2) return res.json(respon({message: 'wrong password'}))
 
         

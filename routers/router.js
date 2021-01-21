@@ -3,7 +3,7 @@ module.exports = function (app) {
     const controllersMember = require('../controllers/controller-member')
     const tabel = require('../models/model-index');
     app.get('/', function(req, res){
-        res.render('login')
+        res.send('this is home page')
     });
 
     app.get('/member', controllersMember.getAll);
@@ -14,7 +14,13 @@ module.exports = function (app) {
     
 
     // Register And Logout
+    app.get('/register', function(req, res){
+        res.render('register')
+    })
     app.post('/register', controllersMember.register);
+    app.get('/login', function(req, res){
+        res.render('login')
+    })
     app.post('/login', controllersMember.login);
     app.get('/logout', controllersMember.logout)
     

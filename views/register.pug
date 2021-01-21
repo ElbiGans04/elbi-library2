@@ -1,0 +1,46 @@
+doctype html
+html(lang="en")
+    head
+        meta(charset="utf-8")
+        meta(http-equiv="X-UA-Compatible" content="IE=edge")
+        meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+        meta(name="description" content="")
+        meta(name="author" content="")
+        title SB Admin 2 - Register
+        // Custom fonts for this template
+        link(href="/assets/template/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css")
+        link(href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet")
+        // Custom styles for this template
+        link(href="/assets/template/css/sb-admin-2.min.css" rel="stylesheet")
+    body.bg-gradient-primary
+        .container
+            .card.o-hidden.border-0.shadow-lg.my-5
+                .card-body.p-0
+                    // Nested Row within Card Body
+                    .row
+                        .col-lg-5.d-none.d-lg-block.bg-register-image
+                        .col-lg-7
+                            .p-5
+                                .text-center
+                                    h1.h4.text-gray-900.mb-4 Create an Account!
+                                div.alert#alert.d-none(role="alert") This is a danger alert—check it out!
+                                form.user(action="/register")
+                                    .form-group
+                                        input#InputEmail.form-control.form-control-user(type="email" placeholder="Email Address" name="email" required autocomplete="off")
+                                    .form-group
+                                        input#InputPassword.form-control.form-control-user(type="password" placeholder="Password" name="password" required autocomplete="off")
+                                    button.btn.btn-primary.btn-user.btn-block(type="submit")
+                                        | Register Account
+                                hr
+                                .text-center
+                                    a.small(href="forgot-password.html") Forgot Password?
+                                .text-center
+                                    a.small(href="/login") Already have an account? Login!
+        // Bootstrap core JavaScript
+        script(src="/assets/template/vendor/jquery/jquery.min.js")
+        script(src="/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js")
+        // Core plugin JavaScript
+        script(src="/assets/template/vendor/jquery-easing/jquery.easing.min.js")
+        // Custom scripts for all pages
+        script(src="/assets/template/js/sb-admin-2.min.js")
+        script(src="/assets/javascript/login.js")
