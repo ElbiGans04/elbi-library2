@@ -1,7 +1,7 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
-const respon = require('../controllers/respon')
+const respon2 = require('../controllers/respon2');
 
 async function auth(req, who) {
     // Verify TOken
@@ -76,7 +76,7 @@ obj.getAll = async function (req, res) {
 obj.post = async function(req, res){
     try {
         let { member } = await model();
-        console.log(req.body)
+
         // Verification
         if(await auth(req, 'admin') == true) {
             // Vadidation 
@@ -88,20 +88,20 @@ obj.post = async function(req, res){
             });
     
             // Jika Tidak Ada
-            if (validation.length > 0) return res.json(respon({message: 'email already register'}));
+            if (validation.length > 0) throw new respon2({code: 200, message: new Error('user already')});
             let result = await member.create(req.body, {
                 attribute: {
                     excludes: ['isAdmin']
                 }
             });
             
-            res.json(respon({message: 'successfully added members'}))
+            res.json(new respon2({message: 'successfully added members'}))
         }
 
     } catch (err) {
-        const message = err.err.message 
+        console.log(err.message)
         const code = err.code || 500;
-        res.sendStatus(code)
+        res.status(code).json(err)
     }
 };
 
@@ -122,7 +122,7 @@ obj.put = async function (req, res) {
     
             // Jika member tidak ditemukan
             if(validation.length <= 0) throw new Error('member not found')
-            
+
             // Jika Ditemukan maka lanjutkan
             await member.update(req.body, {
                 where: {
@@ -181,7 +181,6 @@ obj.register = async function(req, res){
     try {
         let { member } = await model();
 
-
         // Vadidation 
         let validation = await member.findAll({
             where : {
@@ -191,8 +190,12 @@ obj.register = async function(req, res){
         });
 
         // Jika Tidak Ada
-        if (validation.length > 0) return res.json(respon({message: 'email already register'}))
-        let result = await member.create(req.body);
+        if (validation.length > 0) throw new respon2({message: 'email already register', code: 200})
+        let result = await member.create(req.body, {
+            attribute: {
+                excludes: ['isAdmin']
+            }
+        });
         const resultId = result.dataValues.id;
         const isAdmin = result.dataValues.isAdmin;
 
@@ -205,11 +208,11 @@ obj.register = async function(req, res){
             maxAge: process.env.APP_MAX_AGE * 1000
         });
 
-        res.json(respon({message: 'Register successfully', type: true, redirect: '/'}))
+        res.json(new respon2({message: 'Register successfully', redirect:'/', type: true}))
     } catch (err) {
-        const code = err.code || 500;
         console.log(err)
-        res.sendStatus(code)
+        const code = err.code || 500;
+        res.status(code).json(err);
     }
 };
 
@@ -226,12 +229,12 @@ obj.login = async function (req, res) {
             raw: true
         });
         
-        if(result.length <= 0) return res.json(respon({message: 'member not found', type: false}));
+        if(result.length <= 0) throw new respon2({message: 'accouunt not found', code: 200})
         
         let {id, isAdmin, password} = result[0];
         isAdmin = isAdmin === 1 ? true : false;
 
-        if(password !== password2) return res.json(respon({message: 'wrong password'}))
+        if(password !== password2) throw new respon2({message: 'password wrong', code: 200})
 
         
         const token = jwt.sign({isAdmin, id}, process.env.APP_PRIVATE_KEY, {
@@ -242,12 +245,12 @@ obj.login = async function (req, res) {
         res.cookie('token', token, {
             maxAge: process.env.APP_MAX_AGE * 1000
         })
-        res.status(200).json(respon({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/member'}))
+        res.json(new respon2({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/member'}))
         
     } catch (err) {
-        console.log(err);
+        console.log(err.message);
         const code = err.code || 500;
-        return res.sendStatus(code)
+        return res.status(code).json(err)
     }
     
 };
