@@ -30,7 +30,7 @@ obj.get = async function(req, res) {
         
         // Auth
         if(await auth(req, 'admin') == true) {
-            let result = await member.findAll({
+            let result = await member.findOne({
                 where: {
                     id
                 }
@@ -107,6 +107,7 @@ obj.post = async function(req, res){
 
 obj.put = async function (req, res) {
     try {
+        console.log(req.body)
         let { member } = await model();
         let entitasId = req.params.id;
 
@@ -131,7 +132,7 @@ obj.put = async function (req, res) {
             })
     
     
-            res.sendStatus(200)
+            res.json(new respon2({message: 'success', type: true}))
         }
 
     } catch (err) {
@@ -145,7 +146,7 @@ obj.delete = async function (req, res) {
     try {
         let { member } = await model();
         let id = req.params.id;
-
+        
         // Verify
         if(await auth(req, 'admin') == true) {
             // Validation
@@ -165,13 +166,13 @@ obj.delete = async function (req, res) {
                     id
                 }
             })
-            res.send('okay')
+            
+            res.json(new respon2({message: 'successfully deleted member'}))
         }
         
     } catch (err) {
         const code = err.code || 500;
-        const message = err.message.message || err.message
-        res.status(code).send(message)
+        res.status(code).send(err)
     }
 };
 
