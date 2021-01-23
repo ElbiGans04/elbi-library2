@@ -171,6 +171,7 @@ obj.delete = async function (req, res) {
         }
         
     } catch (err) {
+        console.log(err)
         const code = err.code || 500;
         res.status(code).send(err)
     }
