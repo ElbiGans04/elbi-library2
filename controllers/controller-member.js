@@ -6,7 +6,7 @@ const respon2 = require('../controllers/respon2');
 async function auth(req, who) {
     // Verify TOken
     let token = req.cookies.token;
-    if(!token) throw {code: 404, message: new Error('token not found')}
+    if(!token) throw new respon2({message: `token not found`, code: 403})
 
     let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
         algorithms: 'RS256'
@@ -16,9 +16,9 @@ async function auth(req, who) {
     let {member} = await model();
     
     let checkUser = await member.findAll({where: id});
-    if(checkUser.length <= 0) throw {code: 403,message: new Error('unregistered user')}
+    if(checkUser.length <= 0) throw new respon2({message: 'unregistered user', code: 403})
 
-    if(who == 'admin') if(!tokenVerify.isAdmin) throw {code: 403, message: new Error('only for admin')};
+    if(who == 'admin') if(!tokenVerify.isAdmin) throw new respon2({message: 'only for admin', code: 403});
 
     return true
 }
@@ -36,10 +36,10 @@ obj.get = async function(req, res) {
                 }
             });
         
-            if(result.length <= 0) throw {code: 404, message: new Error('member not found')};
+            if(result.length <= 0) throw new respon2({message: 'member not found', code: 200});
     
             // Jika Ada maka Kirimkan
-            res.json(result);
+            res.json(new respon2({message: 'success', code: 200, data: result}));
         }
 
         
@@ -121,7 +121,7 @@ obj.put = async function (req, res) {
             });
     
             // Jika member tidak ditemukan
-            if(validation.length <= 0) throw new Error('member not found')
+            if(validation.length <= 0) throw new respon2({message: 'member not found', code: 200})
 
             // Jika Ditemukan maka lanjutkan
             await member.update(req.body, {
@@ -157,7 +157,7 @@ obj.delete = async function (req, res) {
             });
     
             // Jika TIdak terdapat user
-            if ( validation.length <= 0 ) throw new Error('member not found');
+            if ( validation.length <= 0 ) throw new respon2({message: 'member not found', code: 200});
     
             // Hapus member
             await member.destroy({

@@ -196,17 +196,26 @@ head
                                 each value in coloumn
                                     if(hello(value))
                                         td=value
+                                td Action
                         tfoot
                             tr
                                 each value in coloumn
                                     if(hello(value))
                                         td=value
+                                td Action
                         tbody
                           each entri in data
-                            tr
+                            tr(data-id=`${entri.dataValues.id}`)
                               each rows, index in entri.dataValues
                                     if(hello(index)) 
                                         td= rows
+                              td(style="text-align: center")
+                                button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1
+                                  i.fas.fa-edit
+                                button.buttonActionDelete.btn.btn-danger.btn-circle.btn-sm
+                                  i.fas.fa-trash
+
+                                
 
                                 
                             
@@ -270,12 +279,11 @@ a.scroll-to-top.rounded(href='#page-top')
           span(aria-hidden='true') &times;
       .modal-body 
         form(action="")
-          .form-group
-            label(for="inputEmail") Email :
-            input#inputEmail.form-control(type="email", aria-describedby="emailHelp", placeholder="Enter email" name="email" autocomplate="off")
-          .form-group
-            label(for="inputPassword") Password :
-            input#inputPassword.form-control(type="password", aria-describedby="passwordHelp", placeholder="Enter password" name="password" autocomplate="off")
+          each value in coloumn
+            if(hello(value))
+              .form-group
+                label(for=`inputAdd${value}`)=value
+                input.form-control(id=`inputAdd${value}`, type=`text`, aria-describedby=`${value}Help`, placeholder=`Enter ${value}` name=`${value}` autocomplate=`off`)
           
       .modal-footer
         button.btn.btn-secondary(type='button', data-dismiss='modal', aria-label='Close') Close
