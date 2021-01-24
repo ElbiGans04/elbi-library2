@@ -1,31 +1,8 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
-const respon2 = require('./respon2');
-
-async function auth(req, who) {
-    // Verify TOken
-    let token = req.cookies.token;
-    if(!token) throw new respon2({message: `token not found`, code: 403})
-
-    let tokenVerify = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
-        algorithms: 'RS256'
-    });
-
-    const {id} = tokenVerify;
-    let {member} = await model();
-    
-    let checkUser = await member.findAll({where: id});
-    if(checkUser.length <= 0) throw new respon2({message: 'unregistered user', code: 403})
-
-    if(who == 'admin') if(!tokenVerify.isAdmin) throw new respon2({message: 'only for admin', code: 403});
-
-    return true
-}
-
-
-
-
+const {auth} = require('./module');
+const respon2 = require('./respon2')
 
 obj.get = async function(req, res) {
     try {
@@ -64,7 +41,7 @@ obj.getAll = async function (req, res) {
             let coloumn = Object.keys(await member.rawAttributes);
             res.render('table', {
                 data: allMember,
-                coloumn: Object.keys(await member.rawAttributes),
+                coloumn,
                 without:['id', 'createdat', 'updatedat', 'isadmin'],
                 title: 'Member',
                 active: 'member',

@@ -1,6 +1,7 @@
 import {check} from './module.js'
 const url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
+const columnLength = tableUtama.children[0].children[0].children.length - 1;
 
 // Memberi class active pada navbar
 const nav = document.querySelector('ul#accordionSidebar');
@@ -13,16 +14,88 @@ navList.forEach(function(element, index){
 });
 
 
+
 /// Datatables inisialisasi // // // 
-$(tableUtama).DataTable({
-  columnDefs: [{ orderable: false, targets: 2 }],
-});
+if(navActive == 'member') {
+  var t = $('#tableUtama').DataTable( {
+      "columnDefs": [ {
+          "searchable": false,
+          "orderable": false,
+          "targets": [0, 3]
+      } ],
+      "order": [[ 1, 'asc' ]]
+  } );
+  
+  t.on( 'order.dt search.dt', function () {
+      t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+          cell.innerHTML = i+1;
+      } );
+  } ).draw();
+} else if ('book') {
+  function format ( d ) {
+    return `Publisher: ${d[5]}<br> Page Thickness: ${d[6]}<br> Isbn: ${d[7]}`
+}
+  var dt = $('#tableUtama').DataTable( {
+      columnDefs: [
+        {
+          searchable: false,
+          orderable: false,
+          targets: 0,
+          class: "details-control",
+          defaultContent: "",
+        },
+        {
+          searchable: false,
+          orderable: false,
+          targets: [columnLength],
+        },
+        {
+          visible: false,
+          targets: [5,6,7]
+        }
+      ],
+      order: [[1, "asc"]],
+  } );
+  
+  // Array to track the ids of the details displayed rows
+  var detailRows = [];
+
+  $('#tableUtama tbody').on( 'click', 'tr td.details-control', function () {
+      var tr = $(this).closest('tr');
+      var row = dt.row( tr );
+      var idx = $.inArray( tr.attr('id'), detailRows );
+
+      if ( row.child.isShown() ) {
+          tr.removeClass( 'details' );
+          row.child.hide();
+
+          // Remove from the 'open' array
+          detailRows.splice( idx, 1 );
+      }
+      else {
+          tr.addClass( 'details' );
+          row.child( format( row.data() ) ).show();
+
+          // Add to the 'open' array
+          if ( idx === -1 ) {
+              detailRows.push( tr.attr('id') );
+          }
+      }
+  } );
+
+  // On each draw, loop over the `detailRows` array and show any child rows
+  dt.on( 'draw', function () {
+      $.each( detailRows, function ( i, id ) {
+          $('#'+id+' td.details-control').trigger( 'click' );
+      } );
+  } );
+}
 /// Akhir Datatables inisialisasi // // // 
 
 
 
 // // // Add Modal // // //
-$("#addMemberButton").on("click", function (event) {
+$("#addButton").on("click", function (event) {
   event.preventDefault();
 
   const formElement = $("#addModal .modal-body form")[0];
@@ -70,7 +143,7 @@ $(tombolEdit).on("click", function (event) {
     });
 });
 
-const tombolEditModal = document.getElementById("EditMemberButton");
+const tombolEditModal = document.getElementById("EditButton");
 tombolEditModal.addEventListener("click", function (event) {
   const formElement = document.querySelector(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form "
@@ -122,7 +195,7 @@ $(tombolDelete).on("click", function (event) {
   modal.innerHTML = "Are you sure you want to delete the member?";
 });
 
-const tombolDeleteModal = document.getElementById("deleteMemberButton");
+const tombolDeleteModal = document.getElementById("deleteButton");
 tombolDeleteModal.addEventListener("click", function (event) {
   event.preventDefault();
   const modalBody = document.querySelector(
