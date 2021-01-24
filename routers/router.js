@@ -15,7 +15,10 @@ module.exports = function (app) {
     
     // Books
     app.get('/books', controllersBook.getAll)
+    app.get('/books/:id', controllersBook.get);
     app.post('/books', controllersBook.post)
+    app.put('/books/:id', controllersBook.put);
+    app.delete('/books/:id', controllersBook.delete);
 
     // Register And Logout
     app.get('/register', function(req, res){

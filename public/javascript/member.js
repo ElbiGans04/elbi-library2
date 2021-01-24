@@ -2,6 +2,7 @@ import {check} from './module.js'
 const url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 
+// Memberi class active pada navbar
 const nav = document.querySelector('ul#accordionSidebar');
 const navActive = nav.getAttribute('navbaractive');
 const navList = document.querySelectorAll('#accordionSidebar > li');
@@ -10,6 +11,7 @@ navList.forEach(function(element, index){
     element.classList.add(`active`)
   }
 });
+
 
 /// Datatables inisialisasi // // // 
 $(tableUtama).DataTable({

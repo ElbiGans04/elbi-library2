@@ -85,9 +85,9 @@ function ambilKata(word, pemisah, option) {
     });
 
     const {id} = tokenVerify;
-    let {book} = await model();
+    let {member} = await model();
     
-    let checkUser = await book.findAll({where: id});
+    let checkUser = await member.findAll({where: id});
     if(checkUser.length <= 0) throw new respon2({message: 'unregistered user', code: 403})
 
     if(who == 'admin') if(!tokenVerify.isAdmin) throw new respon2({message: 'only for admin', code: 403});

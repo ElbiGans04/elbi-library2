@@ -19,7 +19,7 @@ module.exports = async function (sequelize) {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {      
-                isAlpha: true  
+                // isAlphanumeric: true  
             }
         },
 
@@ -35,7 +35,7 @@ module.exports = async function (sequelize) {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                isAlpha: true
+                // isAlphanumeric: true
             }
         },
 
@@ -43,7 +43,7 @@ module.exports = async function (sequelize) {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {
-                isAlpha: true
+                // isAlphanumeric: true
             }
         },
 
