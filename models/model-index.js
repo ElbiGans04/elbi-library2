@@ -7,5 +7,6 @@ module.exports = async function () {
     });
     
     const member = await require('./model-member')(sequelize)
-    return {member, sequelize}
+    const book = await require(`./model-books`)(sequelize)
+    return {member, sequelize, book}
 }

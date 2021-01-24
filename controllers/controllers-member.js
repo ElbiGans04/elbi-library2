@@ -1,7 +1,7 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
-const respon2 = require('../controllers/respon2');
+const respon2 = require('./respon2');
 
 async function auth(req, who) {
     // Verify TOken
@@ -22,6 +22,10 @@ async function auth(req, who) {
 
     return true
 }
+
+
+
+
 
 obj.get = async function(req, res) {
     try {
@@ -58,10 +62,14 @@ obj.getAll = async function (req, res) {
         if(await auth(req, 'admin') == true) {
             let allMember = await member.findAll();
             let coloumn = Object.keys(await member.rawAttributes);
-            res.render('member', {
+            res.render('table', {
                 data: allMember,
-                coloumn,
-                without: ['id', 'createdat', 'updatedat', 'isadmin']
+                coloumn: Object.keys(await member.rawAttributes),
+                without:['id', 'createdat', 'updatedat', 'isadmin'],
+                title: 'Member',
+                active: 'member',
+                module: require('./module'),
+                buttonAdd: 'fas fa-user mr-2'
             })
             // res.json(allMember)
         }
@@ -247,7 +255,7 @@ obj.login = async function (req, res) {
         res.cookie('token', token, {
             maxAge: process.env.APP_MAX_AGE * 1000
         })
-        res.json(new respon2({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/member'}))
+        res.json(new respon2({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/members'}))
         
     } catch (err) {
         console.log(err.message);

@@ -1,10 +1,25 @@
 import {check} from './module.js'
 const url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
+
+const nav = document.querySelector('ul#accordionSidebar');
+const navActive = nav.getAttribute('navbaractive');
+const navList = document.querySelectorAll('#accordionSidebar > li');
+navList.forEach(function(element, index){
+  if(element.getAttribute('name') == navActive) {
+    element.classList.add(`active`)
+  }
+});
+
+/// Datatables inisialisasi // // // 
 $(tableUtama).DataTable({
   columnDefs: [{ orderable: false, targets: 2 }],
 });
+/// Akhir Datatables inisialisasi // // // 
 
+
+
+// // // Add Modal // // //
 $("#addMemberButton").on("click", function (event) {
   event.preventDefault();
 
@@ -24,7 +39,10 @@ $("#addMemberButton").on("click", function (event) {
       }
     });
 });
+// // // Akhir Add Modal // // // 
 
+
+// // // Edit Modal // // //
 const tombolEdit = document.querySelectorAll(
   "#tableUtama > tbody > tr > td:last-child > .buttonActionEdit"
 );
@@ -72,7 +90,22 @@ tombolEditModal.addEventListener("click", function (event) {
     });
 });
 
-// Delete Modal
+// // // Akhir Dari edit modal // // // 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // // Delete Modal // // // 
 const tombolDelete = document.querySelectorAll(
   "#tableUtama > tbody > tr > td:last-child > .buttonActionDelete"
 );
@@ -106,3 +139,5 @@ tombolDeleteModal.addEventListener("click", function (event) {
       }
     });
 });
+
+// // // Akhir dari delete modal // // //
