@@ -1,9 +1,14 @@
 const express = require('express');
 const app = express();
-const router = require('./routers/router');
 const dotenv = require('dotenv').config({path: './config/.env'})
 const cookie = require('cookie-parser');
 const {multer} = require('./middleware/multer');
+const port = process.env.APP_PORT || 3000;
+const member = require('./routers/router-member');
+const book = require('./routers/router-book');
+const register = require('./routers/router-register');
+const login = require('./routers/router-login');
+const logout = require('./routers/router-logout');
 
 // // // Instalasi Project // // //
 app.use('/assets', express.static('./public'));
@@ -26,7 +31,18 @@ db.then(result => {
     result.sequelize.sync({force: true}).then(t => {
         result.member.create({email: 'root@gmail.com', password: 123, isAdmin: true}).then(r => {
             result.book.bulkCreate(data).then(r => {
-                router(app)
+                app.use('/members', member);
+                app.use('/books', book);
+            
+                app.use('/register', register);
+                app.use('/login', login)
+                app.use('/logout', logout)
+                
+                
+                app.listen(port, function(err) {
+                    if (err) throw err;
+                    console.log(`Server telah dijalankan pada port ${port}`)
+                })
             })
         })
     });

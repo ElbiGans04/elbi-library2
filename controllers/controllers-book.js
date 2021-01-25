@@ -77,6 +77,9 @@ module.exports = {
     
         } catch (err) {
             console.log(err.message)
+            if(err instanceof Error) {
+                err.code = 200
+            }
             const code = err.code || 500;
             res.status(code).json(err)
         }

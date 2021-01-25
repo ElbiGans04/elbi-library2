@@ -7,6 +7,10 @@ module.exports = async function (sequelize) {
             autoIncrement: true
         },
 
+        book_image: {
+            type: DataTypes.BLOB
+        },
+
         book_stock: {
             type: DataTypes.STRING,
             allowNull: false,

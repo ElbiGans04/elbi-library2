@@ -59,10 +59,13 @@ if(navActive == 'member') {
   
   // Array to track the ids of the details displayed rows
   var detailRows = [];
-
   $('#tableUtama tbody').on( 'click', 'tr td.details-control', function () {
+      // Mencari Baris
       var tr = $(this).closest('tr');
+      // Mendapatkan Datatables API
       var row = dt.row( tr );
+      
+      // Check Apakah baris sudah dibuka
       var idx = $.inArray( tr.attr('id'), detailRows );
 
       if ( row.child.isShown() ) {
