@@ -47,14 +47,14 @@ if(navActive == 'member') {
         {
           searchable: false,
           orderable: false,
-          targets: [columnLength],
+          targets: [1, columnLength],
         },
         {
           visible: false,
-          targets: [5,6,7]
+          targets: [6,7,8]
         }
       ],
-      order: [[1, "asc"]],
+      order: [[3, "asc"]],
   } );
   
   // Array to track the ids of the details displayed rows

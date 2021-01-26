@@ -1,6 +1,7 @@
 let model = require('../models/model-index');
 const respon2 = require('./respon2');
 const {auth} = require('./module');
+const path = require('path');
 module.exports = {
     get: async function(req, res) {
         try {
@@ -14,6 +15,7 @@ module.exports = {
                         id
                     }
                 });
+
             
                 if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
         
@@ -37,7 +39,10 @@ module.exports = {
                 res.render('table', {
                     data: result,
                     coloumn: Object.keys(await book.rawAttributes),
-                    without:['id', 'createdat', 'updatedat'],
+                    without:['id', 'createdat', 'updatedat', 'book_type'],
+                    as: [
+                        {to: 'book_image', as: 'file'}
+                    ],
                     title: 'Book',
                     active: 'book',
                     module: require('./module'),
@@ -54,7 +59,6 @@ module.exports = {
     post: async function (req,res) {
         try {
             let { book } = await model();
-            console.log(req.body)
     
             // Verification
             if(await auth(req, 'admin') == true) {
@@ -67,6 +71,14 @@ module.exports = {
                     },
                     raw: true
                 });
+
+                // Buat File Format
+                let format = path.extname(req.file.originalname);
+                format = format.split('.')[1];
+                req.body.book_type = format
+
+                // Tambahkan File, Karena file berada direq.file
+                req.body.book_image = req.file.buffer;
         
                 // Jika Tidak Ada
                 if (validation.length > 0) throw new respon2({code: 200, message: new Error('book already')});

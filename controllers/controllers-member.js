@@ -205,6 +205,7 @@ obj.register = async function(req, res){
 
 obj.login = async function (req, res) {
     try {
+        console.log(req.body)
         const { member } = await model();
         const { email } = req.body;
         const password2 = req.body.password

@@ -202,14 +202,14 @@ head
                             tr
                                 th No.
                                 each value in coloumn
-                                    if(hello(value))
+                                    if(hello(value, without))
                                         th(name=value)=module.ambilKata(value, '_', {space:true, uppercase:true, without: [0]})
                                 th Action
                         tfoot
                             tr
                                 th No.
                                 each value in coloumn
-                                    if(hello(value))
+                                    if(hello(value, without))
                                         th(name=value)=module.ambilKata(value, '_', {space:true, uppercase:true, without: [0]})
                                 th Action
                         tbody
@@ -217,8 +217,13 @@ head
                             tr(data-id=`${entri.dataValues.id}`)
                               td
                               each rows, index in entri.dataValues
-                                    if(hello(index)) 
-                                        td= rows
+                                    if(index == 'book_image') 
+                                          td
+                                            img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows")
+                                    else                              
+                                      if(hello(index, without))
+                                          td= rows
+                                      
                               td(style="text-align: center")
                                 button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button", data-toggle='modal', data-target='#editModal')
                                   i.fas.fa-edit
@@ -228,7 +233,7 @@ head
                                 
 
                                 
-            - function hello(value) {
+            - function hello(value, without) {
             -   for (let e in without) {
             -       if(without[e].toLowerCase() == value.toLowerCase()) {
             -           return false
@@ -290,11 +295,14 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-body 
         form(action="")
           each value in coloumn
-            if(hello(value))
+            if(hello(value, without))
               .form-group
                 -let value2 = module.ambilKata(value, '_', {uppercase: true, without: [0]})
+                - let type = 'text';
+                if(module.jajal(as, value))
+                  - type='file'
                 label(for=`inputAdd${value2}`)=value2
-                input.form-control(id=`inputAdd${value2}`, type=`text`, aria-describedby=`${value2}Help`, placeholder=`Enter ${value2}` name=`${value}` autocomplate=`off`)
+                input.form-control(id=`inputAdd${value2}`, type=type, aria-describedby=`${value2}Help`, placeholder=`Enter ${value2}` name=`${value}` autocomplate=`off`)
           
       .modal-footer
         button.btn.btn-secondary(type='button', data-dismiss='modal', aria-label='Close') Close
@@ -310,7 +318,7 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-body 
         form(action="")
           each value in coloumn
-            if(hello(value))
+            if(hello(value, without))
               .form-group
                 -let value2 = module.ambilKata(value, '_', {uppercase: true, without: [0]})
                 label(for=`inputEdit${value}`)=value2

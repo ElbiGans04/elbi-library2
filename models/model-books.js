@@ -8,7 +8,11 @@ module.exports = async function (sequelize) {
         },
 
         book_image: {
-            type: DataTypes.BLOB
+            type: DataTypes.BLOB('long')
+        },
+
+        book_type: {
+            type: DataTypes.STRING
         },
 
         book_stock: {

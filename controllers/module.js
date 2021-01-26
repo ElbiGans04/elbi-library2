@@ -74,6 +74,20 @@ function ambilKata(word, pemisah, option) {
       }
     }
   }
+
+  function jajal(without, value) {
+    for(let index in without) {
+      const target = without[index]['to'].toLowerCase();
+      const as = without[index]['as'];
+      value = value.toLowerCase();
+      
+      if(target == value) {
+        return as
+      }
+    }
+
+    return false
+  }
   
   async function auth(req, who) {
     // Verify TOken
@@ -95,4 +109,4 @@ function ambilKata(word, pemisah, option) {
     return true
   }
   
-  module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth}
+  module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth, jajal}
