@@ -323,7 +323,7 @@ a.scroll-to-top.rounded(href='#page-top')
                 -let value2 = module.ambilKata(value, '_', {uppercase: true, without: [0]})
                 - let type = 'text';
                 if(module.jajal(as, value))
-                  img.img-thumbnail.d-block(src="", alt="")
+                  img.img-thumbnail.mb-2.d-block(src="", alt="")
                   - type='file'
                 label(for=`inputEdit${value2}`)=value2
                 input.form-control(id=`inputEdit${value2}`, type=type, aria-describedby=`${value2}Help`, placeholder=`Enter ${value2}` name=`${value}` autocomplate=`off`)

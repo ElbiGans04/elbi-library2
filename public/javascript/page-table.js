@@ -177,6 +177,17 @@ tombolEditModal.addEventListener("click", function (event) {
     });
 });
 
+// Event Ketika User Mengupload
+$('#inputEditImage').on('change', function(event){
+  const gambar = this.parentElement.children[0];
+  const file = this.files[0];
+  const read = new FileReader();
+  read.readAsDataURL(file);
+  read.onload = () => {
+    gambar.setAttribute('src', read.result)
+  }
+});
+
 // // // Akhir Dari edit modal // // // 
 
 
