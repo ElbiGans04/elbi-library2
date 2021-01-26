@@ -16,6 +16,7 @@ module.exports = {
                     }
                 });
 
+                result.dataValues.book_image = result.dataValues.book_image.toString('base64')
             
                 if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
         
@@ -59,7 +60,7 @@ module.exports = {
     post: async function (req,res) {
         try {
             let { book } = await model();
-    
+
             // Verification
             if(await auth(req, 'admin') == true) {
                 // Vadidation 
@@ -73,6 +74,7 @@ module.exports = {
                 });
 
                 // Buat File Format
+
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
                 req.body.book_type = format
@@ -99,7 +101,6 @@ module.exports = {
 
     put: async function (req, res) {
         try {
-            console.log(req.body)
             let { book } = await model();
             let entitasId = req.params.id;
     
@@ -115,6 +116,17 @@ module.exports = {
         
                 // Jika book tidak ditemukan
                 if(validation.length <= 0) throw new respon2({message: 'book not found', code: 200})
+
+                
+                // Tambahkan File, Karena file berada direq.file
+                if(req.file) {
+                    // Buat File Format
+    
+                    let format = path.extname(req.file.originalname);
+                    format = format.split('.')[1];
+                    req.body.book_type = format
+                    req.body.book_image = req.file.buffer;
+                }
     
                 // Jika Ditemukan maka lanjutkan
                 await book.update(req.body, {
@@ -128,6 +140,7 @@ module.exports = {
             }
     
         } catch (err) {
+            console.log(err)
             const code = err.code || 500;
             const message = err.message.message || err.message
             res.status(code).send(message)

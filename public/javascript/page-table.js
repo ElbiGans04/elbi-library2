@@ -140,8 +140,17 @@ $(tombolEdit).on("click", function (event) {
     .then((result) => {
       const { data } = result;
       formInput.forEach(function (e) {
+        const type = e.getAttribute('type');
         const name = e.getAttribute("name");
-        e.value = data[name];
+        const value = data[name]
+        
+        if(type == 'file') {
+          const img = e.parentElement.children[0];
+          img.setAttribute('src', `data:image/${result['book_type']};base64,${value}`)
+          
+        } else {
+          e.value = value;
+        }
       });
     });
 });
