@@ -15,8 +15,13 @@ module.exports = async function (sequelize) {
             type: DataTypes.STRING
         },
 
+        book_price: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+
         book_stock: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
             allowNull: false,
             validate: {
                 isNumeric: true

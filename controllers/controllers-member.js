@@ -10,7 +10,7 @@ obj.get = async function(req, res) {
         const id = req.params.id;
         
         // Auth
-        if(await auth(req, 'admin') == true) {
+        if(await auth(req, 'admin')) {
             let result = await member.findOne({
                 where: {
                     id
@@ -35,8 +35,7 @@ obj.get = async function(req, res) {
 obj.getAll = async function (req, res) {
     try {
         let { member } = await model();
-    
-        if(await auth(req, 'admin') == true) {
+        if(await auth(req, 'admin')) {
             let allMember = await member.findAll();
             let coloumn = Object.keys(await member.rawAttributes);
             res.render('table', {
@@ -49,6 +48,8 @@ obj.getAll = async function (req, res) {
                 buttonAdd: 'fas fa-user mr-2'
             })
             // res.json(allMember)
+        } else {
+            res.send("ok")
         }
 
     } catch (err) {
@@ -63,7 +64,7 @@ obj.post = async function(req, res){
         let { member } = await model();
 
         // Verification
-        if(await auth(req, 'admin') == true) {
+        if(await auth(req, 'admin')) {
             // Vadidation 
             let validation = await member.findAll({
                 where : {
@@ -97,7 +98,7 @@ obj.put = async function (req, res) {
         let entitasId = req.params.id;
 
         // Verify
-        if(await auth(req, 'admin') == true) {
+        if(await auth(req, 'admin')) {
             // Validation
             let validation = await member.findAll({
                 where: {
@@ -133,7 +134,7 @@ obj.delete = async function (req, res) {
         let id = req.params.id;
         
         // Verify
-        if(await auth(req, 'admin') == true) {
+        if(await auth(req, 'admin')) {
             // Validation
             let validation = await member.findAll({
                 where: {

@@ -1,0 +1,22 @@
+head
+    title Elbi
+    link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
+    link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
+    link#bootstrap-css(href='/bootstrap/css/bootstrap.min.css' rel='stylesheet')
+// Section: Block Content
+body
+    .container
+        .row
+            .col-sm-6
+                img.img-fluid(src=`data:image/${result.book_type};base64,${result.book_image}`, style="max-width: 80%")
+            .col-sm-6
+                a#buyNow.btn.btn-sm.btn-primary(href=`/order/product/${result.id}/confirmation`) Buy Now
+
+// Script Dasar
+script(src='/assets/template/vendor/jquery/jquery.min.js')
+script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')
+script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
+script(src='/assets/template/js/sb-admin-2.min.js')
+script(src="/assets/template/vendor/datatables/jquery.dataTables.min.js")
+script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")

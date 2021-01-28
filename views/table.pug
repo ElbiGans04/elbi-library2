@@ -9,14 +9,7 @@ head
   link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i', rel='stylesheet')
   link(href='/assets/template/css/sb-admin-2.min.css', rel='stylesheet')
   link(href='/assets/template/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
-  style. 
-    td.details-control {
-        background: url('/assets/img/details_open.png') no-repeat center center;
-        cursor: pointer;
-    }
-    tr.details td.details-control {
-        background: url('/assets/img/details_close.png') no-repeat center center;
-    }
+  link(rel="stylesheet", href="/assets/css/table.css")
 // Page Wrapper
 #wrapper
   // Sidebar
@@ -44,6 +37,10 @@ head
     li.nav-item(name="book")
       a.nav-link(href='/books')
         i.fas.fa-book
+        span Book
+    li.nav-item(name="order")
+      a.nav-link(href='/order')
+        i.fas.fa-shopping-cart
         span Book
     // Divider
     hr.sidebar-divider.d-none.d-md-block
@@ -296,13 +293,13 @@ a.scroll-to-top.rounded(href='#page-top')
         form(action="")
           each value in coloumn
             if(hello(value, without))
+              -let test = module.jajal(as, value);
+              -let file = test.type || 'input'
+              - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
+              - let realName = test.target || value
               .form-group
-                -let value2 = module.ambilKata(value, '_', {uppercase: true, without: [0]})
-                - let type = 'text';
-                if(module.jajal(as, value))
-                  - type='file'
-                label(for=`inputAdd${value2}`)=value2
-                input.form-control(id=`inputAdd${value2}`, type=type, aria-describedby=`${value2}Help`, placeholder=`Enter ${value2}` name=`${value}` autocomplate=`off`)
+                label(for=`inputAdd${name}`)=name
+                input.form-control(id=`inputAdd${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
           
       .modal-footer
         button.btn.btn-secondary(type='button', data-dismiss='modal', aria-label='Close') Close
@@ -319,14 +316,13 @@ a.scroll-to-top.rounded(href='#page-top')
         form(action="")
           each value in coloumn
             if(hello(value, without))
+              -let test = module.jajal(as, value);
+              -let file = test.type || 'input'
+              - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
+              - let realName = test.target || value
               .form-group
-                -let value2 = module.ambilKata(value, '_', {uppercase: true, without: [0]})
-                - let type = 'text';
-                if(module.jajal(as, value))
-                  img.img-thumbnail.mb-2.d-block(src="", alt="")
-                  - type='file'
-                label(for=`inputEdit${value2}`)=value2
-                input.form-control(id=`inputEdit${value2}`, type=type, aria-describedby=`${value2}Help`, placeholder=`Enter ${value2}` name=`${value}` autocomplate=`off`)
+                label(for=`inputUpdate${name}`)=name
+                input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
           
       .modal-footer
         button.btn.btn-secondary(type='button', data-dismiss='modal', aria-label='Close') Close

@@ -1,6 +1,6 @@
 let model = require('../models/model-index');
 const respon2 = require('./respon2');
-const {auth} = require('./module');
+const {auth, as} = require('./module');
 const path = require('path');
 module.exports = {
     get: async function(req, res) {
@@ -9,7 +9,7 @@ module.exports = {
             const id = req.params.id;
             
             // Auth
-            if(await auth(req, 'admin') == true) {
+            if(await auth(req, 'admin')) {
                 let result = await book.findOne({
                     where: {
                         id
@@ -34,7 +34,7 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            if(await auth(req, 'admin') == true) {
+            if(await auth(req, 'admin')) {
                 const { book } = await model();
                 const result = await book.findAll();
                 res.render('table', {
@@ -42,7 +42,8 @@ module.exports = {
                     coloumn: Object.keys(await book.rawAttributes),
                     without:['id', 'createdat', 'updatedat', 'book_type'],
                     as: [
-                        {to: 'book_image', as: 'file'}
+                        new as({target: 'book_image', type: 'file', as: '', without: [0]}),
+                        new as({target: 'book_title', as: 'identifer', without: [0]})
                     ],
                     title: 'Book',
                     active: 'book',
@@ -62,7 +63,7 @@ module.exports = {
             let { book } = await model();
 
             // Verification
-            if(await auth(req, 'admin') == true) {
+            if(await auth(req, 'admin')) {
                 // Vadidation 
                 let validation = await book.findAll({
                     where : {
@@ -90,9 +91,9 @@ module.exports = {
             }
     
         } catch (err) {
-            console.log(err.message)
+            console.log(err)
             if(err instanceof Error) {
-                err.code = 200
+                err = new respon2({message: 'validasi error', code: 200})
             }
             const code = err.code || 500;
             res.status(code).json(err)
@@ -105,7 +106,7 @@ module.exports = {
             let entitasId = req.params.id;
     
             // Verify
-            if(await auth(req, 'admin') == true) {
+            if(await auth(req, 'admin')) {
                 // Validation
                 let validation = await book.findAll({
                     where: {
@@ -153,7 +154,7 @@ module.exports = {
             let id = req.params.id;
             
             // Verify
-            if(await auth(req, 'admin') == true) {
+            if(await auth(req, 'admin')) {
                 // Validation
                 let validation = await book.findAll({
                     where: {

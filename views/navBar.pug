@@ -1,0 +1,34 @@
+ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion(navbarActive=active).disableButton
+    // Sidebar - Brand
+    a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
+        .sidebar-brand-icon.rotate-n-15
+            i.fas.fa-book-open
+        .sidebar-brand-text.mx-3 Elbi Library
+    // Divider
+    hr.sidebar-divider.my-0
+    // Nav Item - Dashboard
+    li.nav-item(name="dashboard")
+        a.nav-link(href='/')
+            i.fas.fa-fw.fa-tachometer-alt
+            span.ml-1 Dashboard
+    // Divider
+    hr.sidebar-divider
+    // Heading
+    .sidebar-heading Data
+    li.nav-item(name="member")
+        a.nav-link(href='/members')
+            i.fas.fa-users
+            span Member
+    li.nav-item(name="book")
+        a.nav-link(href='/books')
+            i.fas.fa-book
+            span Book
+    li.nav-item(name="order").active
+        a.nav-link(href='/order')
+            i.fas.fa-shopping-cart
+            span order
+    // Divider
+    hr.sidebar-divider.d-none.d-md-block
+    // Sidebar Toggler (Sidebar)
+    .text-center.d-none.d-md-inline
+        button#sidebarToggle.rounded-circle.border-0

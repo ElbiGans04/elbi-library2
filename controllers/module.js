@@ -77,12 +77,12 @@ function ambilKata(word, pemisah, option) {
 
   function jajal(without, value) {
     for(let index in without) {
-      const target = without[index]['to'].toLowerCase();
+      const target = without[index]['target'].toLowerCase();
       const as = without[index]['as'];
       value = value.toLowerCase();
       
       if(target == value) {
-        return as
+        return without[index]
       }
     }
 
@@ -106,7 +106,24 @@ function ambilKata(word, pemisah, option) {
 
     if(who == 'admin') if(!tokenVerify.isAdmin) throw new respon2({message: 'only for admin', code: 403});
 
-    return true
+    return tokenVerify
+  }
+
+  function randomString(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
+  function as (data) {
+    this.target = data.target || '';
+    this.as = data.as || '';
+    this.type = data.type || 'input';
+    this.showName = ambilKata(data.target, '_', {space: true, without: data.without}) || ``;
   }
   
-  module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth, jajal}
+  module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth, jajal, randomString, as}

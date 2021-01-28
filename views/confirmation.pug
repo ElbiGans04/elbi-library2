@@ -1,0 +1,59 @@
+head
+    title Elbi
+    link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
+    link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
+    link#bootstrap-css(href='/bootstrap/css/bootstrap.min.css' rel='stylesheet')
+// Section: Block Content
+body
+    .container
+        .rows
+            .col-sm-12.justify-content-center
+                form(method="post", action="confirmation")
+                    div.form-group
+                        label Member : 
+                        select.form-control(name="id")
+                            each nilai in user
+                                option(value=`${nilai.id}`)=nilai.email
+                        
+                        small.form-text.text-muted We'll never share your email with anyone else.
+                    .form-group
+                        label How many days :
+                        select.form-control(name="day")
+                            option(value=1) 1 Day
+                            option(value=2) 2 Day
+                            option(value=3) 3 Day
+                        small.form-text.text-muted how long do you want to borrow a book? at least 1 day
+
+
+                    button.btn.btn-primary(type="submit") Buy
+
+            .col-sm-6
+
+
+// Script Dasar
+script(src='/assets/template/vendor/jquery/jquery.min.js')
+script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')
+script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
+script(src='/assets/template/js/sb-admin-2.min.js')
+script(src="/assets/template/vendor/datatables/jquery.dataTables.min.js")
+script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")
+script(type="module").
+    import {check} from "/assets/javascript/module.js";
+    $(`button[type=submit]`).on('click', function(event){
+        event.preventDefault();
+        const formElement = $('form')[0]
+        const form = new FormData(formElement);
+        const formUrl = $(formElement).attr('action');
+        console.log()
+        fetch(formUrl, {method: 'POST', body: form})
+            .then(result => check(result))
+            .then(result => {
+                if(result) {
+                    const {redirect} = result
+                    if(redirect) {
+                        window.location = '/order/success'
+                    }
+                } else console.log('false')
+            })
+    })

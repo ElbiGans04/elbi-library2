@@ -14,27 +14,26 @@ navList.forEach(function(element, index){
 });
 
 
-
 /// Datatables inisialisasi // // // 
 if(navActive == 'member') {
   var t = $('#tableUtama').DataTable( {
-      "columnDefs": [ {
-          "searchable": false,
-          "orderable": false,
-          "targets": [0, 3]
+    "columnDefs": [ {
+      "searchable": false,
+      "orderable": false,
+      "targets": [0, 3]
       } ],
       "order": [[ 1, 'asc' ]]
   } );
   
   t.on( 'order.dt search.dt', function () {
       t.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-          cell.innerHTML = i+1;
+        cell.innerHTML = i+1;
       } );
   } ).draw();
 } else if ('book') {
   function format ( d ) {
     return `Publisher: ${d[5]}<br> Page Thickness: ${d[6]}<br> Isbn: ${d[7]}`
-}
+  }
   var dt = $('#tableUtama').DataTable( {
       columnDefs: [
         {
@@ -60,18 +59,18 @@ if(navActive == 'member') {
   // Array to track the ids of the details displayed rows
   var detailRows = [];
   $('#tableUtama tbody').on( 'click', 'tr td.details-control', function () {
-      // Mencari Baris
-      var tr = $(this).closest('tr');
+    // Mencari Baris
+    var tr = $(this).closest('tr');
       // Mendapatkan Datatables API
       var row = dt.row( tr );
       
       // Check Apakah baris sudah dibuka
       var idx = $.inArray( tr.attr('id'), detailRows );
-
+      
       if ( row.child.isShown() ) {
           tr.removeClass( 'details' );
           row.child.hide();
-
+          
           // Remove from the 'open' array
           detailRows.splice( idx, 1 );
       }
@@ -83,16 +82,20 @@ if(navActive == 'member') {
           if ( idx === -1 ) {
               detailRows.push( tr.attr('id') );
           }
-      }
+        }
   } );
 
   // On each draw, loop over the `detailRows` array and show any child rows
   dt.on( 'draw', function () {
-      $.each( detailRows, function ( i, id ) {
+    $.each( detailRows, function ( i, id ) {
           $('#'+id+' td.details-control').trigger( 'click' );
+        } );
       } );
-  } );
-}
+  } else if(navActive == 'order') {
+      console.log(navActive)
+      
+      $('#tableUtama').DataTable()
+  }
 /// Akhir Datatables inisialisasi // // // 
 
 
@@ -178,8 +181,9 @@ tombolEditModal.addEventListener("click", function (event) {
 });
 
 // Event Ketika User Mengupload
-$('#inputEditImage').on('change', function(event){
+$('#inputEditImage, #inputAddImage').on('change', function(event){
   const gambar = this.parentElement.children[0];
+  console.log('check')
   const file = this.files[0];
   const read = new FileReader();
   read.readAsDataURL(file);
