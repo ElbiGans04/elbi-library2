@@ -13,9 +13,8 @@ navList.forEach(function(element, index){
   }
 });
 
-
 /// Datatables inisialisasi // // // 
-if(navActive == 'member') {
+if(navActive == 'member' || navActive == 'order') {
   var t = $('#tableUtama').DataTable( {
     "columnDefs": [ {
       "searchable": false,
@@ -30,7 +29,7 @@ if(navActive == 'member') {
         cell.innerHTML = i+1;
       } );
   } ).draw();
-} else if ('book') {
+} else if (navActive == 'book') {
   function format ( d ) {
     return `Publisher: ${d[5]}<br> Page Thickness: ${d[6]}<br> Isbn: ${d[7]}`
   }
@@ -91,11 +90,7 @@ if(navActive == 'member') {
           $('#'+id+' td.details-control').trigger( 'click' );
         } );
       } );
-  } else if(navActive == 'order') {
-      console.log(navActive)
-      
-      $('#tableUtama').DataTable()
-  }
+} 
 /// Akhir Datatables inisialisasi // // // 
 
 
@@ -181,7 +176,7 @@ tombolEditModal.addEventListener("click", function (event) {
 });
 
 // Event Ketika User Mengupload
-$('#inputEditImage, #inputAddImage').on('change', function(event){
+$('#inputUpdateImage, #inputAddImage').on('change', function(event){
   const gambar = this.parentElement.children[0];
   console.log('check')
   const file = this.files[0];

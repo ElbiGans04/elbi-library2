@@ -6,17 +6,27 @@ const respon2 = require("../controllers/respon2");
 const url = require("url");
 // Definisikan
 Route.get("/", async function (req, res) {
-    const {order} = await tabel();
+    const {order, book, member} = await tabel();
     const allOlder = await order.findAll({});
+    const resultBook = await book.findAll({})
+    const resultMember = await member.findAll({})
     const coloumn = await Object.keys(order.rawAttributes);
+    const without = ["id", "createdat", "updatedat", 'id_transaction', 'order_status']
     res.render("table", {
         data: allOlder,
+        resultBook,
+        resultMember,
         coloumn,
-        without: ["id", "createdat", "updatedat", 'id_transaction', 'order_status'],
+        without,
+        modalwithout: [...without,`order_price`],
         title: "Order list",
         active: "order",
         module: require("../controllers/module"),
         buttonAdd: "fas fa-user mr-2",
+        as: [
+            {target: 'book_id', showName: 'Book', type: 'select'},
+            {target: 'member_id', showName: 'Member', type: 'select'}
+        ]
     });
 });
 Route.get("/product", async function (req, res) {
@@ -55,15 +65,16 @@ Route.get("/product/:id/confirmation", async function (req, res) {
   });
 });
 
-Route.post("/product/:id/confirmation", async function (req, res) {
+Route.post("/", async function (req, res) {
   try {
     const token = await auth(req, false);
     if (token) {
-      const bookId = req.params.id;
+      const {order_day, member_id, book_id} = req.body;
+      const bookId = req.body.book_id;
       const { order, book } = await tabel();
       const bookData = await book.findOne({
         where: {
-          id: bookId,
+          id: book_id,
         },
         raw: true,
       });
@@ -74,11 +85,11 @@ Route.post("/product/:id/confirmation", async function (req, res) {
       if (bookData.book_stock <= 0)
         throw new respon2({ message: "out of stock", code: 200 });
       await order.create({
-        member_id: token.id,
-        book_id: bookId,
+        member_id,
+        book_id,
         id_transaction: codeTransaksi,
         order_price: bookData.book_price,
-        order_day: req.body.day,
+        order_day,
       });
       await book.update(
         { book_stock: bookData.book_stock - 1 },
