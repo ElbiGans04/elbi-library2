@@ -1,7 +1,7 @@
 const express = require("express");
 const Route = express.Router();
 const tabel = require("../models/model-index");
-const { auth, randomString } = require("../controllers/module");
+const { auth, randomString, as } = require("../controllers/module");
 const respon2 = require("../controllers/respon2");
 const url = require("url");
 // Definisikan
@@ -11,24 +11,30 @@ Route.get("/", async function (req, res) {
     const resultBook = await book.findAll({})
     const resultMember = await member.findAll({})
     const coloumn = await Object.keys(order.rawAttributes);
-    const without = ["id", "createdat", "updatedat", 'id_transaction', 'order_status']
+    const result = {};
+
+    const without = ["id", "createdat", "updatedat", 'order_status']
     res.render("table", {
         data: allOlder,
-        resultBook,
-        resultMember,
+        select: {
+            book_id : resultBook,
+            member_id: resultMember
+        },
         coloumn,
         without,
-        modalwithout: [...without,`order_price`],
+        modalwithout: [...without,`order_price`, 'id_transaction'],
         title: "Order list",
         active: "order",
         module: require("../controllers/module"),
         buttonAdd: "fas fa-user mr-2",
         as: [
-            {target: 'book_id', showName: 'Book', type: 'select'},
-            {target: 'member_id', showName: 'Member', type: 'select'}
-        ]
+            new as({show: true, target: 'book_id', showName: 'Book', type: 'select'}),
+            new as({target: 'member_id', showName: 'Member', type: 'select'})
+        ],
+        buttonAction: false
     });
 });
+
 Route.get("/product", async function (req, res) {
   const { book } = await tabel();
   const result = await book.findAll({

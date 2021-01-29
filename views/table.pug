@@ -41,7 +41,7 @@ head
     li.nav-item(name="order")
       a.nav-link(href='/order')
         i.fas.fa-shopping-cart
-        span Book
+        span Order
     // Divider
     hr.sidebar-divider.d-none.d-md-block
     // Sidebar Toggler (Sidebar)
@@ -203,7 +203,8 @@ head
                         -let val = module.jajal(as, value)
                         - let show = val.showName || module.ambilKata(value, '_', {space:true, uppercase:true, without: [0]});
                         th(name=value) #{show}
-                    th Action
+                    if(buttonAction)
+                      th Action
                 tfoot
                   tr
                     th No.
@@ -212,28 +213,29 @@ head
                         -let val = module.jajal(as, value)
                         - let show = val.showName || module.ambilKata(value, '_', {space:true, uppercase:true, without: [0]});
                         th(name=value) #{show}
-                    th Action
+                    if(buttonAction)
+                      th Action
                 tbody
                   each entri in data
                     tr(data-id=`${entri.dataValues.id}`)
                       td
                       each rows, index in entri.dataValues
-                        //- -let test = module.jajal(as, index);
-                        //- -let file = test.type || 'input'
-                        //- - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
-                        //- - let realName = test.target || value
-                        if(index == 'book_image') 
-                          td
-                            img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
-                        else                              
-                          if(hello(index, without))
-                            td= rows
-
-                      td(style="text-align: center")
-                        button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" data-toggle='modal' data-target='#editModal')
-                          i.fas.fa-edit
-                        button.buttonActionDelete.btn.btn-danger.btn-circle.btn-sm(type="button" data-toggle='modal' data-target='#deleteModal')
-                          i.fas.fa-trash
+                        - let dataModule = module.jajal(as, index);
+                        if(hello(index, without))
+                          -let dataAs = dataModule.as || ''
+                          if(dataModule.type == 'file')
+                            td(data-as=dataAs)
+                              img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
+                          else                              
+                            td(data-as=dataAs)= rows
+                      if(buttonAction)
+                        td(style="text-align: center")
+                          if(buttonAction.delete)
+                            button.buttonActionDelete.btn.btn-danger.btn-circle.btn-sm(type="button" )
+                              i.fas.fa-trash
+                          if(buttonAction.update)
+                            button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" )
+                              i.fas.fa-edit
 
 
 
@@ -279,16 +281,48 @@ a.scroll-to-top.rounded(href='#page-top')
           | Cancel
         a.btn.btn-primary(href='login.html') Logout
 // Modal Multiguna
-#deleteModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
-  .modal-dialog(role='document')
-    .modal-content
-      .modal-header
-        h5#multigunaHeader.modal-title Delete
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
-          span(aria-hidden='true') &times;
-      .modal-body Please select a row first 
-      .modal-footer
-        button#deleteButton.btn.btn-danger(type='button' aria-label='delete button') Delete
+if(buttonAction)
+  if(buttonAction.delete)
+    #deleteModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            h5#multigunaHeader.modal-title Delete
+            button.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') &times;
+          .modal-body Please select a row first 
+          .modal-footer
+            button#deleteButton.btn.btn-danger(type='button' aria-label='delete button') Delete
+  if(buttonAction.update)
+    #editModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
+      .modal-dialog(role='document')
+        .modal-content
+          .modal-header
+            h5#multigunaHeader.modal-title Edit
+            button.close(type='button' data-dismiss='modal' aria-label='Close')
+              span(aria-hidden='true') &times;
+          .modal-body 
+            form(action="")
+              each value in coloumn
+                if(hello(value, modalwithout))
+                  -let test = module.jajal(as, value);
+                  -let file = test.type || 'input'
+                  - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
+                  - let realName = test.target || value
+                  .form-group
+                    if(file == 'file')
+                      img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
+                    label(for=`inputUpdate${name}`)=name
+                    if(file == 'select') 
+                      select.form-control
+                        option test
+                    else
+                      input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
+
+          .modal-footer
+            button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
+            button#EditButton.btn.btn-primary(type='button' aria-label='Edit button') Edit
+    
 // Modal Multiguna
 #addModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
   .modal-dialog(role='document')
@@ -310,9 +344,8 @@ a.scroll-to-top.rounded(href='#page-top')
                   img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
                 label(for=`inputAdd${name}`)=name
                 if(file == 'select') 
-                  - let aktif = value == 'member_id' ? resultMember : resultBook;
                   select.form-control(name=value)
-                    each rows in aktif
+                    each rows in select[value]
                       option(value=rows.dataValues.id)=rows.dataValues.book_title || rows.dataValues.email
                 else 
                   input.form-control(id=`inputAdd${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
@@ -320,36 +353,7 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
         button#addButton.btn.btn-primary(type='button' aria-label='add button') Add
-// Modal Multiguna
-#editModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
-  .modal-dialog(role='document')
-    .modal-content
-      .modal-header
-        h5#multigunaHeader.modal-title Edit
-        button.close(type='button' data-dismiss='modal' aria-label='Close')
-          span(aria-hidden='true') &times;
-      .modal-body 
-        form(action="")
-          each value in coloumn
-            if(hello(value, modalWithout))
-              -let test = module.jajal(as, value);
-              -let file = test.type || 'input'
-              - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
-              - let realName = test.target || value
-              .form-group
-                if(file == 'file')
-                  img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
-                label(for=`inputUpdate${name}`)=name
-                if(file == 'select') 
-                  -console.log(`select: ${value}`)
-                  select.form-control
-                    option test
-                else
-                  input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
 
-      .modal-footer
-        button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
-        button#EditButton.btn.btn-primary(type='button' aria-label='Edit button') Edit
 
 // Script Dasar
 script(src='/assets/template/vendor/jquery/jquery.min.js')

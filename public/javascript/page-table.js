@@ -96,7 +96,7 @@ if(navActive == 'member' || navActive == 'order') {
 
 
 // // // Add Modal // // //
-$("#addButton").on("click", function (event) {
+$(document).on("click", '#addButton', function (event) {
   event.preventDefault();
 
   const formElement = $("#addModal .modal-body form")[0];
@@ -118,12 +118,23 @@ $("#addButton").on("click", function (event) {
 // // // Akhir Add Modal // // // 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 // // // Edit Modal // // //
-const tombolEdit = document.querySelectorAll(
-  "#tableUtama > tbody > tr > td:last-child > .buttonActionEdit"
-);
-$(tombolEdit).on("click", function (event) {
-  const row = this.parentElement.parentElement;
+
+$(document).on("click",'.buttonActionEdit', function (event) {
+  $('#editModal').modal('show');
+  const row = $(event.target).closest('tr')[0];
   const id = row.dataset.id;
   const form = document.querySelector(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form"
@@ -153,8 +164,7 @@ $(tombolEdit).on("click", function (event) {
     });
 });
 
-const tombolEditModal = document.getElementById("EditButton");
-tombolEditModal.addEventListener("click", function (event) {
+$(document).on('click', `#EditButton`, function (event) {
   const formElement = document.querySelector(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form "
   );
@@ -175,8 +185,9 @@ tombolEditModal.addEventListener("click", function (event) {
     });
 });
 
+
 // Event Ketika User Mengupload
-$('#inputUpdateImage, #inputAddImage').on('change', function(event){
+$(document).on('change', '#inputUpdateImage, #inputAddImage', function(event){
   const gambar = this.parentElement.children[0];
   console.log('check')
   const file = this.files[0];
@@ -206,23 +217,24 @@ $('#inputUpdateImage, #inputAddImage').on('change', function(event){
 const tombolDelete = document.querySelectorAll(
   "#tableUtama > tbody > tr > td:last-child > .buttonActionDelete"
 );
-$(tombolDelete).on("click", function (event) {
-  const row = this.parentElement.parentElement;
+$(document).on("click", '.buttonActionDelete', function (event) {
+  $('#deleteModal').modal('show')
+  const row = $(event.target).closest('tr')[0];
+  const col = $(row).children('[data-as=identifer]')[0]
   const id = row.dataset.id;
-
   const modal = document.querySelector(
     "#deleteModal > .modal-dialog > .modal-content > .modal-body"
   );
   modal.setAttribute("data-id", id);
-  modal.innerHTML = "Are you sure you want to delete the member?";
+  modal.innerHTML = `Are you sure you want to delete <strong>${col.textContent}?</strong>`;
 });
 
-const tombolDeleteModal = document.getElementById("deleteButton");
-tombolDeleteModal.addEventListener("click", function (event) {
+$(document).on("click", '#deleteButton', function (event) {
   event.preventDefault();
   const modalBody = document.querySelector(
     "#deleteModal > .modal-dialog > .modal-content > .modal-body"
   );
+
   const id = modalBody.dataset.id;
   fetch(`${url}/${id}`, {
     method: "delete",

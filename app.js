@@ -59,10 +59,10 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   data[0].book_image = file;
   let {sequelize, member, book} = await modelIndex()
   try {
-    // await sequelize.sync({force: true})
-    // await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
-    // await book.create(data[0])
-    // await book.create(data[1])
+    await sequelize.sync({force: true})
+    await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
+    await book.create(data[0])
+    await book.create(data[1])
     // await book.create(data[0])
     // await book.create(data[1])
     // await book.bulkCreate(data)

@@ -1,7 +1,7 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
-const {auth} = require('./module');
+const {auth, as} = require('./module');
 const respon2 = require('./respon2')
 
 obj.get = async function(req, res) {
@@ -38,14 +38,23 @@ obj.getAll = async function (req, res) {
         if(await auth(req, 'admin')) {
             let allMember = await member.findAll();
             let coloumn = Object.keys(await member.rawAttributes);
+            const without = ['id', 'createdat', 'updatedat', 'isadmin'];
             res.render('table', {
                 data: allMember,
                 coloumn,
-                without:['id', 'createdat', 'updatedat', 'isadmin'],
+                modalwithout: [...without],
+                without,
                 title: 'Member',
                 active: 'member',
                 module: require('./module'),
-                buttonAdd: 'fas fa-user mr-2'
+                as: [
+                    new as({target: 'email', as: 'identifer'})
+                ],
+                buttonAdd: 'fas fa-user mr-2',
+                buttonAction: {
+                    update: true,
+                    delete: true
+                }
             })
             // res.json(allMember)
         } else {
@@ -206,7 +215,6 @@ obj.register = async function(req, res){
 
 obj.login = async function (req, res) {
     try {
-        console.log(req.body)
         const { member } = await model();
         const { email } = req.body;
         const password2 = req.body.password

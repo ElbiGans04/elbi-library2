@@ -41,14 +41,19 @@ module.exports = {
                     data: result,
                     coloumn: Object.keys(await book.rawAttributes),
                     without:['id', 'createdat', 'updatedat', 'book_type'],
+                    modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
                     as: [
-                        new as({target: 'book_image', type: 'file', as: '', without: [0]}),
+                        new as({target: 'book_image', type: 'file', without: [0]}),
                         new as({target: 'book_title', as: 'identifer', without: [0]})
                     ],
                     title: 'Book',
                     active: 'book',
                     module: require('./module'),
-                    buttonAdd: 'fas fa-book mr-2'
+                    buttonAdd: 'fas fa-book mr-2',
+                    buttonAction: {
+                        delete: true,
+                        update: true
+                    }
                 })
             }
         } catch (err) {
