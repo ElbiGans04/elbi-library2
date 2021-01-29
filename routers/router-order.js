@@ -7,13 +7,31 @@ const url = require("url");
 // Definisikan
 Route.get("/", async function (req, res) {
     const {order, book, member} = await tabel();
-    const allOlder = await order.findAll({});
-    const resultBook = await book.findAll({})
+    const allOlder = await order.findAll();
+    const resultBook = await book.findAll()
     const resultMember = await member.findAll({})
-    const coloumn = await Object.keys(order.rawAttributes);
-    const result = {};
 
-    const without = ["id", "createdat", "updatedat", 'order_status']
+
+    for(let value in allOlder) {
+      const memberId = allOlder[value].dataValues.member_id;
+      const bookId = allOlder[value].dataValues.book_id;
+      const result = await allOlder[value].getBook({
+        raw: true,
+        attributes: ['id', 'book_title']
+      });
+      const result2 = await allOlder[value].getMember({
+        raw: true,
+        attributes: ['id', 'email']
+      });
+
+      allOlder[value].dataValues.book_id = {title: result.book_title, id: result.id};
+      allOlder[value].dataValues.member_id = {title: result2.email, id: result2.id};
+    }
+    // console.log(await allOlder[0].getBook({
+    //   attributes: ['id', 'book_title']
+    // }))
+    const coloumn = await Object.keys(order.rawAttributes);
+    const without = ["id", "createdat", "updatedat"]
     res.render("table", {
         data: allOlder,
         select: {
@@ -22,14 +40,24 @@ Route.get("/", async function (req, res) {
         },
         coloumn,
         without,
-        modalwithout: [...without,`order_price`, 'id_transaction'],
+        modalwithout: [...without,`order_price`, 'id_transaction', `return_status`],
         title: "Order list",
         active: "order",
         module: require("../controllers/module"),
-        buttonAdd: "fas fa-user mr-2",
+        buttonHeader: {
+          add: {
+            class: 'fas fa-user mr-2',
+            id: 'addActionButton'
+          },
+          return: {
+            class: 'fas fa-user mr-2',
+            id: 'returnButton'
+          },
+          
+        },
         as: [
-            new as({show: true, target: 'book_id', showName: 'Book', type: 'select'}),
-            new as({target: 'member_id', showName: 'Member', type: 'select'})
+            new as({show: true, target: 'book_id', showName: 'Book', type: 'select', without: [0]}),
+            new as({target: 'member_id', showName: 'Member', type: 'select',})
         ],
         buttonAction: false
     });

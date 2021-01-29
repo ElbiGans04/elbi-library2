@@ -47,6 +47,12 @@ obj.getAll = async function (req, res) {
                 title: 'Member',
                 active: 'member',
                 module: require('./module'),
+                buttonHeader: {
+                    add: {
+                      class: 'fas fa-user mr-2',
+                      id: 'addActionButton'
+                    }
+                },
                 as: [
                     new as({target: 'email', as: 'identifer'})
                 ],

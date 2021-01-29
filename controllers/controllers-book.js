@@ -49,7 +49,12 @@ module.exports = {
                     title: 'Book',
                     active: 'book',
                     module: require('./module'),
-                    buttonAdd: 'fas fa-book mr-2',
+                    buttonHeader: {
+                        add: {
+                            class: 'fas fa-book mr-2',
+                            id: 'addActionButton'
+                        }
+                    },
                     buttonAction: {
                         delete: true,
                         update: true

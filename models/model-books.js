@@ -1,6 +1,6 @@
 const {DataTypes, Op} = require('sequelize');
 module.exports = async function (sequelize) {
-    return await sequelize.define('table-books', {
+    return await sequelize.define('book', {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,

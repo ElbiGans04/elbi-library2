@@ -10,7 +10,7 @@ const bookRouter = require("./routers/router-book");
 const register = require("./routers/router-register");
 const login = require("./routers/router-login");
 const logout = require("./routers/router-logout");
-const order = require('./routers/router-order');
+const orderRoute = require('./routers/router-order');
 const returnRoute = require('./routers/router-return');
 
 
@@ -57,12 +57,18 @@ const data = [
 fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   if(err) throw err;
   data[0].book_image = file;
-  let {sequelize, member, book} = await modelIndex()
+  const {DataTypes} = require('sequelize')
+  let {sequelize, member, book, order} = await modelIndex()
   try {
-    await sequelize.sync({force: true})
-    await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
-    await book.create(data[0])
-    await book.create(data[1])
+    // await sequelize.sync({force: true})
+    // await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
+    // await book.create(data[0]);
+  
+
+
+    
+    
+    // await book.create(data[1])
     // await book.create(data[0])
     // await book.create(data[1])
     // await book.bulkCreate(data)
@@ -72,7 +78,7 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
     app.use("/register", register);
     app.use("/login", login);
     app.use("/logout", logout);
-    app.use('/order', order);
+    app.use('/order', orderRoute);
     app.use('/return', returnRoute)
     
     app.listen(port, function (err) {

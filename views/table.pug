@@ -186,9 +186,15 @@ head
           .col-sm-4
             h3.mb-4.text-gray-800 #{module.ubahHurufPertama(title)}
           .col-sm-8.d-flex.justify-content-end
-            button.btn.btn-primary.btn-sm(type="button" data-toggle='modal' data-target='#addModal')
-              i(class=buttonAdd)
-              span add #{active}
+            if(buttonHeader)
+              .kumpulan-button
+                each val, index in buttonHeader
+                  button.btn.btn-primary.btn-sm.mr-3(id=val.id, type="button")
+                    i.mr-1(class=val.class)
+                    | #{index}
+            //- button.btn.btn-primary.btn-sm(type="button" data-toggle='modal' data-target='#addModal')
+            //-   i(class=buttonAdd)
+            //-   span add #{active}
         .card.shadow.mb-4
           .card-header.py-3
             h6.m-0.font-weight-bold.text-primary 
@@ -216,7 +222,7 @@ head
                     if(buttonAction)
                       th Action
                 tbody
-                  each entri in data
+                  each entri, index in data
                     tr(data-id=`${entri.dataValues.id}`)
                       td
                       each rows, index in entri.dataValues
@@ -226,8 +232,11 @@ head
                           if(dataModule.type == 'file')
                             td(data-as=dataAs)
                               img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
-                          else                              
-                            td(data-as=dataAs)= rows
+                          else    
+                            if(typeof rows == 'object')
+                              td(data-id=rows.id)=rows.title
+                            else 
+                              td(data-as=dataAs)= rows
                       if(buttonAction)
                         td(style="text-align: center")
                           if(buttonAction.delete)

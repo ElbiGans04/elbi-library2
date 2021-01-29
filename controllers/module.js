@@ -124,8 +124,6 @@ function ambilKata(word, pemisah, option) {
     this.as = data.as || '';
     this.type = data.type || 'input';
     this.showName = data.showName || ambilKata(data.target, '_', {space: true, without: data.without});
-    this.show = data.show || true;
-    this.modal = data.modal || true;
   }
   
   module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth, jajal, randomString, as}

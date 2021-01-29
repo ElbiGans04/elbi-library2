@@ -1,7 +1,7 @@
 const { Sequelize,DataTypes } = require("sequelize");
 
 module.exports = async function (sequelize) {
-  return await sequelize.define("table-order", {
+  return await sequelize.define("order", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -12,7 +12,7 @@ module.exports = async function (sequelize) {
       type: DataTypes.STRING
     },
 
-    order_status: {
+    return_status: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },

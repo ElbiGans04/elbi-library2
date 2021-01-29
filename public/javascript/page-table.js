@@ -96,6 +96,9 @@ if(navActive == 'member' || navActive == 'order') {
 
 
 // // // Add Modal // // //
+$(document).on('click', '#addActionButton', function(event){
+  $('#addModal').modal('show')
+});
 $(document).on("click", '#addButton', function (event) {
   event.preventDefault();
 
