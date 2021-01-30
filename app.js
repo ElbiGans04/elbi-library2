@@ -38,7 +38,8 @@ const data = [
     book_page_thickness: "12",
     book_isbn: "12",
     book_type: 'img',
-    book_price: 30000
+    book_price: 30000,
+    book_fines: 3000
   },
   {
     book_title: "Mengejar Matahari",

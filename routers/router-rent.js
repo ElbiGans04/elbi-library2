@@ -5,6 +5,8 @@ const { auth, randomString, as } = require("../controllers/module");
 const moduleCustom = require("../controllers/module");
 const respon2 = require("../controllers/respon2");
 const url = require("url");
+const {Op} = require('sequelize');
+
 // Definisikan
 Route.get("/", async function (req, res) {
     const {order, book, member} = await tabel();
@@ -41,7 +43,7 @@ Route.get("/", async function (req, res) {
         },
         coloumn,
         without,
-        modalwithout: [...without,`order_price`, 'id_transaction', `return_status`],
+        modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date'],
         title: "Order list",
         active: "order",
         module: require("../controllers/module"),
@@ -64,41 +66,7 @@ Route.get("/", async function (req, res) {
     });
 });
 
-Route.get("/product", async function (req, res) {
-  const { book } = await tabel();
-  const result = await book.findAll({
-    raw: true,
-  });
 
-  res.render("order", {
-    result,
-  });
-});
-
-Route.get("/product/:id", async function (req, res) {
-  const id = req.params.id;
-  const { book } = await tabel();
-  let result = await book.findOne({
-    where: {
-      id,
-    },
-    raw: true,
-  });
-
-  result.book_image = result.book_image.toString("base64");
-
-  res.render("product", {
-    result,
-  });
-});
-
-Route.get("/product/:id/confirmation", async function (req, res) {
-  const { member } = await tabel();
-  const user = await member.findAll();
-  res.render("confirmation", {
-    user,
-  });
-});
 
 Route.post("/", async function (req, res) {
   try {
@@ -114,6 +82,8 @@ Route.post("/", async function (req, res) {
         raw: true,
       });
 
+      const waktu = new Date().getTime();
+      console.log(waktu)
       const codeTransaksi = randomString(26);
       if (bookData == null)
         throw new respon2({ message: "book not found", code: 200 });
@@ -125,6 +95,7 @@ Route.post("/", async function (req, res) {
         id_transaction: codeTransaksi,
         order_price: bookData.book_price,
         order_day,
+        order_date: waktu
       });
       await book.update(
         { book_stock: bookData.book_stock - 1 },
@@ -150,32 +121,85 @@ Route.post("/", async function (req, res) {
   }
 });
 
-Route.get("/success", function (req, res) {
-  const alamat = url.parse(req.url, true).query;
-  res.render("success");
-});
 
-Route.delete('/', function(req, res){
-  console.log(req.body)
-  res.send("Allright")
+
+Route.delete('/', async function(req, res){
+  const {order} = await tabel();
+  let { member, book, id_transaction } = req.body;
+
+  // Check Apakah Orderan tsb ada
+  const resultOrder = await order.findAll({
+    where: {
+      [Op.and] : {
+        member_id: member,
+        book_id: book,
+        id_transaction
+      }
+    }
+  });
+
+  // Jika Ga ada
+  if(resultOrder.length <= 0) throw new respon2({message: 'not found. Please check again'});
+
+  // Logic
+  await order.update({return_status: true}, {
+    where: {
+      [Op.and] : {
+        member_id: member,
+        book_id: book,
+        id_transaction
+      }
+    }
+  })
+  res.json(new respon2({message: 'success', code: 200}))
 });
 
 Route.get('/return', async function(req, res){
   const {order} = await tabel();
-  const dataOrder = await order.findAll();
+  const dataOrder = await order.findAll({
+    where: {
+      [Op.not] : {
+        return_status: true
+      }
+    }
+  });
 
   for(let index in dataOrder) {
       const dataOrderMember = await dataOrder[index].getMember({attributes: ['email', 'id'],raw:true});
-      const dataOrderBook = await dataOrder[index].getBook({attributes: ['book_title', 'id'],raw:true});
+      const dataOrderBook = await dataOrder[index].getBook({attributes: ['book_title', 'id', `book_fines`],raw:true});
 
       dataOrder[index].dataValues.member_id = {title: dataOrderMember.email, id: dataOrderMember.id};
-      dataOrder[index].dataValues.book_id = {title: dataOrderBook.book_title, id: dataOrderBook.id};
+      dataOrder[index].dataValues.book_id = {title: dataOrderBook.book_title, id: dataOrderBook.id, fines: dataOrderBook.book_fines};
   }   
-
+  
   res.render('returnBook', {
       dataOrder,
       show: [`member_id`, `book_id`],
       moduleCustom
   })
-})
+});
+
+Route.get('/return/:id', async function(req, res){
+  const paramId = req.params.id;
+  const {order} = await tabel();
+  
+  const dataOrder = await order.findAll({
+    where: {
+      [Op.and] : {
+        member_id : paramId,
+        return_status: false
+      }
+    }
+  });
+
+  for(let index in dataOrder) {
+    const dataOrderMember = await dataOrder[index].getMember({attributes: ['email', 'id', 'book_fines'],raw:true});
+    const dataOrderBook = await dataOrder[index].getBook({attributes: ['book_title', 'id'],raw:true});
+
+    dataOrder[index].dataValues.member_id = {title: dataOrderMember.email, id: dataOrderMember.id};
+    dataOrder[index].dataValues.book_id = {title: dataOrderBook.book_title, id: dataOrderBook.id, fines: dataOrderBook.book_fines};
+  };
+
+  res.json(dataOrder)
+});
 module.exports = Route;

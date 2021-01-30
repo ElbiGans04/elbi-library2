@@ -125,5 +125,19 @@ function ambilKata(word, pemisah, option) {
     this.type = data.type || 'input';
     this.showName = data.showName || ambilKata(data.target, '_', {space: true, without: data.without});
   }
+
+  function getTime(waktu) {
+    const waktuNow = new Date().getTime();
+    const distance = waktuNow - waktu;
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    
+    return {
+      days, hours, minutes, seconds
+    }
+  }
   
-  module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth, jajal, randomString, as}
+  module.exports = {ubahHurufPertama, ambilKata, gaTermasuk, termasuk, auth, jajal, randomString, as, getTime}

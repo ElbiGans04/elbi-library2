@@ -20,6 +20,10 @@ module.exports = async function (sequelize) {
             allowNull: false
         },
 
+        book_fines : {
+            type: DataTypes.INTEGER
+        },
+
         book_stock: {
             type: DataTypes.INTEGER,
             allowNull: false,

@@ -19,7 +19,6 @@ module.exports = async function (sequelize) {
 
     order_day: {
       type: DataTypes.INTEGER,
-
     },
 
     order_price: {
@@ -27,6 +26,12 @@ module.exports = async function (sequelize) {
       allowNull: false
     },
 
+    order_date: {
+      type: DataTypes.BIGINT(20)
+    }
 
+
+  }, {
+    timestamps: false,
   });
 };

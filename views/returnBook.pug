@@ -9,7 +9,14 @@ head
     link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
     link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
     link(href='/assets/template/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
-    link(rel="stylesheet" href="/assets/css/table.css")
+    style.
+        table {
+            width: 100%;
+        }
+        table tr {
+            display: flex;
+            justify-content: space-between
+        }
 // Page Wrapper
 #wrapper
     // Sidebar
@@ -45,7 +52,7 @@ head
             #collapseUtilities.collapse.show(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
                 .bg-white.py-2.collapse-inner.rounded
                     h6.collapse-header rent or return books
-                    a.collapse-item(href='/return') Rent 
+                    a.collapse-item(href='/rent') Rent 
                     a.collapse-item.active(href='/rent/return') Return 
         // Divider
         hr.sidebar-divider.d-none.d-md-block
@@ -196,30 +203,64 @@ head
                 else
                   .col-sm-12
                     -let already = [];
+                    - let active = '';
                         form()
                             .form-group
                                 label Member: 
-                                select.form-control
+                                select.form-control(name="member")
                                     each rows in dataOrder
                                         - const title = rows.dataValues.member_id.title;
                                         if(hello(title, already))
+                                            if(active.length == 0) 
+                                                -active += title
                                             option(value=rows.dataValues.member_id.id)=title
                                             -already.push(title)
                             .form-group
                                 label Book :
-                                select.form-control
+                                select.form-control(name="book")
                                     each rows in dataOrder
                                         - const title = rows.dataValues.book_id.title;
-                                        option(value=rows.dataValues.book_id.id)=title
-                                        -already.push(title)
+                                        if(rows.dataValues.member_id.title == active)
+                                            option(value=rows.dataValues.book_id.id, data-transaction=rows.dataValues.id_transaction, data-price=rows.dataValues.order_price, data-day=rows.dataValues.order_day, data-fines=rows.dataValues.book_id.fines, data-date=rows.dataValues.order_date)=title
+                                            -already.push(title)
                             .form-group
                                 label Id Transaction
-                                input.form-control(readonly="readonly", value=dataOrder[0].dataValues.id_transaction)
+                                input.form-control(readonly="readonly", value=dataOrder[0].dataValues.id_transaction, name="id_transaction")
 
                         
                   .col-sm-12.mt-3
-                    div.alert.alert-info#information(role="alert", style="width:100%") are you sure to pay for the  book rent ?
-                    button.btn-sm.btn.btn-primary#buttonAction Send
+                    div.alert.alert-info#information(role="alert", style="width:100%").p-5
+                        h4.mb-5
+                          strong Information
+                        -const rows = dataOrder[0].dataValues
+                        table.mb-5
+                            tr 
+                                th Rental fee per day :
+                                td.fee=rows.order_price
+                            tr 
+                                th Length of time :
+                                td.feeDay !{rows.order_day} Day
+                            - const {days} = moduleCustom.getTime(rows.order_date)
+                            - let denda = days * rows.book_id.fines
+                            - let fee = rows.order_price * rows.order_day;
+                            - let total = parseInt(fee) + parseInt(denda);
+                            tr  
+                                th how long it takes to return late :
+                                td.finesDay !{days} Day
+                            tr 
+                                th fines per day :
+                                td.fines=rows.book_id.fines
+                            tr
+                                th Fee + Fines :
+                                td.feeFInes #{rows.order_price * rows.order_day} + #{denda}
+
+                            tr
+                                th total :
+                                td.total
+                                    strong.total.
+                                        RP. !{total}
+                                
+                        button.btn-sm.btn.btn-primary#buttonAction.d-block Pay now
         - function hello(value, without) {
           -   for (let e in without) {
           -       if(without[e].toLowerCase() == value.toLowerCase()) {
@@ -268,15 +309,4 @@ script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
 script(src='/assets/template/js/sb-admin-2.min.js')
 script(src="/assets/template/vendor/datatables/jquery.dataTables.min.js")
 script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")
-script. 
-    const action = document.getElementById('buttonAction');
-    const formElement = document.querySelector('form');
-    const formData = new FormData(formElement);
-    action.addEventListener('click', function(event){
-        fetch('/order', {
-            method: 'delete',
-            body: formData
-        })
-            .then(result => result.text())
-            .then(result => console.log(result))
-    })
+script(type="module", src="/assets/javascript/return.js")
