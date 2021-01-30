@@ -10,7 +10,7 @@ const bookRouter = require("./routers/router-book");
 const register = require("./routers/router-register");
 const login = require("./routers/router-login");
 const logout = require("./routers/router-logout");
-const orderRoute = require('./routers/router-order');
+const rentRoute = require('./routers/router-rent');
 const returnRoute = require('./routers/router-return');
 
 
@@ -78,8 +78,7 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
     app.use("/register", register);
     app.use("/login", login);
     app.use("/logout", logout);
-    app.use('/order', orderRoute);
-    app.use('/return', returnRoute)
+    app.use('/rent', rentRoute);
     
     app.listen(port, function (err) {
       if (err) throw err;

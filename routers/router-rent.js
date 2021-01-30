@@ -2,6 +2,7 @@ const express = require("express");
 const Route = express.Router();
 const tabel = require("../models/model-index");
 const { auth, randomString, as } = require("../controllers/module");
+const moduleCustom = require("../controllers/module");
 const respon2 = require("../controllers/respon2");
 const url = require("url");
 // Definisikan
@@ -153,4 +154,28 @@ Route.get("/success", function (req, res) {
   const alamat = url.parse(req.url, true).query;
   res.render("success");
 });
+
+Route.delete('/', function(req, res){
+  console.log(req.body)
+  res.send("Allright")
+});
+
+Route.get('/return', async function(req, res){
+  const {order} = await tabel();
+  const dataOrder = await order.findAll();
+
+  for(let index in dataOrder) {
+      const dataOrderMember = await dataOrder[index].getMember({attributes: ['email', 'id'],raw:true});
+      const dataOrderBook = await dataOrder[index].getBook({attributes: ['book_title', 'id'],raw:true});
+
+      dataOrder[index].dataValues.member_id = {title: dataOrderMember.email, id: dataOrderMember.id};
+      dataOrder[index].dataValues.book_id = {title: dataOrderBook.book_title, id: dataOrderBook.id};
+  }   
+
+  res.render('returnBook', {
+      dataOrder,
+      show: [`member_id`, `book_id`],
+      moduleCustom
+  })
+})
 module.exports = Route;

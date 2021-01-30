@@ -10,6 +10,20 @@ const navList = document.querySelectorAll('#accordionSidebar > li');
 navList.forEach(function(element, index){
   if(element.getAttribute('name') == navActive) {
     element.classList.add(`active`)
+    const anak = element.children;
+    
+    if(anak.length > 1) {
+      const cucu = Array.from(anak[1].children[0].children);
+      anak[1].classList.add('show');
+      const path = window.location.pathname;
+      
+      cucu.forEach(function(e){
+        if(e.getAttribute('href') == path) {
+          e.classList.add('active')
+        }
+      })
+    }
+
   }
 });
 
