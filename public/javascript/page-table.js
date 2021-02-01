@@ -126,9 +126,10 @@ $(document).on("click", '#addButton', function (event) {
     .then((result) => check(result))
     .then((result) => {
       if (result) {
+        console.log(result)
         const { message, redirect, type } = result;
         alert(message);
-        window.location.reload();
+        if(type) window.location.reload();
       }
     });
 });

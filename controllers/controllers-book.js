@@ -1,6 +1,6 @@
 let model = require('../models/model-index');
 const respon2 = require('./respon2');
-const {auth, as} = require('./module');
+const {ambilKata, as, pesanError} = require('./module');
 const path = require('path');
 module.exports = {
     get: async function(req, res) {
@@ -94,13 +94,14 @@ module.exports = {
             
             res.json(new respon2({message: 'successfully added book'}))
 
-    
         } catch (err) {
             console.log(err)
             if(err instanceof Error) {
-                err = new respon2({message: 'validasi error', code: 200})
+                if(err.errors) err.message = pesanError(err)
+                else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
+                err = new respon2({message: err.message, code:200});
             }
-            const code = err.code || 500;
+            const code = err.code || 200;
             res.status(code).json(err)
         }
     },
@@ -145,9 +146,13 @@ module.exports = {
     
         } catch (err) {
             console.log(err)
-            const code = err.code || 500;
-            const message = err.message.message || err.message
-            res.status(code).send(message)
+            if(err instanceof Error) {
+                if(err.errors) err.message = pesanError(err)
+                else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
+                err = new respon2({message: err.message, code:200});
+            }
+            const code = err.code || 200;
+            res.status(code).json(err)
         }
     },
 

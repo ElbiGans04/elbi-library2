@@ -1,7 +1,7 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
-const {as} = require('./module');
+const {as, pesanError} = require('./module');
 const respon2 = require('./respon2')
 
 obj.get = async function(req, res) {
@@ -22,9 +22,14 @@ obj.get = async function(req, res) {
         res.json(new respon2({message: 'success', code: 200, data: result}));
 
     } catch ( err ) {
-        const code = err.code || 500;
-        const message = err.message.message || err.message
-        res.status(code).send(message)
+        console.log(err)
+        if(err instanceof Error) {
+            if(err.errors) err.message = pesanError(err)
+            else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
+            err = new respon2({message: err.message, code:200});
+        }
+        const code = err.code || 200;
+        res.status(code).json(err)
     }
 }
 
@@ -94,8 +99,13 @@ obj.post = async function(req, res){
         res.json(new respon2({message: 'successfully added members'}))
 
     } catch (err) {
-        console.log(err.message)
-        const code = err.code || 500;
+        console.log(err);
+        if(err instanceof Error) {
+            if(err.errors) err.message = pesanError(err)
+            else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
+            err = new respon2({message: err.message, code:200});
+        }
+        const code = err.code || 200;
         res.status(code).json(err)
     }
 };
@@ -238,9 +248,13 @@ obj.login = async function (req, res) {
         res.json(new respon2({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/members'}))
         
     } catch (err) {
-        console.log(err.message);
-        const code = err.code || 500;
-        return res.status(code).json(err)
+        if(err instanceof Error) {
+            if(err.errors) err.message = pesanError(err)
+            else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
+            err = new respon2({message: err.message, code:200});
+        }
+        const code = err.code || 200;
+        res.status(code).json(err)
     }
     
 };
