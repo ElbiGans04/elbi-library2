@@ -15,5 +15,5 @@ module.exports = async function () {
     await book.hasOne(order, {foreignKey: 'book_id'});
     await order.belongsTo(book, {foreignKey: 'book_id'});
 
-    return {member, sequelize, book, order}
+    return {member, sequelize, book, order, Op}
 }

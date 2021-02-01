@@ -12,7 +12,11 @@ Route.get("/", async function (req, res) {
     const {order, book, member} = await tabel();
     const allOlder = await order.findAll();
     const resultBook = await book.findAll()
-    const resultMember = await member.findAll({})
+    const resultMember = await member.findAll({
+      where: {
+        isAdmin: false
+      }
+    })
 
 
     for(let value in allOlder) {
@@ -51,12 +55,7 @@ Route.get("/", async function (req, res) {
           add: {
             class: 'fas fa-user mr-2',
             id: 'addActionButton'
-          },
-          return: {
-            class: 'fas fa-user mr-2',
-            id: 'returnButton'
-          },
-          
+          }
         },
         as: [
             new as({show: true, target: 'book_id', showName: 'Book', type: 'select', without: [0]}),
