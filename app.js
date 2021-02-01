@@ -11,8 +11,8 @@ const register = require("./routers/router-register");
 const login = require("./routers/router-login");
 const logout = require("./routers/router-logout");
 const rentRoute = require('./routers/router-rent');
-const returnRoute = require('./routers/router-return');
-
+const jwt = require('jsonwebtoken');
+const respon = require('./controllers/respon2');
 
 
 // // // Instalasi Project // // //
@@ -28,6 +28,7 @@ app.set("views", "./views");
 
 
 const modelIndex = require("./models/model-index");
+const respon2 = require("./controllers/respon2");
 const data = [
   {
     book_title: "Mengejar Mimpi",
@@ -63,17 +64,17 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   try {
     await sequelize.sync({force: true})
     await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
-    await book.create(data[0]);
+    // await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
+    // await book.create(data[0]);
   
 
-
-    app.use("/members", memberRouter);
-    app.use("/books", bookRouter);
+    app.use("/members", auth, memberRouter);
+    app.use("/books", auth, bookRouter);
     
-    app.use("/register", register);
+    app.use("/register",auth, register);
     app.use("/login", login);
     app.use("/logout", logout);
-    app.use('/rent', rentRoute);
+    app.use('/rent', auth , rentRoute);
     app.listen(port, function (err) {
       if (err) throw err;
       console.log(`Server telah dijalankan pada port ${port}`);
@@ -90,3 +91,36 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   }
   
 })
+
+
+async function auth (req, res, next){
+  try {
+    const token = req.cookies.token;
+    let {member} = await modelIndex()
+    
+    // Jika Token Tidak ada
+    if(!token) throw new respon2({message: 'token not found', code: 200, redirect: '/login'})
+    const tokenJwt = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
+      algorithms: 'RS256'
+    });
+
+    const user = await member.findOne({
+      where: {
+        id: tokenJwt.id
+      }
+    });
+    
+    // Jika user tidak ada
+    if(!user) throw new respon2({message: 'unregistered user', code: 200, redirect: '/login'})
+    
+    req.user = tokenJwt;
+
+    next();
+  } catch (err) {
+    if(req.method == 'GET') {
+      res.redirect(err.redirect)
+    } else {
+      res.json(err)
+    }
+  }
+}

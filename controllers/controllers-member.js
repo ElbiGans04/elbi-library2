@@ -1,7 +1,7 @@
 let obj = {};
 let model = require('../models/model-index');
 let jwt = require('jsonwebtoken');
-const {auth, as} = require('./module');
+const {as} = require('./module');
 const respon2 = require('./respon2')
 
 obj.get = async function(req, res) {
@@ -10,20 +10,17 @@ obj.get = async function(req, res) {
         const id = req.params.id;
         
         // Auth
-        if(await auth(req, 'admin')) {
-            let result = await member.findOne({
-                where: {
-                    id
-                }
-            });
-        
-            if(result.length <= 0) throw new respon2({message: 'member not found', code: 200});
+        let result = await member.findOne({
+            where: {
+                id
+            }
+        });
     
-            // Jika Ada maka Kirimkan
-            res.json(new respon2({message: 'success', code: 200, data: result}));
-        }
+        if(result.length <= 0) throw new respon2({message: 'member not found', code: 200});
 
-        
+        // Jika Ada maka Kirimkan
+        res.json(new respon2({message: 'success', code: 200, data: result}));
+
     } catch ( err ) {
         const code = err.code || 500;
         const message = err.message.message || err.message
@@ -35,41 +32,37 @@ obj.get = async function(req, res) {
 obj.getAll = async function (req, res) {
     try {
         let { member, Op } = await model();
-        if(await auth(req, 'admin')) {
-            let allMember = await member.findAll({
-                where: {
-                    isAdmin: false
+        let allMember = await member.findAll({
+            where: {
+                isAdmin: false
+            }
+        });
+        
+        let coloumn = Object.keys(await member.rawAttributes);
+        const without = ['id', 'createdat', 'updatedat', 'isadmin'];
+        res.render('table', {
+            data: allMember,
+            coloumn,
+            modalwithout: [...without],
+            without,
+            title: 'Member',
+            active: 'member',
+            module: require('./module'),
+            buttonHeader: {
+                add: {
+                  class: 'fas fa-user mr-2',
+                  id: 'addActionButton'
                 }
-            });
-            let coloumn = Object.keys(await member.rawAttributes);
-            const without = ['id', 'createdat', 'updatedat', 'isadmin'];
-            res.render('table', {
-                data: allMember,
-                coloumn,
-                modalwithout: [...without],
-                without,
-                title: 'Member',
-                active: 'member',
-                module: require('./module'),
-                buttonHeader: {
-                    add: {
-                      class: 'fas fa-user mr-2',
-                      id: 'addActionButton'
-                    }
-                },
-                as: [
-                    new as({target: 'email', as: 'identifer'})
-                ],
-                buttonAdd: 'fas fa-user mr-2',
-                buttonAction: {
-                    update: true,
-                    delete: true
-                }
-            })
-            // res.json(allMember)
-        } else {
-            res.send("ok")
-        }
+            },
+            as: [
+                new as({target: 'email', as: 'identifer'})
+            ],
+            buttonAdd: 'fas fa-user mr-2',
+            buttonAction: {
+                update: true,
+                delete: true
+            }
+        })
 
     } catch (err) {
         const code = err.code || 500;
@@ -81,27 +74,24 @@ obj.getAll = async function (req, res) {
 obj.post = async function(req, res){
     try {
         let { member } = await model();
+        
+        // Vadidation 
+        let validation = await member.findAll({
+            where : {
+                email : req.body.email
+            },
+            raw: true
+        });
 
-        // Verification
-        if(await auth(req, 'admin')) {
-            // Vadidation 
-            let validation = await member.findAll({
-                where : {
-                    email : req.body.email
-                },
-                raw: true
-            });
-    
-            // Jika Tidak Ada
-            if (validation.length > 0) throw new respon2({code: 200, message: new Error('user already')});
-            let result = await member.create(req.body, {
-                attribute: {
-                    excludes: ['isAdmin']
-                }
-            });
-            
-            res.json(new respon2({message: 'successfully added members'}))
-        }
+        // Jika Tidak Ada
+        if (validation.length > 0) throw new respon2({code: 200, message: new Error('user already')});
+        let result = await member.create(req.body, {
+            attribute: {
+                excludes: ['isAdmin']
+            }
+        });
+        
+        res.json(new respon2({message: 'successfully added members'}))
 
     } catch (err) {
         console.log(err.message)
@@ -112,33 +102,30 @@ obj.post = async function(req, res){
 
 obj.put = async function (req, res) {
     try {
-        console.log(req.body)
         let { member } = await model();
         let entitasId = req.params.id;
 
         // Verify
-        if(await auth(req, 'admin')) {
-            // Validation
-            let validation = await member.findAll({
-                where: {
-                    id: entitasId
-                },
-                raw: true
-            });
-    
-            // Jika member tidak ditemukan
-            if(validation.length <= 0) throw new respon2({message: 'member not found', code: 200})
+        // Validation
+        let validation = await member.findAll({
+            where: {
+                id: entitasId
+            },
+            raw: true
+        });
 
-            // Jika Ditemukan maka lanjutkan
-            await member.update(req.body, {
-                where: {
-                    id: entitasId
-                }
-            })
-    
-    
-            res.json(new respon2({message: 'success', type: true}))
-        }
+        // Jika member tidak ditemukan
+        if(validation.length <= 0) throw new respon2({message: 'member not found', code: 200})
+
+        // Jika Ditemukan maka lanjutkan
+        await member.update(req.body, {
+            where: {
+                id: entitasId
+            }
+        })
+
+
+        res.json(new respon2({message: 'success', type: true}))
 
     } catch (err) {
         const code = err.code || 500;
@@ -152,28 +139,25 @@ obj.delete = async function (req, res) {
         let { member } = await model();
         let id = req.params.id;
         
-        // Verify
-        if(await auth(req, 'admin')) {
-            // Validation
-            let validation = await member.findAll({
-                where: {
-                    id
-                },
-                raw: true
-            });
-    
-            // Jika TIdak terdapat user
-            if ( validation.length <= 0 ) throw new respon2({message: 'member not found', code: 200});
-    
-            // Hapus member
-            await member.destroy({
-                where: {
-                    id
-                }
-            })
-            
-            res.json(new respon2({message: 'successfully deleted member'}))
-        }
+        // Validation
+        let validation = await member.findAll({
+            where: {
+                id
+            },
+            raw: true
+        });
+
+        // Jika TIdak terdapat user
+        if ( validation.length <= 0 ) throw new respon2({message: 'member not found', code: 200});
+
+        // Hapus member
+        await member.destroy({
+            where: {
+                id
+            }
+        })
+        
+        res.json(new respon2({message: 'successfully deleted member'}))
         
     } catch (err) {
         console.log(err)
@@ -226,8 +210,7 @@ obj.register = async function(req, res){
 obj.login = async function (req, res) {
     try {
         const { member } = await model();
-        const { email } = req.body;
-        const password2 = req.body.password
+        const { email, password: password2 } = req.body;
     
         let result = await member.findAll({
             where: {

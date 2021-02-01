@@ -45,7 +45,7 @@ Route.get("/", async function (req, res) {
         },
         coloumn,
         without,
-        modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date'],
+        modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date', `librarian_buy`, 'librarian_return'],
         title: "Order list",
         active: "order",
         module: require("../controllers/module"),

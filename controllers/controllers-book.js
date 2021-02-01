@@ -9,21 +9,18 @@ module.exports = {
             const id = req.params.id;
             
             // Auth
-            if(await auth(req, 'admin')) {
-                let result = await book.findOne({
-                    where: {
-                        id
-                    }
-                });
+            let result = await book.findOne({
+                where: {
+                    id
+                }
+            });
 
-                result.dataValues.book_image = result.dataValues.book_image.toString('base64')
-            
-                if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
+            result.dataValues.book_image = result.dataValues.book_image.toString('base64')
         
-                // Jika Ada maka Kirimkan
-                res.json(new respon2({message: 'success', code: 200, data: result}));
-            }
+            if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
     
+            // Jika Ada maka Kirimkan
+            res.json(new respon2({message: 'success', code: 200, data: result}));
             
         } catch ( err ) {
             const code = err.code || 500;
@@ -34,33 +31,32 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            if(await auth(req, 'admin')) {
-                const { book } = await model();
-                const result = await book.findAll();
-                res.render('table', {
-                    data: result,
-                    coloumn: Object.keys(await book.rawAttributes),
-                    without:['id', 'createdat', 'updatedat', 'book_type'],
-                    modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
-                    as: [
-                        new as({target: 'book_image', type: 'file', without: [0]}),
-                        new as({target: 'book_title', as: 'identifer', without: [0]})
-                    ],
-                    title: 'Book',
-                    active: 'book',
-                    module: require('./module'),
-                    buttonHeader: {
-                        add: {
-                            class: 'fas fa-book mr-2',
-                            id: 'addActionButton'
-                        }
-                    },
-                    buttonAction: {
-                        delete: true,
-                        update: true
+            const { book } = await model();
+            const result = await book.findAll();
+            res.render('table', {
+                data: result,
+                coloumn: Object.keys(await book.rawAttributes),
+                without:['id', 'createdat', 'updatedat', 'book_type'],
+                modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
+                as: [
+                    new as({target: 'book_image', type: 'file', without: [0]}),
+                    new as({target: 'book_title', as: 'identifer', without: [0]})
+                ],
+                title: 'Book',
+                active: 'book',
+                module: require('./module'),
+                buttonHeader: {
+                    add: {
+                        class: 'fas fa-book mr-2',
+                        id: 'addActionButton'
                     }
-                })
-            }
+                },
+                buttonAction: {
+                    delete: true,
+                    update: true
+                }
+            })
+
         } catch (err) {
             console.log(err.message)
             const code = err.code || 500;
@@ -73,32 +69,31 @@ module.exports = {
             let { book } = await model();
 
             // Verification
-            if(await auth(req, 'admin')) {
-                // Vadidation 
-                let validation = await book.findAll({
-                    where : {
-                        book_title
-                         : req.body.book_title
+            // Vadidation 
+            let validation = await book.findAll({
+                where : {
+                    book_title
+                     : req.body.book_title
 
-                    },
-                    raw: true
-                });
+                },
+                raw: true
+            });
 
-                // Buat File Format
+            // Buat File Format
 
-                let format = path.extname(req.file.originalname);
-                format = format.split('.')[1];
-                req.body.book_type = format
+            let format = path.extname(req.file.originalname);
+            format = format.split('.')[1];
+            req.body.book_type = format
 
-                // Tambahkan File, Karena file berada direq.file
-                req.body.book_image = req.file.buffer;
-        
-                // Jika Tidak Ada
-                if (validation.length > 0) throw new respon2({code: 200, message: new Error('book already')});
-                let result = await book.create(req.body);
-                
-                res.json(new respon2({message: 'successfully added book'}))
-            }
+            // Tambahkan File, Karena file berada direq.file
+            req.body.book_image = req.file.buffer;
+    
+            // Jika Tidak Ada
+            if (validation.length > 0) throw new respon2({code: 200, message: new Error('book already')});
+            let result = await book.create(req.body);
+            
+            res.json(new respon2({message: 'successfully added book'}))
+
     
         } catch (err) {
             console.log(err)
@@ -116,39 +111,37 @@ module.exports = {
             let entitasId = req.params.id;
     
             // Verify
-            if(await auth(req, 'admin')) {
-                // Validation
-                let validation = await book.findAll({
-                    where: {
-                        id: entitasId
-                    },
-                    raw: true
-                });
-        
-                // Jika book tidak ditemukan
-                if(validation.length <= 0) throw new respon2({message: 'book not found', code: 200})
+            // Validation
+            let validation = await book.findAll({
+                where: {
+                    id: entitasId
+                },
+                raw: true
+            });
+    
+            // Jika book tidak ditemukan
+            if(validation.length <= 0) throw new respon2({message: 'book not found', code: 200})
 
-                
-                // Tambahkan File, Karena file berada direq.file
-                if(req.file) {
-                    // Buat File Format
-    
-                    let format = path.extname(req.file.originalname);
-                    format = format.split('.')[1];
-                    req.body.book_type = format
-                    req.body.book_image = req.file.buffer;
-                }
-    
-                // Jika Ditemukan maka lanjutkan
-                await book.update(req.body, {
-                    where: {
-                        id: entitasId
-                    }
-                })
-        
-        
-                res.json(new respon2({message: 'success', type: true}))
+            
+            // Tambahkan File, Karena file berada direq.file
+            if(req.file) {
+                // Buat File Format
+
+                let format = path.extname(req.file.originalname);
+                format = format.split('.')[1];
+                req.body.book_type = format
+                req.body.book_image = req.file.buffer;
             }
+
+            // Jika Ditemukan maka lanjutkan
+            await book.update(req.body, {
+                where: {
+                    id: entitasId
+                }
+            })
+    
+    
+            res.json(new respon2({message: 'success', type: true}))
     
         } catch (err) {
             console.log(err)
@@ -164,27 +157,25 @@ module.exports = {
             let id = req.params.id;
             
             // Verify
-            if(await auth(req, 'admin')) {
-                // Validation
-                let validation = await book.findAll({
-                    where: {
-                        id
-                    },
-                    raw: true
-                });
-        
-                // Jika TIdak terdapat user
-                if ( validation.length <= 0 ) throw new respon2({message: 'book not found', code: 200});
-        
-                // Hapus book
-                await book.destroy({
-                    where: {
-                        id
-                    }
-                })
-                
-                res.json(new respon2({message: 'successfully deleted book'}))
-            }
+            // Validation
+            let validation = await book.findAll({
+                where: {
+                    id
+                },
+                raw: true
+            });
+    
+            // Jika TIdak terdapat user
+            if ( validation.length <= 0 ) throw new respon2({message: 'book not found', code: 200});
+    
+            // Hapus book
+            await book.destroy({
+                where: {
+                    id
+                }
+            })
+            
+            res.json(new respon2({message: 'successfully deleted book'}))
             
         } catch (err) {
             console.log(err)
