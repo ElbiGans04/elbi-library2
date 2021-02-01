@@ -12,6 +12,10 @@ module.exports = async function () {
 
     await member.hasOne(order, {foreignKey: 'member_id'});
     await order.belongsTo(member, {foreignKey: 'member_id'});
+    await member.hasOne(order, {foreignKey: 'librarian_buy'});
+    await order.belongsTo(member, {foreignKey: 'librarian_buy'});
+    await member.hasOne(order, {foreignKey: 'librarian_return'});
+    await order.belongsTo(member, {foreignKey: 'librarian_return'});
     await book.hasOne(order, {foreignKey: 'book_id'});
     await order.belongsTo(book, {foreignKey: 'book_id'});
 

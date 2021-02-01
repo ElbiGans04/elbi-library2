@@ -55,39 +55,38 @@ const data = [
   },
 ];
 
-// fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
-//   if(err) throw err;
-//   data[0].book_image = file;
-//   const {DataTypes} = require('sequelize')
-//   let {sequelize, member, book, order} = await modelIndex()
-//   try {
-//     // await sequelize.sync({force: true})
-//     // await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
-//     // await book.create(data[0]);
+fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
+  if(err) throw err;
+  data[0].book_image = file;
+  const {DataTypes} = require('sequelize')
+  let {sequelize, member, book, order} = await modelIndex()
+  try {
+    await sequelize.sync({force: true})
+    await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
+    await book.create(data[0]);
   
 
 
+    app.use("/members", memberRouter);
+    app.use("/books", bookRouter);
+    
+    app.use("/register", register);
+    app.use("/login", login);
+    app.use("/logout", logout);
+    app.use('/rent', rentRoute);
+    app.listen(port, function (err) {
+      if (err) throw err;
+      console.log(`Server telah dijalankan pada port ${port}`);
+    });
     
     
-//     // await book.create(data[1])
-//     // await book.create(data[0])
-//     // await book.create(data[1])
-//     // await book.bulkCreate(data)
+    // await book.create(data[1])
+    // await book.create(data[0])
+    // await book.create(data[1])
+    // await book.bulkCreate(data)
     
-//   } catch (err) {
-//     console.log(err)
-//   }
+  } catch (err) {
+    console.log(err)
+  }
   
-// })
-
-app.use("/members", memberRouter);
-app.use("/books", bookRouter);
-
-app.use("/register", register);
-app.use("/login", login);
-app.use("/logout", logout);
-app.use('/rent', rentRoute);
-app.listen(port, function (err) {
-  if (err) throw err;
-  console.log(`Server telah dijalankan pada port ${port}`);
-});
+})

@@ -34,9 +34,7 @@ Route.get("/", async function (req, res) {
       allOlder[value].dataValues.book_id = {title: result.book_title, id: result.id};
       allOlder[value].dataValues.member_id = {title: result2.email, id: result2.id};
     }
-    // console.log(await allOlder[0].getBook({
-    //   attributes: ['id', 'book_title']
-    // }))
+
     const coloumn = await Object.keys(order.rawAttributes);
     const without = ["id", "createdat", "updatedat"]
     res.render("table", {
@@ -82,7 +80,6 @@ Route.post("/", async function (req, res) {
       });
 
       const waktu = new Date().getTime();
-      console.log(waktu)
       const codeTransaksi = randomString(26);
       if (bookData == null)
         throw new respon2({ message: "book not found", code: 200 });
@@ -94,7 +91,8 @@ Route.post("/", async function (req, res) {
         id_transaction: codeTransaksi,
         order_price: bookData.book_price,
         order_day,
-        order_date: waktu
+        order_date: waktu,
+        librarian_buy: token.id
       });
       await book.update(
         { book_stock: bookData.book_stock - 1 },

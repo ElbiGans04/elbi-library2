@@ -37,16 +37,10 @@ obj.getAll = async function (req, res) {
         let { member, Op } = await model();
         if(await auth(req, 'admin')) {
             let allMember = await member.findAll({
-                // attributes: {
-                //     [Op.not] : {
-                //         isAdmin: true
-                //     }
-                // }
                 where: {
                     isAdmin: false
                 }
             });
-            console.log(allMember)
             let coloumn = Object.keys(await member.rawAttributes);
             const without = ['id', 'createdat', 'updatedat', 'isadmin'];
             res.render('table', {

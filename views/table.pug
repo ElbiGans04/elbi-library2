@@ -227,7 +227,7 @@ head
                     if(buttonAction)
                       th Action
                 tbody
-                  each entri, index in data
+                  each entri in data
                     tr(data-id=`${entri.dataValues.id}`)
                       td
                       each rows, index in entri.dataValues
@@ -237,9 +237,12 @@ head
                           if(dataModule.type == 'file')
                             td(data-as=dataAs)
                               img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
-                          else    
+                          else
                             if(typeof rows == 'object')
-                              td(data-id=rows.id)=rows.title
+                              if(rows == null)
+                                td '-'
+                              else
+                                td(data-id=rows.id)=rows.title
                             else 
                               td(data-as=dataAs)= rows
                       if(buttonAction)

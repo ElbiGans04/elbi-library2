@@ -28,8 +28,7 @@ module.exports = async function (sequelize) {
 
     order_date: {
       type: DataTypes.BIGINT(20)
-    }
-
+    },
 
   }, {
     timestamps: false,
