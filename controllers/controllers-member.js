@@ -41,15 +41,17 @@ module.exports = {
             let { member, Op } = await model();
             let allMember = await member.findAll({
                 where: {
-                    isAdmin: false
+                    [Op.not] : {
+                        role: ['admin', 'librarian']
+                    }
                 }
             });
             
             let coloumn = Object.keys(await member.rawAttributes);
-            const without = ['id', 'createdat', 'updatedat', 'isadmin'];
+            const without = ['id', 'createdat', 'updatedat', 'role'];
             res.render('table', {
                 data: allMember,
-                coloumn,
+                coloumn: [...coloumn],
                 modalwithout: [...without],
                 without,
                 title: 'Member',
@@ -62,7 +64,7 @@ module.exports = {
                     }
                 },
                 as: [
-                    new as({target: 'email', as: 'identifer'})
+                    new as({target: 'email', as: 'identifer'}),
                 ],
                 buttonAdd: 'fas fa-user mr-2',
                 buttonAction: {

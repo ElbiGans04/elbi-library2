@@ -129,6 +129,7 @@ function as(data) {
   this.target = data.target || "";
   this.as = data.as || "";
   this.type = data.type || "input";
+  this.value = data.value || null;
   this.showName =
     data.showName ||
     ambilKata(data.target, "_", { space: true, without: data.without });

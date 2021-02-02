@@ -23,9 +23,9 @@ module.exports = async function (sequelize) {
             }
         },
 
-        isAdmin: {
-            type: DataTypes.BOOLEAN,
-            defaultValue: false
+        role: {
+            type: DataTypes.STRING,
+            defaultValue: `user`
         }
     });
 

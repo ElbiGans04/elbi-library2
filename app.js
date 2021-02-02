@@ -63,18 +63,22 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   let {sequelize, member, book, order} = await modelIndex()
   try {
     await sequelize.sync({force: true})
-    await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
+    await member.create({email: 'root@gmail.com', password: 123, role: 'librarian'});
+    await member.create({email: 'admin@gmail.com', password: 123, role: 'admin'});
     await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
     await book.create(data[0]);
   
-
-    app.use("/members", auth, memberRouter);
-    app.use("/books", auth, bookRouter);
+    app.get('/', function(req, res){
+      res.render('index')
+    })
+    app.use("/members", auth, roleAuth, memberRouter);
+    app.use("/books", auth, roleAuthLibrary, bookRouter);
+    app.use('/rent', auth , roleAuthLibrary, rentRoute);
     
-    app.use("/register",auth, register);
+    // // Jika mau daftar harus melalui fisik
+    // app.use("/register",auth, register);
     app.use("/login", login);
     app.use("/logout", logout);
-    app.use('/rent', auth , rentRoute);
     app.listen(port, function (err) {
       if (err) throw err;
       console.log(`Server telah dijalankan pada port ${port}`);
@@ -121,6 +125,36 @@ async function auth (req, res, next){
       res.redirect(err.redirect)
     } else {
       res.json(err)
+    }
+  }
+}
+
+async function roleAuth (req, res, next) {
+  let { role } = req.user;
+  role = role.toLowerCase();
+  
+  if(role == 'admin' || role == 'librarian') {
+    next();
+  } else {
+    if(req.method == 'GET') {
+      res.redirect('/')
+    } else {
+      res.json(new respon2({message: `you don't have permission`, code: 403}));
+    }
+  }
+}
+
+async function roleAuthLibrary (req, res, next) {
+  let { role } = req.user;
+  role = role.toLowerCase();
+  
+  if(role == 'librarian') {
+    next();
+  } else {
+    if(req.method == 'GET') {
+      res.redirect('/')
+    } else {
+      res.json(new respon2({message: `you don't have permission`, code: 403}));
     }
   }
 }
