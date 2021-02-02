@@ -64,8 +64,8 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   try {
     await sequelize.sync({force: true})
     await member.create({email: 'root@gmail.com', password: 123, isAdmin: true});
-    // await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
-    // await book.create(data[0]);
+    await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
+    await book.create(data[0]);
   
 
     app.use("/members", auth, memberRouter);

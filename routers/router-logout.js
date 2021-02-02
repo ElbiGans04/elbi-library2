@@ -1,6 +1,12 @@
 const express = require('express');
 const Route = express.Router()
-const controllersMember = require('../controllers/controllers-member');
 // Definisikan
-Route.get('/', controllersMember.logout)
+Route.get('/', function(req, res){
+    res.cookie('token', {}, {
+        maxAge: -1000000
+    });
+
+    console.log("Cookie Telah Dihapus");
+    res.redirect('/login')
+})
 module.exports = Route
