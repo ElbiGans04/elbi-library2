@@ -30,23 +30,11 @@ head
     hr.sidebar-divider
     // Heading
     .sidebar-heading Data
-    li.nav-item(name="member")
-      a.nav-link(href='/members')
-        i.fas.fa-users
-        span Member
-    li.nav-item(name="book")
-      a.nav-link(href='/books')
-        i.fas.fa-book
-        span Book
-    li.nav-item(name="order")
-      a.nav-link.collapsed(href='/order', data-toggle='collapse', data-target='#collapseUtilities', aria-expanded='true', aria-controls='collapseUtilities')
-        i.fas.fa-shopping-cart
-        span Order
-      #collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
-        .bg-white.py-2.collapse-inner.rounded
-          h6.collapse-header rent or return books
-          a.collapse-item(href='/rent') Rent 
-          a.collapse-item(href='/rent/return') Return 
+    if(role == 'librarian')
+      include navBar.pug
+    else if (role == 'admin')
+      include navBarAdmin.pug
+
     // Divider
     hr.sidebar-divider.d-none.d-md-block
     // Sidebar Toggler (Sidebar)

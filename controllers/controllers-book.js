@@ -42,6 +42,7 @@ module.exports = {
                     new as({target: 'book_image', type: 'file', without: [0]}),
                     new as({target: 'book_title', as: 'identifer', without: [0]})
                 ],
+                role: req.user.role,
                 title: 'Book',
                 active: 'book',
                 module: require('./module'),

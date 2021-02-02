@@ -1,7 +1,7 @@
 const express = require("express");
 const Route = express.Router();
 const tabel = require("../models/model-index");
-const { auth, randomString, as, selectModal } = require("../controllers/module");
+const { randomString, as, selectModal } = require("../controllers/module");
 const moduleCustom = require("../controllers/module");
 const respon2 = require("../controllers/respon2");
 const url = require("url");
@@ -10,6 +10,7 @@ const {Op} = require('sequelize');
 
 // Definisikan
 Route.get("/", async function (req, res) {
+    let { role } = req.user;
     const {order, book, member, Op} = await tabel();
     const allOlder = await order.findAll();
     const resultBook = await book.findAll({
@@ -46,12 +47,14 @@ Route.get("/", async function (req, res) {
     const without = ["id", "createdat", "updatedat"]
     res.render("table", {
         data: allOlder,
+        role,
         coloumn,
         without,
         modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date', `librarian_buy`, 'librarian_return'],
         title: "Order list",
         active: "order",
         module: require("../controllers/module"),
+        role,
         buttonHeader: {
           add: {
             class: 'fas fa-user mr-2',
@@ -70,50 +73,49 @@ Route.get("/", async function (req, res) {
 
 Route.post("/", async function (req, res) {
   try {
-    const token = await auth(req, false);
-    if (token) {
-      const {order_day, member_id, book_id} = req.body;
-      const bookId = req.body.book_id;
-      const { order, book } = await tabel();
-      const bookData = await book.findOne({
-        where: {
-          id: book_id,
-        },
-        raw: true,
-      });
+    const token = req.user
+    const {order_day, member_id, book_id} = req.body;
+    const bookId = req.body.book_id;
+    const { order, book } = await tabel();
+    const bookData = await book.findOne({
+      where: {
+        id: book_id,
+      },
+      raw: true,
+    });
 
-      const waktu = new Date().getTime();
-      const codeTransaksi = randomString(26);
-      if (bookData == null)
-        throw new respon2({ message: "book not found", code: 200 });
-      if (bookData.book_stock <= 0)
-        throw new respon2({ message: "out of stock", code: 200 });
-      await order.create({
-        member_id,
-        book_id,
-        id_transaction: codeTransaksi,
-        order_price: bookData.book_price,
-        order_day,
-        order_date: waktu,
-        librarian_buy: token.id
-      });
-      await book.update(
-        { book_stock: bookData.book_stock - 1 },
-        {
-          where: {
-            id: bookId,
-          },
-        }
-      );
-      res.json(
-        new respon2({
-          message: codeTransaksi,
-          code: 200,
-          type: true,
-          redirect: true,
-        })
-      );
-    }
+    const waktu = new Date().getTime();
+    const codeTransaksi = randomString(26);
+    if (bookData == null)
+      throw new respon2({ message: "book not found", code: 200 });
+    if (bookData.book_stock <= 0)
+      throw new respon2({ message: "out of stock", code: 200 });
+    await order.create({
+      member_id,
+      book_id,
+      id_transaction: codeTransaksi,
+      order_price: bookData.book_price,
+      order_day,
+      order_date: waktu,
+      librarian_buy: token.id
+    });
+    await book.update(
+      { book_stock: bookData.book_stock - 1 },
+      {
+        where: {
+          id: bookId,
+        },
+      }
+    );
+    res.json(
+      new respon2({
+        message: codeTransaksi,
+        code: 200,
+        type: true,
+        redirect: true,
+      })
+    );
+
   } catch (err) {
     console.log(err);
     const code = err.code || 500;

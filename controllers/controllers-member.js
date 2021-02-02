@@ -57,6 +57,7 @@ module.exports = {
 
             res.render('table', {
                 data: allMember,
+                role: userRole,
                 coloumn: coloumn,
                 modalwithout: [...without],
                 without: [...without, 'role'],
