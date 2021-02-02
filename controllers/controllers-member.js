@@ -1,5 +1,5 @@
 let model = require('../models/model-index');
-const {as, pesanError} = require('./module');
+const {as, pesanError, selectModal} = require('./module');
 const respon2 = require('./respon2')
 
 
@@ -46,14 +46,20 @@ module.exports = {
                     }
                 }
             });
+            let {role: userRole} = req.user;
+            let role = [{id: 'user', value: 'user'}];
+            if(userRole == 'librarian' || userRole == 'admin') {
+                role.push({id: 'admin', value: 'admin'})
+            }
             
             let coloumn = Object.keys(await member.rawAttributes);
-            const without = ['id', 'createdat', 'updatedat', 'role'];
+            const without = ['id', 'createdat', 'updatedat'];
+
             res.render('table', {
                 data: allMember,
-                coloumn: [...coloumn],
+                coloumn: coloumn,
                 modalwithout: [...without],
-                without,
+                without: [...without, 'role'],
                 title: 'Member',
                 active: 'member',
                 module: require('./module'),
@@ -65,6 +71,7 @@ module.exports = {
                 },
                 as: [
                     new as({target: 'email', as: 'identifer'}),
+                    new as({target: 'role', type: 'select', value: role}),
                 ],
                 buttonAdd: 'fas fa-user mr-2',
                 buttonAction: {
@@ -86,6 +93,7 @@ module.exports = {
     post: async function(req, res){
         try {
             let { member } = await model();
+            let {role: userRole} = req.user;
             
             // Vadidation 
             let validation = await member.findAll({
@@ -94,14 +102,12 @@ module.exports = {
                 },
                 raw: true
             });
-    
             // Jika Tidak Ada
-            if (validation.length > 0) throw new respon2({code: 200, message: new Error('user already')});
-            let result = await member.create(req.body, {
-                attribute: {
-                    excludes: ['isAdmin']
-                }
-            });
+            if (validation.length > 0) throw new respon2({code: 200, message: 'user already'});
+            if(req.body.role.toLowerCase() == 'librarian') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
+            if(userRole == 'user' && req.body.role.toLowerCase() == 'admin') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
+            
+            let result = await member.create(req.body, {});
             
             res.json(new respon2({message: 'successfully added members'}))
     

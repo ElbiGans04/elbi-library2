@@ -67,6 +67,7 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
     await member.create({email: 'admin@gmail.com', password: 123, role: 'admin'});
     await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
     await book.create(data[0]);
+    await book.create(data[1]);
   
     app.get('/', function(req, res){
       res.render('index')

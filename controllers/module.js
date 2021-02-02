@@ -176,4 +176,20 @@ module.exports = {
     err.message = resultNewErr += " is invalid";
     return err.message
   },
+  selectModal: function(data, masuk) {
+    masuk = masuk || [];
+    let newResultBook = [];
+    data.forEach(function(e, i){
+      for(let entitas in e) {
+        if(entitas == masuk) {
+          newResultBook.push({
+            id: e['id'],
+            value: e[entitas],
+          })
+        }
+      }
+    });
+
+    return newResultBook
+  }
 };

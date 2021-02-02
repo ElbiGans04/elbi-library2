@@ -1,24 +1,31 @@
 const express = require("express");
 const Route = express.Router();
 const tabel = require("../models/model-index");
-const { auth, randomString, as } = require("../controllers/module");
+const { auth, randomString, as, selectModal } = require("../controllers/module");
 const moduleCustom = require("../controllers/module");
 const respon2 = require("../controllers/respon2");
 const url = require("url");
 const {Op} = require('sequelize');
 
+
 // Definisikan
 Route.get("/", async function (req, res) {
-    const {order, book, member} = await tabel();
+    const {order, book, member, Op} = await tabel();
     const allOlder = await order.findAll();
-    const resultBook = await book.findAll()
+    const resultBook = await book.findAll({
+      raw: true
+    })
     const resultMember = await member.findAll({
       where: {
-        isAdmin: false
-      }
-    })
-
-
+          role : 'user'
+      }, 
+      raw: true
+    });
+    
+    let newResultBook = selectModal(resultBook, 'book_title');
+    let newResultMember = selectModal(resultMember, 'email');
+    
+    // Mengambil Data dari tabel relasi
     for(let value in allOlder) {
       const memberId = allOlder[value].dataValues.member_id;
       const bookId = allOlder[value].dataValues.book_id;
@@ -39,10 +46,6 @@ Route.get("/", async function (req, res) {
     const without = ["id", "createdat", "updatedat"]
     res.render("table", {
         data: allOlder,
-        select: {
-            book_id : resultBook,
-            member_id: resultMember
-        },
         coloumn,
         without,
         modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date', `librarian_buy`, 'librarian_return'],
@@ -56,8 +59,8 @@ Route.get("/", async function (req, res) {
           }
         },
         as: [
-            new as({show: true, target: 'book_id', showName: 'Book', type: 'select', without: [0]}),
-            new as({target: 'member_id', showName: 'Member', type: 'select',})
+            new as({show: true, target: 'book_id', showName: 'Book', type: 'select', without: [0], value: newResultBook}),
+            new as({target: 'member_id', showName: 'Member', type: 'select', value: newResultMember})
         ],
         buttonAction: false
     });

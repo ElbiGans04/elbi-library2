@@ -354,6 +354,7 @@ if(buttonAction)
             if(hello(value, modalwithout))
               -let test = module.jajal(as, value);
               -let file = test.type || 'input'
+              -let selectValue = test.value || 'input'
               - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
               - let realName = test.target || value
               .form-group
@@ -362,8 +363,8 @@ if(buttonAction)
                 label(for=`inputAdd${name}`)=name
                 if(file == 'select') 
                   select.form-control(name=value)
-                    each rows in select[value]
-                      option(value=rows.dataValues.id)=rows.dataValues.book_title || rows.dataValues.email
+                    each rows in selectValue
+                      option(value=rows.id)=rows.value
                 else 
                   input.form-control(id=`inputAdd${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
 
