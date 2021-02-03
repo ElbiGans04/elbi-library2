@@ -59,18 +59,41 @@ const data = [
 fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
   if(err) throw err;
   data[0].book_image = file;
-  const {DataTypes} = require('sequelize')
   let {sequelize, member, book, order} = await modelIndex()
   try {
-    await sequelize.sync({force: true})
-    await member.create({email: 'root@gmail.com', password: 123, role: 'librarian'});
-    await member.create({email: 'admin@gmail.com', password: 123, role: 'admin'});
-    await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
-    await book.create(data[0]);
-    await book.create(data[1]);
+    // await sequelize.sync({force: true})
+    // await member.create({email: 'root@gmail.com', password: 123, role: 'librarian'});
+    // await member.create({email: 'admin@gmail.com', password: 123, role: 'admin'});
+    // await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123});
+    // await book.create(data[0]);
+    // await book.create(data[1]);
   
-    app.get('/', function(req, res){
-      res.render('index')
+    app.get('/', async function(req, res){
+      let { getTime } = require('./controllers/module');
+      const resultActive = await order.findAll({
+        where: {
+          return_status: false
+        },
+        attributes: [`id`],
+        raw: true, 
+      });
+      
+      const allOlder = await order.findAll({
+        attributes: [`order_date`],
+        raw: true, 
+      });
+      
+      let lateToPay = [];
+      allOlder.forEach(function(el, i){
+        let { days } = getTime(el.order_date);
+        if(days > 0) lateToPay.push(days)
+      })
+      
+      res.render('index', {
+        resultActive,
+        allOlder,
+        lateToPay: lateToPay.length
+      })
     })
     app.use("/members", auth, roleAuth, memberRouter);
     app.use("/books", auth, roleAuthLibrary, bookRouter);

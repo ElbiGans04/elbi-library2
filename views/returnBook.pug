@@ -240,7 +240,8 @@ head
                             tr 
                                 th Length of time :
                                 td.feeDay !{rows.order_day} Day
-                            - const {days} = moduleCustom.getTime(rows.order_date)
+                            - let {days} = moduleCustom.getTime(rows.order_date)
+                            - days = days < 0 ? 0 : days;
                             - let denda = days * rows.book_id.fines
                             - let fee = rows.order_price * rows.order_day;
                             - let total = parseInt(fee) + parseInt(denda);

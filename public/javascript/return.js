@@ -10,7 +10,7 @@ action.addEventListener('click', function(event){
         body: formData
     })
         .then(result => result.json())
-        .then(result => console.log(result))
+        .then(result => alert(result.message))
 });
 
 const selectMember = document.querySelector('.container-fluid form select[name=member]');

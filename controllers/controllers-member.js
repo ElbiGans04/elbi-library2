@@ -64,17 +64,16 @@ module.exports = {
                 title: 'Member',
                 active: 'member',
                 module: require('./module'),
+                as: [
+                    new as({target: 'email', as: 'identifer'}),
+                    new as({target: 'role', type: 'select', value: role}),
+                ],
                 buttonHeader: {
                     add: {
                       class: 'fas fa-user mr-2',
                       id: 'addActionButton'
                     }
                 },
-                as: [
-                    new as({target: 'email', as: 'identifer'}),
-                    new as({target: 'role', type: 'select', value: role}),
-                ],
-                buttonAdd: 'fas fa-user mr-2',
                 buttonAction: {
                     update: true,
                     delete: true

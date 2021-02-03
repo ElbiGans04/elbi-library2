@@ -319,8 +319,9 @@ if(buttonAction)
                       img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
                     label(for=`inputUpdate${name}`)=name
                     if(file == 'select') 
-                      select.form-control
-                        option test
+                      select.form-control(name=realName)
+                        each val in test.value
+                          option(value=val.id)=val.value
                     else
                       input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
 

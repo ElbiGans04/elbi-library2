@@ -53,7 +53,7 @@ Route.get("/", async function (req, res) {
         modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date', `librarian_buy`, 'librarian_return'],
         title: "Order list",
         active: "order",
-        module: require("../controllers/module"),
+        module: moduleCustom,
         role,
         buttonHeader: {
           add: {
@@ -84,7 +84,9 @@ Route.post("/", async function (req, res) {
       raw: true,
     });
 
-    const waktu = new Date().getTime();
+    let waktu = new Date();
+    waktu.setDate(waktu.getDate() + parseInt(req.body.order_day));
+    waktu = waktu.getTime();
     const codeTransaksi = randomString(26);
     if (bookData == null)
       throw new respon2({ message: "book not found", code: 200 });
@@ -97,7 +99,7 @@ Route.post("/", async function (req, res) {
       order_price: bookData.book_price,
       order_day,
       order_date: waktu,
-      librarian_buy: token.id
+      librarian_buy: token.id,
     });
     await book.update(
       { book_stock: bookData.book_stock - 1 },
@@ -128,7 +130,7 @@ Route.post("/", async function (req, res) {
 Route.delete('/', async function(req, res){
   const {order} = await tabel();
   let { member, book, id_transaction } = req.body;
-
+  
   // Check Apakah Orderan tsb ada
   const resultOrder = await order.findAll({
     where: {
@@ -144,7 +146,7 @@ Route.delete('/', async function(req, res){
   if(resultOrder.length <= 0) throw new respon2({message: 'not found. Please check again'});
 
   // Logic
-  await order.update({return_status: true}, {
+  await order.update({return_status: true, librarian_return: req.user.id}, {
     where: {
       [Op.and] : {
         member_id: member,
