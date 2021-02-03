@@ -1,6 +1,7 @@
 let model = require('../models/model-index');
 const respon2 = require('./respon2');
-const {ambilKata, as, pesanError} = require('./module');
+const ModuleTemplate = require('./module');
+const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
 module.exports = {
     get: async function(req, res) {
@@ -39,13 +40,13 @@ module.exports = {
                 without:['id', 'createdat', 'updatedat', 'book_type'],
                 modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
                 as: [
-                    new as({target: 'book_image', type: 'file', without: [0]}),
-                    new as({target: 'book_title', as: 'identifer', without: [0]})
+                    moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
+                    moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]})
                 ],
                 role: req.user.role,
                 title: 'Book',
                 active: 'book',
-                module: require('./module'),
+                module: moduleLibrary,
                 buttonHeader: {
                     add: {
                         class: 'fas fa-book mr-2',
@@ -93,12 +94,12 @@ module.exports = {
             if (validation.length > 0) throw new respon2({code: 200, message: new Error('book already')});
             let result = await book.create(req.body);
             
-            res.json(new respon2({message: 'successfully added book'}))
+            res.json(new respon2({message: 'successfully added book', type: true}))
 
         } catch (err) {
             console.log(err)
             if(err instanceof Error) {
-                if(err.errors) err.message = pesanError(err)
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
                 else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
                 err = new respon2({message: err.message, code:200});
             }
@@ -148,7 +149,7 @@ module.exports = {
         } catch (err) {
             console.log(err)
             if(err instanceof Error) {
-                if(err.errors) err.message = pesanError(err)
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
                 else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
                 err = new respon2({message: err.message, code:200});
             }

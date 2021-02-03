@@ -1,8 +1,8 @@
 const express = require("express");
 const Route = express.Router();
 const tabel = require("../models/model-index");
-const { randomString, as, selectModal } = require("../controllers/module");
-const moduleCustom = require("../controllers/module");
+const ModuleTemplate = require('../controllers/module');
+const  moduleLibrary = new ModuleTemplate();
 const respon2 = require("../controllers/respon2");
 const url = require("url");
 const {Op} = require('sequelize');
@@ -23,8 +23,8 @@ Route.get("/", async function (req, res) {
       raw: true
     });
     
-    let newResultBook = selectModal(resultBook, 'book_title');
-    let newResultMember = selectModal(resultMember, 'email');
+    let newResultBook = moduleLibrary.selectModal(resultBook, 'book_title');
+    let newResultMember = moduleLibrary.selectModal(resultMember, 'email');
     
     // Mengambil Data dari tabel relasi
     for(let value in allOlder) {
@@ -53,7 +53,7 @@ Route.get("/", async function (req, res) {
         modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date', `librarian_buy`, 'librarian_return'],
         title: "Order list",
         active: "order",
-        module: moduleCustom,
+        module: moduleLibrary,
         role,
         buttonHeader: {
           add: {
@@ -62,8 +62,8 @@ Route.get("/", async function (req, res) {
           }
         },
         as: [
-            new as({show: true, target: 'book_id', showName: 'Book', type: 'select', without: [0], value: newResultBook}),
-            new as({target: 'member_id', showName: 'Member', type: 'select', value: newResultMember})
+            moduleLibrary.as({show: true, target: 'book_id', showName: 'Book', type: 'select', without: [0], value: newResultBook}),
+            moduleLibrary.as({target: 'member_id', showName: 'Member', type: 'select', value: newResultMember})
         ],
         buttonAction: false
     });
@@ -87,7 +87,7 @@ Route.post("/", async function (req, res) {
     let waktu = new Date();
     waktu.setDate(waktu.getDate() + parseInt(req.body.order_day));
     waktu = waktu.getTime();
-    const codeTransaksi = randomString(26);
+    const codeTransaksi =  moduleLibrary.randomString(26);
     if (bookData == null)
       throw new respon2({ message: "book not found", code: 200 });
     if (bookData.book_stock <= 0)
@@ -179,7 +179,7 @@ Route.get('/return', async function(req, res){
   res.render('returnBook', {
       dataOrder,
       show: [`member_id`, `book_id`],
-      moduleCustom
+      moduleCustom : moduleLibrary
   })
 });
 

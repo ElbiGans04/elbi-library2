@@ -22,7 +22,6 @@ submit.addEventListener('click', function(event){
         })
         .then(result => {
             if(result) {
-                console.log(result)
                 const { message, redirect, type } = result;
                 const alertClass = type ? 'alert-success' : 'alert-danger';
                 $(alertElement).removeClass('d-none alert-success alert-danger').addClass(alertClass);

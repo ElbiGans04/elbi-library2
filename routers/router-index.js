@@ -5,7 +5,8 @@ const tabel = require('../models/model-index');
 Route.get('/', async function(req, res){
     let { role } = req.user;
     let {order} = await tabel();
-    let { getTime } = require('../controllers/module');
+    let Template = require('../controllers/module');
+    let moduleLibrary = new Template();
     const resultActive = await order.findAll({
       where: {
         return_status: false
@@ -21,7 +22,7 @@ Route.get('/', async function(req, res){
     
     let lateToPay = [];
     allOlder.forEach(function(el, i){
-      let { days } = getTime(el.order_date);
+      let { days } = moduleLibrary.getTime(el.order_date);
       if(days > 0) lateToPay.push(days)
     })
     

@@ -1,5 +1,6 @@
 let model = require('../models/model-index');
-const {as, pesanError, selectModal} = require('./module');
+const ModuleTemplate = require('./module');
+const  moduleLibrary = new ModuleTemplate();
 const respon2 = require('./respon2')
 
 
@@ -9,6 +10,7 @@ module.exports = {
         try {
             let { member } = await model();
             const id = req.params.id;
+
             
             // Auth
             let result = await member.findOne({
@@ -25,8 +27,7 @@ module.exports = {
         } catch ( err ) {
             console.log(err)
             if(err instanceof Error) {
-                if(err.errors) err.message = pesanError(err)
-                else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
                 err = new respon2({message: err.message, code:200});
             }
             const code = err.code || 200;
@@ -56,17 +57,17 @@ module.exports = {
             const without = ['id', 'createdat', 'updatedat'];
 
             res.render('table', {
+                coloumn: coloumn,
                 data: allMember,
                 role: userRole,
-                coloumn: coloumn,
                 modalwithout: [...without],
                 without: [...without, 'role'],
                 title: 'Member',
                 active: 'member',
-                module: require('./module'),
+                module: moduleLibrary,
                 as: [
-                    new as({target: 'email', as: 'identifer'}),
-                    new as({target: 'role', type: 'select', value: role}),
+                    moduleLibrary.as({target: 'email', as: 'identifer'}),
+                    moduleLibrary.as({target: 'role', type: 'select', value: role}),
                 ],
                 buttonHeader: {
                     add: {
@@ -102,7 +103,8 @@ module.exports = {
                 },
                 raw: true
             });
-            // Jika Tidak Ada
+            
+            // Jika Ada
             if (validation.length > 0) throw new respon2({code: 200, message: 'user already'});
             if(req.body.role.toLowerCase() == 'librarian') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
             if(userRole == 'user' && req.body.role.toLowerCase() == 'admin') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
@@ -114,7 +116,7 @@ module.exports = {
         } catch (err) {
             console.log(err);
             if(err instanceof Error) {
-                if(err.errors) err.message = pesanError(err)
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
                 else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
                 err = new respon2({message: err.message, code:200});
             }

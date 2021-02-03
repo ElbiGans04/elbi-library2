@@ -2,7 +2,8 @@ const express = require('express');
 const Route = express.Router()
 const respon2 = require('../controllers/respon2');
 const model = require('../models/model-index');
-const {pesanError} = require('../controllers/module');
+const ModuleLibrary = require('../controllers/module');
+const moduleLibrary = new ModuleLibrary();
 const jwt = require('jsonwebtoken');
 
 // Definisikan
@@ -39,7 +40,7 @@ Route.post('/', async function (req, res) {
         
     } catch (err) {
         if(err instanceof Error) {
-            if(err.errors) err.message = pesanError(err);
+            if(err.errors) err.message = moduleLibrary.pesanError(err);
             err = new respon2({message: err.message, code:200});
         }
         const code = err.code || 200;
