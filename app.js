@@ -1,18 +1,22 @@
+// Dependensi
 const express = require("express");
 const app = express();
 const fs = require("fs");
 const dotenv = require("dotenv").config({ path: "./config/.env" });
 const cookie = require("cookie-parser");
-const { multer } = require("./middleware/multer");
+const jwt = require('jsonwebtoken');
 const port = process.env.APP_PORT || 3000;
+const { multer } = require("./middleware/multer");
+
+
+// Router
 const memberRouter = require("./routers/router-member");
 const bookRouter = require("./routers/router-book");
 const register = require("./routers/router-register");
 const login = require("./routers/router-login");
 const logout = require("./routers/router-logout");
 const rentRoute = require('./routers/router-rent');
-const jwt = require('jsonwebtoken');
-const respon = require('./controllers/respon2');
+const indexRoute = require('./routers/router-index');
 
 
 // // // Instalasi Project // // //
@@ -68,33 +72,7 @@ fs.readFile('./public/img/gambar1.jpg', {}, async function(err, file){
     // await book.create(data[0]);
     // await book.create(data[1]);
   
-    app.get('/', async function(req, res){
-      let { getTime } = require('./controllers/module');
-      const resultActive = await order.findAll({
-        where: {
-          return_status: false
-        },
-        attributes: [`id`],
-        raw: true, 
-      });
-      
-      const allOlder = await order.findAll({
-        attributes: [`order_date`],
-        raw: true, 
-      });
-      
-      let lateToPay = [];
-      allOlder.forEach(function(el, i){
-        let { days } = getTime(el.order_date);
-        if(days > 0) lateToPay.push(days)
-      })
-      
-      res.render('index', {
-        resultActive,
-        allOlder,
-        lateToPay: lateToPay.length
-      })
-    })
+    app.get('/', auth, indexRoute)
     app.use("/members", auth, roleAuth, memberRouter);
     app.use("/books", auth, roleAuthLibrary, bookRouter);
     app.use('/rent', auth , roleAuthLibrary, rentRoute);
