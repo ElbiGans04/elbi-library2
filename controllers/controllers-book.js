@@ -3,30 +3,40 @@ const respon2 = require('./respon2');
 const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
+
+// Export
 module.exports = {
     get: async function(req, res) {
         try {
             let { book } = await model();
             const id = req.params.id;
             
-            // Auth
+            // Validation
+            // Jika apakah ditemukan user dengan id tsb
             let result = await book.findOne({
                 where: {
                     id
                 }
             });
+            
+            // Jika tidak ditemukan
+            if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
 
+            // Jika ditemukan convert image ke base 64
             result.dataValues.book_image = result.dataValues.book_image.toString('base64')
         
-            if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
     
             // Jika Ada maka Kirimkan
             res.json(new respon2({message: 'success', code: 200, data: result}));
             
         } catch ( err ) {
-            const code = err.code || 500;
-            const message = err.message.message || err.message
-            res.status(code).send(message)
+            console.log(err);
+            if(err instanceof Error) {
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
+                err = new respon2({message: err.message, code:200});
+            }
+            const code = err.code || 200;
+            res.status(code).json(err)
         }
     },
 
@@ -34,6 +44,9 @@ module.exports = {
         try {
             const { book } = await model();
             const result = await book.findAll();
+
+
+            // Render 
             res.render('table', {
                 data: result,
                 coloumn: Object.keys(await book.rawAttributes),
@@ -71,7 +84,7 @@ module.exports = {
             let { book } = await model();
 
             // Verification
-            // Vadidation 
+            // check apakah buku dengan title tsb sudah ada
             let validation = await book.findAll({
                 where : {
                     book_title
@@ -80,27 +93,32 @@ module.exports = {
                 },
                 raw: true
             });
+            
+            // Jika Ada
+            if (validation.length > 0) throw new respon2({code: 200, message: 'book already'});
 
             // Buat File Format
-
-            let format = path.extname(req.file.originalname);
-            format = format.split('.')[1];
-            req.body.book_type = format
-
-            // Tambahkan File, Karena file berada direq.file
-            req.body.book_image = req.file.buffer;
+            if(!req.file) {
+                throw new respon2({code: 200, message: 'please insert image'})
+            } else {
+                let format = path.extname(req.file.originalname);
+                format = format.split('.')[1];
+                req.body.book_type = format
     
-            // Jika Tidak Ada
-            if (validation.length > 0) throw new respon2({code: 200, message: new Error('book already')});
+                // Tambahkan File, Karena file berada direq.file
+                req.body.book_image = req.file.buffer;
+            }
+            
+            // Buat
             let result = await book.create(req.body);
             
+            // Beri respone
             res.json(new respon2({message: 'successfully added book', type: true}))
 
         } catch (err) {
             console.log(err)
             if(err instanceof Error) {
                 if(err.errors) err.message = moduleLibrary.pesanError(err)
-                else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
                 err = new respon2({message: err.message, code:200});
             }
             const code = err.code || 200;
@@ -129,7 +147,6 @@ module.exports = {
             // Tambahkan File, Karena file berada direq.file
             if(req.file) {
                 // Buat File Format
-
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
                 req.body.book_type = format
@@ -150,7 +167,6 @@ module.exports = {
             console.log(err)
             if(err instanceof Error) {
                 if(err.errors) err.message = moduleLibrary.pesanError(err)
-                else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
                 err = new respon2({message: err.message, code:200});
             }
             const code = err.code || 200;
@@ -185,9 +201,13 @@ module.exports = {
             res.json(new respon2({message: 'successfully deleted book'}))
             
         } catch (err) {
-            console.log(err)
-            const code = err.code || 500;
-            res.status(code).send(err)
+            console.log(err);
+            if(err instanceof Error) {
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
+                err = new respon2({message: err.message, code:200});
+            }
+            const code = err.code || 200;
+            res.status(code).json(err)
         }
     }
 }

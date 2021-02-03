@@ -82,7 +82,7 @@ module.exports = {
             })
     
         } catch (err) {
-            const code = err.code || 500;
+            const code = err.code || 200;
             const message = err.message.message || err.message
             res.status(code).send(message)
         }
@@ -93,10 +93,13 @@ module.exports = {
     // Post
     post: async function(req, res){
         try {
+            // Load Modal member
             let { member } = await model();
+            // Ambil Role dari cookie
             let {role: userRole} = req.user;
             
             // Vadidation 
+            // Check Apakah user dengan email terkait telah terdaftar
             let validation = await member.findAll({
                 where : {
                     email : req.body.email
@@ -106,18 +109,22 @@ module.exports = {
             
             // Jika Ada
             if (validation.length > 0) throw new respon2({code: 200, message: 'user already'});
+            // Jika ada yang menambahkan user dengan role librarian maka lempar pesan
             if(req.body.role.toLowerCase() == 'librarian') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
-            if(userRole == 'user' && req.body.role.toLowerCase() == 'admin') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
-            
+            // jika user dengan role user mencoba menambahkan user maka lempar pesan
+            if(userRole == 'user') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
+
+
+            // Buat User sesuai yang diinputkan
             let result = await member.create(req.body, {});
             
+            // Kirim Respon kepada user
             res.json(new respon2({message: 'successfully added members'}))
     
         } catch (err) {
             console.log(err);
             if(err instanceof Error) {
                 if(err.errors) err.message = moduleLibrary.pesanError(err)
-                else if(err.message == `Cannot read property 'originalname' of undefined`) err.message = 'please insert image'
                 err = new respon2({message: err.message, code:200});
             }
             const code = err.code || 200;
@@ -132,8 +139,8 @@ module.exports = {
             let { member } = await model();
             let entitasId = req.params.id;
     
-            // Verify
             // Validation
+            // Check Apakah user dengan id terkait ditemukan
             let validation = await member.findAll({
                 where: {
                     id: entitasId
@@ -141,7 +148,7 @@ module.exports = {
                 raw: true
             });
     
-            // Jika member tidak ditemukan
+            // Jika user tidak ditemukan maka lempar pesan
             if(validation.length <= 0) throw new respon2({message: 'member not found', code: 200})
     
             // Jika Ditemukan maka lanjutkan
@@ -151,13 +158,18 @@ module.exports = {
                 }
             })
     
-    
+            
+            // Kirim Tanggapan
             res.json(new respon2({message: 'success', type: true}))
     
         } catch (err) {
-            const code = err.code || 500;
-            const message = err.message.message || err.message
-            res.status(code).send(message)
+            console.log(err);
+            if(err instanceof Error) {
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
+                err = new respon2({message: err.message, code:200});
+            }
+            const code = err.code || 200;
+            res.status(code).json(err)
         }
     },
 
@@ -189,9 +201,13 @@ module.exports = {
             res.json(new respon2({message: 'successfully deleted member'}))
             
         } catch (err) {
-            console.log(err)
-            const code = err.code || 500;
-            res.status(code).send(err)
+            console.log(err);
+            if(err instanceof Error) {
+                if(err.errors) err.message = moduleLibrary.pesanError(err)
+                err = new respon2({message: err.message, code:200});
+            }
+            const code = err.code || 200;
+            res.status(code).json(err)
         }
     }
 };
