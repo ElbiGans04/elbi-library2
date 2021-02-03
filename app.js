@@ -37,7 +37,6 @@ app.use("/books", auth, roleAuthLibrary, bookRouter);
 app.use("/rent", auth, roleAuthLibrary, rentRoute);
 
 // // Jika mau daftar harus melalui fisik
-// app.use("/register",auth, register);
 app.use("/login", login);
 app.use("/logout", logout);
 app.listen(port, function (err) {
