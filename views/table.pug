@@ -51,7 +51,9 @@ head
         ul.navbar-nav.ml-auto
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-              span.mr-2.d-none.d-lg-inline.text-gray-600.small Library
+              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{name}
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #${Math.floor(Math.random()*16777215).toString(16)}`)
+                span !{name.slice(0,2)}
             
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
               a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
@@ -169,7 +171,7 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal')
           | Cancel
-        a.btn.btn-primary(href='login.html') Logout
+        a.btn.btn-primary(href='/logout') Logout
 // Modal Multiguna
 if(buttonAction)
   if(buttonAction.delete)

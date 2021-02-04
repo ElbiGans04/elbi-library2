@@ -42,8 +42,18 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            const { book } = await model();
+            const { book, member } = await model();
             const result = await book.findAll();
+            const {id} = req.user;
+
+            // Looping
+            let name = await member.findOne({
+                where: {
+                    id,
+                },
+                raw: true,
+                attributes: ['email']
+            })
 
 
             // Render 
@@ -55,6 +65,7 @@ module.exports = {
                 without:['id', 'createdat', 'updatedat', 'book_type'],
                 title: 'Book',
                 active: 'book',
+                name : name.email,
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]})

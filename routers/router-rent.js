@@ -10,7 +10,7 @@ const {Op} = require('sequelize');
 
 // Definisikan
 Route.get("/", async function (req, res) {
-    let { role } = req.user;
+    let { role, id: userID } = req.user;
     const {order, book, member, Op} = await tabel();
     const allOlder = await order.findAll();
     const resultBook = await book.findAll({
@@ -22,6 +22,14 @@ Route.get("/", async function (req, res) {
       }, 
       raw: true
     });
+
+    let name = await member.findOne({
+      where: {
+        id: userID
+      },
+      raw: true,
+      attributes: ['email']
+    })
     
     let newResultBook = moduleLibrary.selectModal(resultBook, 'book_title');
     let newResultMember = moduleLibrary.selectModal(resultMember, 'email');
@@ -53,6 +61,7 @@ Route.get("/", async function (req, res) {
         modalwithout: [...without,`order_price`, 'id_transaction', `return_status`, 'order_date', `librarian_buy`, 'librarian_return'],
         title: "Order list",
         active: "order",
+        name: name.email,
         module: moduleLibrary,
         role,
         buttonHeader: {

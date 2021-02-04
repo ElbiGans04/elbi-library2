@@ -47,11 +47,20 @@ module.exports = {
                     }
                 }
             });
-            let {role: userRole} = req.user;
+            let {role: userRole, id: userID} = req.user;
             let role = [{id: 'user', value: 'user'}];
             if(userRole == 'librarian' || userRole == 'admin') {
                 role.push({id: 'admin', value: 'admin'})
             }
+
+            // Name
+            let name = await member.findOne({
+                attributes: ['email'],
+                where: {
+                    id: userID
+                },
+                raw: true
+            })
             
             let coloumn = Object.keys(await member.rawAttributes);
             const without = ['id', 'createdat', 'updatedat'];
@@ -65,6 +74,7 @@ module.exports = {
                 title: 'Member',
                 active: 'member',
                 module: moduleLibrary,
+                name: name.email,
                 as: [
                     moduleLibrary.as({target: 'email', as: 'identifer'}),
                     moduleLibrary.as({target: 'role', type: 'select', value: role}),
