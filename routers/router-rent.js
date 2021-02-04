@@ -233,6 +233,9 @@ Route.get('/return', async function(req, res){
           }
         }
       });
+
+      // Jika Ga ada
+      if(dataOrder.length <= 0) throw new respon2({message: 'not found. Please check again'});
       
       // Ambil Data dari foreign Key
       for(let index in dataOrder) {
@@ -262,6 +265,7 @@ Route.get('/return/:id', async function(req, res){
     const paramId = req.params.id;
     const {order} = await tabel();
     
+    // Cari bedasarkan yang diberi
     const dataOrder = await order.findAll({
       where: {
         [Op.and] : {
@@ -270,15 +274,20 @@ Route.get('/return/:id', async function(req, res){
         }
       }
     });
+
+    // Jika Ga ada
+    if(dataOrder.length <= 0) throw new respon2({message: 'not found. Please check again'});
   
-    for(let index in dataOrder) {
-      const dataOrderMember = await dataOrder[index].getMember({attributes: ['email', 'id', 'book_fines'],raw:true});
-      const dataOrderBook = await dataOrder[index].getBook({attributes: ['book_title', 'id'],raw:true});
+      // Ambil Data dari foreign Key
+      for(let index in dataOrder) {
+        const dataOrderMember = await dataOrder[index].getMember({attributes: [['email', 'title'], 'id'],raw:true});
+        const dataOrderBook = await dataOrder[index].getBook({attributes: [['book_title', 'title'], 'id', [`book_fines`, 'fines']],raw:true});
   
-      dataOrder[index].dataValues.member_id = {title: dataOrderMember.email, id: dataOrderMember.id};
-      dataOrder[index].dataValues.book_id = {title: dataOrderBook.book_title, id: dataOrderBook.id, fines: dataOrderBook.book_fines};
-    };
-  
+        dataOrder[index].dataValues.member_id = dataOrderMember;
+        dataOrder[index].dataValues.book_id = dataOrderBook;
+      }   
+      
+    // Kembalikan
     res.json(dataOrder)
 
   } catch (err) {
