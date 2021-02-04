@@ -11,7 +11,6 @@ const { multer } = require("./middleware/multer");
 // Router
 const memberRouter = require("./routers/router-member");
 const bookRouter = require("./routers/router-book");
-const register = require("./routers/router-register");
 const login = require("./routers/router-login");
 const logout = require("./routers/router-logout");
 const rentRoute = require("./routers/router-rent");
@@ -29,20 +28,25 @@ app.set("view engine", "pug");
 app.set("views", "./views");
 
 const modelIndex = require("./models/model-index");
-const respon2 = require("./controllers/respon2");
+const respon2 = require("./controllers/respon");
 
-app.get("/", auth, indexRoute);
-app.use("/members", auth, roleAuth, memberRouter);
-app.use("/books", auth, roleAuthLibrary, bookRouter);
-app.use("/rent", auth, roleAuthLibrary, rentRoute);
+(async function() {
+  // let { sequelize } = await modelIndex();
+  // await sequelize.sync({force: true})
 
-// // Jika mau daftar harus melalui fisik
-app.use("/login", login);
-app.use("/logout", logout);
-app.listen(port, function (err) {
-  if (err) throw err;
-  console.log(`Server telah dijalankan pada port ${port}`);
-});
+  app.get("/", auth, roleAuth, indexRoute);
+  app.use("/members", auth, roleAuth, memberRouter);
+  app.use("/books", auth, roleAuthLibrary, bookRouter);
+  app.use("/rent", auth, roleAuthLibrary, rentRoute);
+  app.use("/login", login);
+  app.use("/logout", logout);
+  app.listen(port, function (err) {
+    if (err) throw err;
+    console.log(`Server telah dijalankan pada port ${port}`);
+  });
+
+})()
+
 
 async function auth(req, res, next) {
   try {

@@ -1,6 +1,6 @@
 const express = require('express');
 const Route = express.Router()
-const respon2 = require('../controllers/respon2');
+const respon2 = require('../controllers/respon');
 const model = require('../models/model-index');
 const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
@@ -12,12 +12,13 @@ Route.get('/', function (req, res) {
 })
 Route.post('/', async function (req, res) {
     try {
-        const { member } = await model();
+        const { member, Op } = await model();
         const { email, password: password2 } = req.body;
     
         let result = await member.findAll({
             where: {
-                email
+                email,
+                role : ['admin', 'librarian']
             },
             raw: true
         });

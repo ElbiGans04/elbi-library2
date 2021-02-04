@@ -3,7 +3,7 @@ const Route = express.Router();
 const tabel = require("../models/model-index");
 const ModuleTemplate = require('../controllers/module');
 const  moduleLibrary = new ModuleTemplate();
-const respon2 = require("../controllers/respon2");
+const respon2 = require("../controllers/respon");
 const url = require("url");
 const {Op} = require('sequelize');
 

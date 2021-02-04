@@ -10,13 +10,29 @@ module.exports = async function () {
     const book = await require(`./model-books`)(sequelize)
     const order = await require(`./model-order`)(sequelize)
 
-    await member.hasOne(order, {foreignKey: 'member_id'});
+    await member.hasOne(order, {
+        foreignKey: 'member_id',
+        onDelete: 'RESTRICT',
+        onUpdate: 'NO ACTION'
+    });
     await order.belongsTo(member, {foreignKey: 'member_id'});
-    await member.hasOne(order, {foreignKey: 'librarian_buy'});
+    await member.hasOne(order, {
+        foreignKey: 'librarian_buy',
+        onDelete: 'RESTRICT',
+        onUpdate: 'NO ACTION'
+    });
     await order.belongsTo(member, {foreignKey: 'librarian_buy'});
-    await member.hasOne(order, {foreignKey: 'librarian_return'});
+    await member.hasOne(order, {
+        foreignKey: 'librarian_return',
+        onDelete: 'RESTRICT',
+        onUpdate: 'NO ACTION'
+    });
     await order.belongsTo(member, {foreignKey: 'librarian_return'});
-    await book.hasOne(order, {foreignKey: 'book_id'});
+    await book.hasOne(order, {
+        foreignKey: 'book_id',
+        onDelete: 'RESTRICT',
+        onUpdate: 'NO ACTION'
+    });
     await order.belongsTo(book, {foreignKey: 'book_id'});
 
     return {member, sequelize, book, order, Op}

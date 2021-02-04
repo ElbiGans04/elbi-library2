@@ -57,6 +57,8 @@ head
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
               span.mr-2.d-none.d-lg-inline.text-gray-600.small Elbi Library
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #${Math.floor(Math.random()*16777215).toString(16)}`)
+                | HI
             // Dropdown - User Information
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
               a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
@@ -73,40 +75,62 @@ head
             |  Generate Report
         // Content Row
         .row
-          // Earnings (Monthly) Card Example
-          .col-xl-3.col-md-6.mb-4
-            .card.border-left-primary.shadow.h-100.py-2
-              .card-body
-                .row.no-gutters.align-items-center
-                  .col.mr-2
-                    .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1
-                      | Active orders
-                    .h5.mb-0.font-weight-bold.text-gray-800.textActiveOrder #{resultActive.length}
-                  .col-auto
-                    i.fas.fa-calendar.fa-2x.text-gray-300
-          // Earnings (Monthly) Card Example
-          .col-xl-3.col-md-6.mb-4
-            .card.border-left-success.shadow.h-100.py-2
-              .card-body
-                .row.no-gutters.align-items-center
-                  .col.mr-2
-                    .text-xs.font-weight-bold.text-success.text-uppercase.mb-1
-                      | The total number of orders
-                    .h5.mb-0.font-weight-bold.text-gray-800.textTotalOrder #{allOlder.length}
-                  .col-auto
-                    i.fas.fa-dollar-sign.fa-2x.text-gray-300
+          if(role == 'librarian') 
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-primary.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1
+                        | Active orders
+                      .h5.mb-0.font-weight-bold.text-gray-800.textActiveOrder #{resultActive.length}
+                    .col-auto
+                      i.fas.fa-calendar.fa-2x.text-gray-300
+            // Earnings (Monthly) Card Example
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-success.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-success.text-uppercase.mb-1
+                        | The total number of orders
+                      .h5.mb-0.font-weight-bold.text-gray-800.textTotalOrder #{allOlder.length}
+                    .col-auto
+                      i.fas.fa-dollar-sign.fa-2x.text-gray-300
 
-          // Pending Requests Card Example
-          .col-xl-3.col-md-6.mb-4
-            .card.border-left-danger.shadow.h-100.py-2
-              .card-body
-                .row.no-gutters.align-items-center
-                  .col.mr-2
-                    .text-xs.font-weight-bold.text-danger.text-uppercase.mb-1
-                      | late to pay
-                    .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{lateToPay}
-                  .col-auto
-                    i.fas.fa-clipboard-list.fa-2x.text-gray-300
+            // Pending Requests Card Example
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-danger.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-danger.text-uppercase.mb-1
+                        | late to pay
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{lateToPay}
+                    .col-auto
+                      i.fas.fa-clipboard-list.fa-2x.text-gray-300
+            // Pending Requests Card Example
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-success.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-success.text-uppercase.mb-1
+                        | average order
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{orderDay} %
+                    .col-auto
+                      i.fas.fa-clipboard-list.fa-2x.text-gray-300
+          else if ( role == 'librarian' || role == 'admin' )
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-primary.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1
+                        | number of users
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{users.length}
+                    .col-auto
+                      i.fas.fa-clipboard-list.fa-2x.text-gray-300
 
                     
         // Content Row

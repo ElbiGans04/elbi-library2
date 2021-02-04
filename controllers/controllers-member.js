@@ -1,7 +1,7 @@
 let model = require('../models/model-index');
 const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
-const respon2 = require('./respon2')
+const respon2 = require('./respon')
 
 
 
@@ -111,15 +111,13 @@ module.exports = {
             if (validation.length > 0) throw new respon2({code: 200, message: 'user already'});
             // Jika ada yang menambahkan user dengan role librarian maka lempar pesan
             if(req.body.role.toLowerCase() == 'librarian') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
-            // jika user dengan role user mencoba menambahkan user maka lempar pesan
-            if(userRole == 'user') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
 
 
             // Buat User sesuai yang diinputkan
-            let result = await member.create(req.body, {});
+            await member.create(req.body, {});
             
             // Kirim Respon kepada user
-            res.json(new respon2({message: 'successfully added members'}))
+            res.json(new respon2({message: 'successfully added members', type: true}))
     
         } catch (err) {
             console.log(err);
@@ -201,7 +199,6 @@ module.exports = {
             res.json(new respon2({message: 'successfully deleted member'}))
             
         } catch (err) {
-            console.log(err);
             if(err instanceof Error) {
                 if(err.errors) err.message = moduleLibrary.pesanError(err)
                 err = new respon2({message: err.message, code:200});

@@ -1,5 +1,5 @@
 let model = require('../models/model-index');
-const respon2 = require('./respon2');
+const respon2 = require('./respon');
 const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
@@ -48,17 +48,17 @@ module.exports = {
 
             // Render 
             res.render('table', {
-                data: result,
                 coloumn: Object.keys(await book.rawAttributes),
-                without:['id', 'createdat', 'updatedat', 'book_type'],
+                data: result,
+                role: req.user.role,
                 modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
+                without:['id', 'createdat', 'updatedat', 'book_type'],
+                title: 'Book',
+                active: 'book',
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]})
                 ],
-                role: req.user.role,
-                title: 'Book',
-                active: 'book',
                 module: moduleLibrary,
                 buttonHeader: {
                     add: {
