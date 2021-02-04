@@ -37,7 +37,7 @@ Route.post('/', async function (req, res) {
         res.cookie('token', token, {
             maxAge: process.env.APP_MAX_AGE * 1000
         })
-        res.json(new respon2({message: `success. the page will redirect in <strong> 3 seconds</strong>`, type: true, redirect: '/members', code: 200}))
+        res.json(new respon2({message: `success. the page will redirect in`, type: true, redirect: '/members', code: 200, delay: 3}))
         
     } catch (err) {
         if(err instanceof Error) {

@@ -39,7 +39,10 @@ module.exports = {
     // Get All
     getAll : async function (req, res) {
         try {
+            // Ambil Model
             let { member, Op } = await model();
+
+            // Cari Member yang rolenya bukan admin maupun librarian
             let allMember = await member.findAll({
                 where: {
                     [Op.not] : {
@@ -47,13 +50,16 @@ module.exports = {
                     }
                 }
             });
-            let {role: userRole, id: userID} = req.user;
-            let role = [{id: 'user', value: 'user'}];
-            if(userRole == 'librarian' || userRole == 'admin') {
-                role.push({id: 'admin', value: 'admin'})
-            }
 
-            // Name
+            // Tampilkan pilih nilai select modal
+            let {role: userRole, id: userID} = req.user;
+            let role = [
+                {id: 'user', value: 'user'},
+                {id: 'admin', value: 'admin'}
+            ];
+    
+
+            // Cari email bedasarkan id dari cookie
             let name = await member.findOne({
                 attributes: ['email'],
                 where: {
@@ -62,9 +68,14 @@ module.exports = {
                 raw: true
             })
             
+            // Ambil Column
             let coloumn = Object.keys(await member.rawAttributes);
+
+            // Column yang tidak ingin ditampilkan
             const without = ['id', 'createdat', 'updatedat'];
 
+
+            // Render halaman
             res.render('table', {
                 coloumn: coloumn,
                 data: allMember,
@@ -105,8 +116,6 @@ module.exports = {
         try {
             // Load Modal member
             let { member } = await model();
-            // Ambil Role dari cookie
-            let {role: userRole} = req.user;
             
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar

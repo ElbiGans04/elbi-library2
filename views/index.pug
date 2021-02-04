@@ -120,7 +120,7 @@ head
                       .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{orderDay} %
                     .col-auto
                       i.fas.fa-clipboard-list.fa-2x.text-gray-300
-          else if ( role == 'librarian' || role == 'admin' )
+          if ( role == 'librarian' || role == 'admin' )
             .col-xl-3.col-md-6.mb-4
               .card.border-left-primary.shadow.h-100.py-2
                 .card-body

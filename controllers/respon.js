@@ -3,5 +3,6 @@ module.exports = function (data) {
     this.message = data.message.message || data.message;
     this.redirect = data.redirect || false;
     this.type = data.type || false;
+    this.delay = data.delay || false
     if(data.data) this.data = data.data
 }

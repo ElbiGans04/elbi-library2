@@ -16,18 +16,7 @@ module.exports = async function () {
         onUpdate: 'NO ACTION'
     });
     await order.belongsTo(member, {foreignKey: 'member_id'});
-    await member.hasOne(order, {
-        foreignKey: 'librarian_buy',
-        onDelete: 'RESTRICT',
-        onUpdate: 'NO ACTION'
-    });
-    await order.belongsTo(member, {foreignKey: 'librarian_buy'});
-    await member.hasOne(order, {
-        foreignKey: 'librarian_return',
-        onDelete: 'RESTRICT',
-        onUpdate: 'NO ACTION'
-    });
-    await order.belongsTo(member, {foreignKey: 'librarian_return'});
+    
     await book.hasOne(order, {
         foreignKey: 'book_id',
         onDelete: 'RESTRICT',

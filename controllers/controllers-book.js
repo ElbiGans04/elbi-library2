@@ -65,12 +65,12 @@ module.exports = {
                 without:['id', 'createdat', 'updatedat', 'book_type'],
                 title: 'Book',
                 active: 'book',
+                module: moduleLibrary,
                 name : name.email,
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]})
                 ],
-                module: moduleLibrary,
                 buttonHeader: {
                     add: {
                         class: 'fas fa-book mr-2',
@@ -121,10 +121,10 @@ module.exports = {
             }
             
             // Buat
-            let result = await book.create(req.body);
+            await book.create(req.body);
             
             // Beri respone
-            res.json(new respon2({message: 'successfully added book', type: true}))
+            res.json(new respon2({message: 'successfully added book', type: true, code: 200}))
 
         } catch (err) {
             console.log(err)
@@ -172,7 +172,7 @@ module.exports = {
             })
     
     
-            res.json(new respon2({message: 'success', type: true}))
+            res.json(new respon2({message: 'success', type: true, code: 200}))
     
         } catch (err) {
             console.log(err)
@@ -209,7 +209,7 @@ module.exports = {
                 }
             })
             
-            res.json(new respon2({message: 'successfully deleted book'}))
+            res.json(new respon2({message: 'successfully deleted book', type: true, code: 200}))
             
         } catch (err) {
             console.log(err);

@@ -1,9 +1,5 @@
 // untuk menambil kata ke-berapa dari string
 module.exports = class {
-  constructor() {
-    
-  }
-  
   // Ubah Huruf
   ubahHurufPertama(word, mau) {
     // Ambil Bagian nomor depan
@@ -141,25 +137,6 @@ module.exports = class {
     err.message = resultNewErr += " is invalid";
     return err.message
   } 
-
-  selectModal (data, masuk) {
-    masuk = masuk || [];
-    let newResultBook = [];
-    data.forEach(function(e, i){
-      for(let entitas in e) {
-        if(entitas == masuk) {
-          newResultBook.push({
-            id: e['id'],
-            value: e[entitas],
-          })
-        }
-      }
-    });
-
-    return newResultBook
-  }
-
-
 
   
   jajal(without, value) {
