@@ -30,13 +30,13 @@ submit.addEventListener('click', function(event){
                 let { message, redirect, type, delay } = result;
                 let alertClass = type ? 'alert-success' : 'alert-danger';
                 $(alertElement).removeClass('d-none alert-success alert-danger').addClass(alertClass);
-                alertElement.innerHTML = `${message} ${delay} second`;
+                alertElement.innerHTML = `${message} <strong>${delay} second</strong>`;
                 if(redirect && delay) {
                     let i = 0
                     setInterval(function(){
                         if(i < delay) {
                             delay--
-                            alertElement.innerHTML = `${message} ${delay} second`;
+                            alertElement.innerHTML = `${message} <strong>${delay} second</strong>`;
                         } else {
                             clearInterval()
                             window.location = `${redirect}`

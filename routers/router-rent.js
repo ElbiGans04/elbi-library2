@@ -4,7 +4,6 @@ const tabel = require("../models/model-index");
 const ModuleTemplate = require("../controllers/module");
 const moduleLibrary = new ModuleTemplate();
 const respon2 = require("../controllers/respon");
-const url = require("url");
 const { Op } = require("sequelize");
 
 // Definisikan
@@ -76,8 +75,8 @@ Route.get("/", async function (req, res) {
         "id_transaction",
         `return_status`,
         "order_date",
-        `librarian_buy`,
-        "librarian_return",
+        `order_officer_buy`,
+        "order_officer_return",
       ],
       title: "Order list",
       active: "order",
@@ -118,7 +117,7 @@ Route.get("/", async function (req, res) {
 Route.post("/", async function (req, res) {
   try {
     // Ambil TOken
-    const token = req.user;
+    const {email} = req.user;
 
     // Ambil data bedasarkan apa yang diinputkan user
     const { order_day, member_id, book_id } = req.body;
@@ -159,7 +158,7 @@ Route.post("/", async function (req, res) {
       order_price: bookData.book_price,
       order_day,
       order_date: waktu,
-      librarian_buy: token.id,
+      order_officer_buy: email,
     });
 
     // Update Stock Buku
@@ -213,7 +212,7 @@ Route.delete("/", async function (req, res) {
 
     // Update
     await order.update(
-      { return_status: true, librarian_return: req.user.id },
+      { return_status: 'has been returned', order_officer_return: req.user.email },
       {
         where: {
           [Op.and]: {
