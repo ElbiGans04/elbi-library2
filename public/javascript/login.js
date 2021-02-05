@@ -2,9 +2,11 @@ const submit = document.querySelector('button[type=submit]');
 const formElement = document.querySelector('form.user');
 const formLogin = formElement.getAttribute('action');
 const alertElement = document.getElementById('alert');
+const modalCustom = document.querySelector('.modal-custom');
 
 submit.addEventListener('click', function(event){
     event.preventDefault();
+    modalCustom.style.display = 'flex';
 
     // Buat Object Form
     const form = new FormData(formElement);
@@ -12,6 +14,9 @@ submit.addEventListener('click', function(event){
         method: 'POST',
         body: form, 
     })
+        .finally(result => {
+            modalCustom.style.display = 'none'
+        })
         .then(result => {
             if(!result.ok) {
                 alert(result.statusText)
@@ -41,4 +46,5 @@ submit.addEventListener('click', function(event){
                 }
             }
         })
+
 });
