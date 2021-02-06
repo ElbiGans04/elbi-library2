@@ -1,12 +1,13 @@
 // Dependensi
 const express = require("express");
 const app = express();
-const fs = require("fs");
 const dotenv = require("dotenv").config({ path: "./config/.env" });
 const cookie = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const port = process.env.APP_PORT || 3000;
 const { multer } = require("./middleware/multer");
+
+
 
 // Router
 const memberRouter = require("./routers/router-member");
@@ -15,6 +16,8 @@ const login = require("./routers/router-login");
 const logout = require("./routers/router-logout");
 const rentRoute = require("./routers/router-rent");
 const indexRoute = require("./routers/router-index");
+const forgetRoute = require("./routers/router-forget");
+
 
 // // // Instalasi Project // // //
 app.use("/assets", express.static("./public"));
@@ -33,15 +36,17 @@ const respon2 = require("./controllers/respon");
 (async function() {
   let { sequelize, member } = await modelIndex();
   await sequelize.sync({force: true});
-  await member.create({email: 'librarian@gmail.com', password: 123, role: 'librarian'});
+  await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123, role: 'librarian'});
   await member.create({email: 'user@gmail.com', password: 123, role: 'user'});
 
+  
   app.get("/", auth, roleAuth, indexRoute);
   app.use("/members", auth, roleAuth, memberRouter);
   app.use("/books", auth, roleAuthLibrary, bookRouter);
   app.use("/rent", auth, roleAuthLibrary, rentRoute);
   app.use("/login", login);
   app.use("/logout", logout);
+  app.use('/forget', forgetRoute)
   app.listen(port, function (err) {
     if (err) throw err;
     console.log(`Server telah dijalankan pada port ${port}`);

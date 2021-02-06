@@ -241,14 +241,10 @@ Route.get("/return", async function (req, res) {
     const dataOrder = await order.findAll({
       where: {
         [Op.not]: {
-          return_status: true,
+          return_status: 'has been returned',
         },
       },
     });
-
-    // Jika Ga ada
-    if (dataOrder.length <= 0)
-      throw new respon2({ message: "not found. Please check again" });
 
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {

@@ -5,6 +5,7 @@ const alertElement = document.getElementById('alert');
 const modalCustom = document.querySelector('.modal-custom');
 
 submit.addEventListener('click', function(event){
+    console.log("masuk bos")
     event.preventDefault();
     modalCustom.style.display = 'flex';
 
@@ -28,9 +29,11 @@ submit.addEventListener('click', function(event){
         .then(result => {
             if(result) {
                 let { message, redirect, type, delay } = result;
+                let text = message;
                 let alertClass = type ? 'alert-success' : 'alert-danger';
                 $(alertElement).removeClass('d-none alert-success alert-danger').addClass(alertClass);
-                alertElement.innerHTML = `${message} <strong>${delay} second</strong>`;
+                if(delay) text += `<strong>${delay} second</strong>`;
+                alertElement.innerHTML = text
                 if(redirect && delay) {
                     let i = 0
                     setInterval(function(){

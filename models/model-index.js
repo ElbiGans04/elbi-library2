@@ -5,10 +5,12 @@ module.exports = async function () {
         host: process.env.APP_HOST,
         logging: false
     });
+
     
     const member = await require('./model-member')(sequelize)
     const book = await require(`./model-books`)(sequelize)
     const order = await require(`./model-order`)(sequelize)
+    const forget = await require(`./model-forget`)(sequelize)
 
     await member.hasOne(order, {
         foreignKey: 'member_id',
@@ -24,5 +26,12 @@ module.exports = async function () {
     });
     await order.belongsTo(book, {foreignKey: 'book_id'});
 
-    return {member, sequelize, book, order, Op}
+    await member.hasOne(forget, {
+        foreignKey: 'member_id',
+        onDelete: 'RESTRICT',
+        onUpdate: 'NO ACTION'
+    });
+    await forget.belongsTo(member, {foreignKey: 'member_id'});
+
+    return {member, sequelize, book, order, forget, Op}
 }

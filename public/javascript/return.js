@@ -42,16 +42,17 @@ function updateDisplay () {
 
 // Book
 selectBook.addEventListener('change', function(event){
-    const optionSelect = this.children[this.options.selectedIndex];
-    const id = optionSelect.dataset.transaction;
-    const price = optionSelect.dataset.price;
-    const date = optionSelect.dataset.date;
-    const day = optionSelect.dataset.day;
-    const fines = optionSelect.dataset.fines;
+    let optionSelect = this.children[this.options.selectedIndex];
+    let id = optionSelect.dataset.transaction;
+    let price = optionSelect.dataset.price;
+    let date = optionSelect.dataset.date;
+    let day = optionSelect.dataset.day;
+    let fines = optionSelect.dataset.fines;
 
 
     // Logic
-    const {days} = getTime(date)
+    let {days} = getTime(date);
+    if(days < 0) days = 0
     let denda = days * fines;
     let fee = price * day;
     let total = parseInt(fee) + parseInt(denda);
