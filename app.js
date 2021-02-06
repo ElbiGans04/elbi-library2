@@ -34,10 +34,10 @@ const modelIndex = require("./models/model-index");
 const respon2 = require("./controllers/respon");
 
 (async function() {
-  let { sequelize, member } = await modelIndex();
-  await sequelize.sync({force: true});
-  await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123, role: 'librarian'});
-  await member.create({email: 'user@gmail.com', password: 123, role: 'user'});
+  // let { sequelize, member } = await modelIndex();
+  // await sequelize.sync({force: true});
+  // await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123, role: 'librarian'});
+  // await member.create({email: 'user@gmail.com', password: 123, role: 'user'});
 
   
   app.get("/", auth, roleAuth, indexRoute);
