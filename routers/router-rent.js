@@ -38,7 +38,7 @@ Route.get("/", async function (req, res) {
         raw: true,
         attributes: ["id", ["book_title", "title"]],
       });
-      const result2 = await allOlder[value].getMember({
+      const result2 = await allOlder[value].getUser({
         raw: true,
         attributes: ["id", ["name", `title`]],
       });
@@ -238,7 +238,7 @@ Route.get("/return", async function (req, res) {
 
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
-      const dataOrderMember = await dataOrder[index].getMember({
+      const dataOrderMember = await dataOrder[index].getUser({
         attributes: [["email", "title"], "id"],
         raw: true,
       });
@@ -250,7 +250,7 @@ Route.get("/return", async function (req, res) {
       dataOrder[index].dataValues.user_id = dataOrderMember;
       dataOrder[index].dataValues.book_id = dataOrderBook;
     }
-    console.log("masuk")
+    
     // Render halaman
     res.render("returnBook", {
       dataOrder,
@@ -285,7 +285,7 @@ Route.get("/return/:id", async function (req, res) {
 
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
-      const dataOrderUser = await dataOrder[index].getMember({
+      const dataOrderUser = await dataOrder[index].getUser({
         attributes: [["email", "title"], "id"],
         raw: true,
       });

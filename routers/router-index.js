@@ -4,7 +4,7 @@ const tabel = require('../models/model-index');
 
 Route.get('/', async function(req, res){
     let { role, id: userID } = req.user;
-    let {order, member} = await tabel();
+    let {order, user} = await tabel();
     let Template = require('../controllers/module');
     let moduleLibrary = new Template();
     const resultActive = await order.findAll({
@@ -15,7 +15,7 @@ Route.get('/', async function(req, res){
       raw: true, 
     });
     
-    const resultMember = await member.findAll({
+    const resultUser = await user.findAll({
       attributes: ['email', 'id'],
       raw: true
     })
@@ -39,7 +39,7 @@ Route.get('/', async function(req, res){
 
     if(allOlder.length > 0) orderDay = orderDay / allOlder.length
     
-    resultMember.forEach(function(e,i){
+    resultUser.forEach(function(e,i){
       if(e.id == userID) {
         name += e.email
       }
@@ -51,7 +51,7 @@ Route.get('/', async function(req, res){
       allOlder,
       lateToPay: lateToPay.length,
       orderDay,
-      users: resultMember,
+      users: resultUser,
       name,
     })
 });

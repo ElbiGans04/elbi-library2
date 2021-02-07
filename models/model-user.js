@@ -1,6 +1,6 @@
 module.exports = async function (sequelize) {
     const { DataTypes } = require("sequelize")
-    const member = await sequelize.define('member', {
+    const member = await sequelize.define('user', {
         email: {
             type: DataTypes.STRING,
             validate: {
