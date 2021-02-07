@@ -37,10 +37,10 @@ head
         hr.sidebar-divider
         // Heading
         .sidebar-heading Data
-        li.nav-item(name="member")
-            a.nav-link(href='/members')
+        li.nav-item(name="user")
+            a.nav-link(href='/users')
                 i.fas.fa-users
-                span Member
+                span User
         li.nav-item(name="book")
             a.nav-link(href='/books')
                 i.fas.fa-book
@@ -94,21 +94,21 @@ head
                             - let active = '';
                                 form()
                                     .form-group
-                                        label Member: 
-                                        select.form-control(name="member")
+                                        label User: 
+                                        select.form-control(name="user")
                                             each rows in dataOrder
-                                                - const title = rows.dataValues.member_id.title;
+                                                - const title = rows.dataValues.user_id.title;
                                                 if(hello(title, already))
                                                     if(active.length == 0) 
                                                         -active += title
-                                                    option(value=rows.dataValues.member_id.id)=title
+                                                    option(value=rows.dataValues.user_id.id)=title
                                                     -already.push(title)
                                     .form-group
                                         label Book :
                                         select.form-control(name="book")
                                             each rows in dataOrder
                                                 - const title = rows.dataValues.book_id.title;
-                                                if(rows.dataValues.member_id.title == active)
+                                                if(rows.dataValues.user_id.title == active)
                                                     option(value=rows.dataValues.book_id.id, data-transaction=rows.dataValues.id_transaction, data-price=rows.dataValues.order_price, data-day=rows.dataValues.order_day, data-fines=rows.dataValues.book_id.fines, data-date=rows.dataValues.order_date)=title
                                                     -already.push(title)
                                     .form-group

@@ -5,7 +5,6 @@ const alertElement = document.getElementById('alert');
 const modalCustom = document.querySelector('.modal-custom');
 
 submit.addEventListener('click', function(event){
-    console.log("masuk bos")
     event.preventDefault();
     modalCustom.style.display = 'flex';
 

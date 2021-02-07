@@ -13,11 +13,11 @@ action.addEventListener('click', function(event){
         .then(result => alert(result.message))
 });
 
-const selectMember = document.querySelector('.container-fluid form select[name=member]');
+const selectUser = document.querySelector('.container-fluid form select[name=user]');
 const selectBook = document.querySelector('.container-fluid form select[name=book]');
 const transaksi = document.querySelector('.container-fluid form input[readonly]');
 
-selectMember.addEventListener('change', function(event){
+selectUser.addEventListener('change', function(event){
     const value = this.value;
     fetch(`/rent/return/${value}`)
         .then(result => result.json())

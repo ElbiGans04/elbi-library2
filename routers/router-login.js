@@ -6,30 +6,44 @@ const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
 const jwt = require('jsonwebtoken');
 
+
 // Definisikan
 Route.get('/', function (req, res) {
     res.render('login')
-})
+});
+
 Route.post('/', async function (req, res) {
     try {
-        const { member, Op } = await model();
-        const { email, password: password2 } = req.body;
+        const { officer, role } = await model();
+        let { email, password: password2 } = req.body;
+
+        // Hashing
+        password2 = moduleLibrary.hashing(password2)
     
-        let result = await member.findAll({
+        let result = await officer.findOne({
             where: {
                 email,
-                role : ['admin', 'librarian']
+            },
+            attributes: {
+                exclude: ['createdAt', 'updatedAt']
+            },
+            include: {
+                model: role,
+                through: {
+                    attributes: []
+                },
             },
             raw: true
         });
         
-        if(result.length <= 0) throw new respon2({message: 'accouunt not found', code: 200})
+        if(!result) throw new Error(`accouunt not found`)
         
-        let {id, role, password, email: userEmail} = result[0];
-        if(password !== password2) throw new respon2({message: 'password wrong', code: 200})
+        let {id, email: userEmail, password} = result;
+        let roles = result['roles.name']
+        if(password !== password2) throw new Error('password wrong')
 
         
-        const token = jwt.sign({role, id, email: userEmail}, process.env.APP_PRIVATE_KEY, {
+        const token = jwt.sign({id, email: userEmail, role: roles}, process.env.APP_PRIVATE_KEY, {
             algorithm: 'RS256',
             expiresIn: '1d'
         });
@@ -37,9 +51,10 @@ Route.post('/', async function (req, res) {
         res.cookie('token', token, {
             maxAge: process.env.APP_MAX_AGE * 1000
         })
-        res.json(new respon2({message: `success. the page will redirect in`, type: true, redirect: '/members', code: 200, delay: 3}))
+        res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
         
     } catch (err) {
+        console.log(err)
         if(err instanceof Error) {
             if(err.errors) err.message = moduleLibrary.pesanError(err);
             err = new respon2({message: err.message, code:200});

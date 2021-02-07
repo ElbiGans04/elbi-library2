@@ -6,7 +6,8 @@ const cookie = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const port = process.env.APP_PORT || 3000;
 const { multer } = require("./middleware/multer");
-
+const ModuleLibrary = require('./controllers/module');
+const moduleLibrary = new ModuleLibrary();
 
 
 // Router
@@ -34,16 +35,21 @@ const modelIndex = require("./models/model-index");
 const respon2 = require("./controllers/respon");
 
 (async function() {
-  // let { sequelize, member } = await modelIndex();
+  // let { sequelize, officer, role } = await modelIndex();
   // await sequelize.sync({force: true});
-  // await member.create({email: 'rhafaelbijaksana04@gmail.com', password: 123, role: 'librarian'});
-  // await member.create({email: 'user@gmail.com', password: 123, role: 'user'});
-
   
+  // let password = moduleLibrary.hashing('123');
+  // let role2 = await role.create({name: 'librarian'});
+  // let role3 = await officer.create({email: 'rhafaelbijaksana04@gmail.com', password, name: 'elbi'});
+  // await role2.addOfficer(role3)
+  // let role4 = await memberRole.create({});
+
+  // await member.create({email: 'user@gmail.com', password});
+
   app.get("/", auth, roleAuth, indexRoute);
-  app.use("/members", auth, roleAuth, memberRouter);
-  app.use("/books", auth, roleAuthLibrary, bookRouter);
-  app.use("/rent", auth, roleAuthLibrary, rentRoute);
+  app.use("/users", auth, roleAuth, memberRouter);
+  app.use("/books", auth, roleAuth, bookRouter);
+  app.use("/rent", auth, roleAuth, rentRoute);
   app.use("/login", login);
   app.use("/logout", logout);
   app.use('/forget', forgetRoute)
@@ -58,75 +64,74 @@ const respon2 = require("./controllers/respon");
 async function auth(req, res, next) {
   try {
     const token = req.cookies.token;
-    let { member } = await modelIndex();
+    let { officer } = await modelIndex();
 
     // Jika Token Tidak ada
-    if (!token)
-      throw new respon2({
-        message: "token not found",
-        code: 200,
-        redirect: "/login",
-      });
+    if (!token) return res.redirect('/login')
     const tokenJwt = jwt.verify(token, process.env.APP_PUBLIC_KEY, {
       algorithms: "RS256",
     });
 
-    const user = await member.findOne({
+    const user = await officer.findOne({
       where: {
         id: tokenJwt.id,
+        email: tokenJwt.email
       },
     });
 
     // Jika user tidak ada
-    if (!user)
-      throw new respon2({
-        message: "unregistered user",
-        code: 200,
-        redirect: "/login",
-      });
+    if (!user) return res.redirect('/login')
 
     req.user = tokenJwt;
 
     next();
   } catch (err) {
-    if (req.method == "GET") {
-      res.redirect(err.redirect);
-    } else {
-      res.json(err);
-    }
+    console.log(err)
   }
 }
 
 async function roleAuth(req, res, next) {
-  let { role } = req.user;
-  role = role.toLowerCase();
+  try {
+    let permission = {
+      admin: ['/users'],
+      librarian: ['/users', '/books', '/rent', '/return']
+    };
 
-  if (role == "admin" || role == "librarian") {
-    next();
-  } else {
-    if (req.method == "GET") {
-      res.redirect("/");
-    } else {
-      res.json(
-        new respon2({ message: `you don't have permission`, code: 403 })
-      );
-    }
-  }
-}
+    let url = req.originalUrl;
+    // Import Model
+    let { role } = await modelIndex();
+  
+    // User
+    let {role: userROLE} = req.user
+    
+    // Cari
+    let findRole = await role.findOne({
+      where: {
+        name: userROLE
+      }
+    });
+  
+    // Jika Tidak Ditemukan
+    if(!findRole) new Error('Role Invalid');
 
-async function roleAuthLibrary(req, res, next) {
-  let { role } = req.user;
-  role = role.toLowerCase();
+    // Logic
+    // permission[userROLE].forEach(function(el, idx){
+    //   if ( el == url ) console.log(el)
+    // // });
+    // if( moduleLibrary.termasuk(permission[userROLE], url) ) {
+    //   next();
+    // } else {
+    //   if(req.method == 'GET') {
+    //     return res.redirect('/login');
+    //   } else {
+    //     throw new Error('not permission')
+    //   }
+    // }
 
-  if (role == "librarian") {
-    next();
-  } else {
-    if (req.method == "GET") {
-      res.redirect("/");
-    } else {
-      res.json(
-        new respon2({ message: `you don't have permission`, code: 403 })
-      );
-    }
+    next()    
+  } catch (err) {
+    console.log(err)
+    const code = err.code || 200;
+    res.status(code).json(err)
   }
 }

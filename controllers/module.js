@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 // untuk menambil kata ke-berapa dari string
 module.exports = class {
   // Ubah Huruf
@@ -151,6 +152,13 @@ module.exports = class {
     }
   
     return false;
+  }
+
+  hashing (text) {
+    // Hash password
+    let hash = crypto.createHash('SHA256');
+    hash.write(text, 'base64');
+    return hash.digest('base64');
   }
 }
 

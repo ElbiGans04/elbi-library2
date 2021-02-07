@@ -113,6 +113,7 @@ head
                             td(data-as=dataAs)
                               img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
                           else
+                            //- - console.log(rows)
                             if(typeof rows == 'object')
                               if(rows == null)
                                 td '-'
@@ -215,7 +216,6 @@ if(buttonAction)
           .modal-footer
             button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
             button#EditButton.btn.btn-primary(type='button' aria-label='Edit button') Edit
-    
 // Modal Multiguna
 #addModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
   .modal-dialog(role='document')

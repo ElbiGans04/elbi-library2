@@ -28,7 +28,7 @@ navList.forEach(function(element, index){
 });
 
 /// Datatables inisialisasi // // // 
-if(navActive == 'member' || navActive == 'order') {
+if(navActive == 'user' || navActive == 'order') {
   var t = $('#tableUtama').DataTable( {
     "columnDefs": [ {
       "searchable": false,
@@ -161,7 +161,7 @@ $(document).on("click",'.buttonActionEdit', function (event) {
   const formInput = document.querySelectorAll(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form > .form-group > input"
   );
-
+  
   fetch(`${url}/${id}`)
     .then((result) => check(result))
     .then((result) => {

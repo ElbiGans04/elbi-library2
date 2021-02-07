@@ -10,10 +10,10 @@ const { Op } = require("sequelize");
 Route.get("/", async function (req, res) {
   try {
     // Ambil Role dan id dari req.user
-    let { role, id: userID } = req.user;
+    let { role, id: userID, email: officerEmail } = req.user;
 
     // Import Model
-    const { order, book, member, Op } = await tabel();
+    const { order, book, user, Op } = await tabel();
 
     // Ambil Semua Orderan
     const allOlder = await order.findAll();
@@ -25,22 +25,12 @@ Route.get("/", async function (req, res) {
     });
 
     // Ambil semua user dengan role user BUKAN ADMIN & LIBRARIAN
-    const resultMember = await member.findAll({
-      where: {
-        role: "user",
-      },
-      attributes: ["id", ["email", "value"]],
+    const resultMember = await user.findAll({
       raw: true,
+      attributes: ['id', ["email", "value"]]
     });
 
-    // Cari User bedasarkan id yang didapat dari req.user
-    let name = await member.findOne({
-      where: {
-        id: userID,
-      },
-      raw: true,
-      attributes: ["email"],
-    });
+
 
     // Mengambil Data dari tabel relasi
     for (let value in allOlder) {
@@ -50,13 +40,13 @@ Route.get("/", async function (req, res) {
       });
       const result2 = await allOlder[value].getMember({
         raw: true,
-        attributes: ["id", ["email", `title`]],
+        attributes: ["id", ["name", `title`]],
       });
 
       allOlder[value].dataValues.book_id = result;
-      allOlder[value].dataValues.member_id = result2;
+      allOlder[value].dataValues.user_id = result2;
     }
-
+    
     // Ambil Column dari model
     const coloumn = await Object.keys(order.rawAttributes);
 
@@ -80,7 +70,7 @@ Route.get("/", async function (req, res) {
       ],
       title: "Order list",
       active: "order",
-      name: name.email,
+      name: officerEmail,
       module: moduleLibrary,
       role,
       buttonHeader: {
@@ -99,8 +89,8 @@ Route.get("/", async function (req, res) {
           value: resultBook,
         }),
         moduleLibrary.as({
-          target: "member_id",
-          showName: "Member",
+          target: "user_id",
+          showName: "user",
           type: "select",
           value: resultMember,
         }),
@@ -120,7 +110,7 @@ Route.post("/", async function (req, res) {
     const {email} = req.user;
 
     // Ambil data bedasarkan apa yang diinputkan user
-    const { order_day, member_id, book_id } = req.body;
+    const { order_day, user_id, book_id } = req.body;
     const bookId = req.body.book_id;
 
     // Import Model
@@ -152,7 +142,7 @@ Route.post("/", async function (req, res) {
 
     // Masukan Data
     await order.create({
-      member_id,
+      user_id,
       book_id,
       id_transaction: codeTransaksi,
       order_price: bookData.book_price,
@@ -193,13 +183,13 @@ Route.delete("/", async function (req, res) {
     const { order } = await tabel();
 
     // Ambil yang diinputkan user
-    let { member, book, id_transaction } = req.body;
+    let { user, book, id_transaction } = req.body;
 
     // Check Apakah Orderan tsb ada
     const resultOrder = await order.findAll({
       where: {
         [Op.and]: {
-          member_id: member,
+          user_id: user,
           book_id: book,
           id_transaction,
         },
@@ -216,7 +206,7 @@ Route.delete("/", async function (req, res) {
       {
         where: {
           [Op.and]: {
-            member_id: member,
+            user_id: user,
             book_id: book,
             id_transaction,
           },
@@ -225,7 +215,7 @@ Route.delete("/", async function (req, res) {
     );
 
     // Kirim Respon
-    res.json(new respon2({ message: "success", code: 200 }));
+    res.json(new respon2({ message: "success", code: 200, type: true, redirect: '/rent' }));
   } catch (err) {
     console.log(err);
     const code = err.code || 200;
@@ -257,10 +247,10 @@ Route.get("/return", async function (req, res) {
         raw: true,
       });
 
-      dataOrder[index].dataValues.member_id = dataOrderMember;
+      dataOrder[index].dataValues.user_id = dataOrderMember;
       dataOrder[index].dataValues.book_id = dataOrderBook;
     }
-
+    console.log("masuk")
     // Render halaman
     res.render("returnBook", {
       dataOrder,
@@ -283,7 +273,7 @@ Route.get("/return/:id", async function (req, res) {
     const dataOrder = await order.findAll({
       where: {
         [Op.and]: {
-          member_id: paramId,
+          user_id: paramId,
           return_status: false,
         },
       },
@@ -295,7 +285,7 @@ Route.get("/return/:id", async function (req, res) {
 
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
-      const dataOrderMember = await dataOrder[index].getMember({
+      const dataOrderUser = await dataOrder[index].getMember({
         attributes: [["email", "title"], "id"],
         raw: true,
       });
@@ -304,7 +294,7 @@ Route.get("/return/:id", async function (req, res) {
         raw: true,
       });
 
-      dataOrder[index].dataValues.member_id = dataOrderMember;
+      dataOrder[index].dataValues.user_id = dataOrderUser;
       dataOrder[index].dataValues.book_id = dataOrderBook;
     }
 

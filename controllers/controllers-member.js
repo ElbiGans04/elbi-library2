@@ -8,18 +8,18 @@ const respon2 = require('./respon')
 module.exports = {
     get : async function(req, res) {
         try {
-            let { member } = await model();
+            let { user } = await model();
             const id = req.params.id;
 
             
             // Auth
-            let result = await member.findOne({
+            let result = await user.findOne({
                 where: {
                     id
                 }
             });
         
-            if(result.length <= 0) throw new respon2({message: 'member not found', code: 200});
+            if(result.length <= 0) throw new respon2({message: 'user not found', code: 200});
     
             // Jika Ada maka Kirimkan
             res.json(new respon2({message: 'success', code: 200, data: result}));
@@ -40,36 +40,13 @@ module.exports = {
     getAll : async function (req, res) {
         try {
             // Ambil Model
-            let { member, Op } = await model();
+            let { user} = await model();
 
-            // Cari Member yang rolenya bukan admin maupun librarian
-            let allMember = await member.findAll({
-                where: {
-                    [Op.not] : {
-                        role: ['admin', 'librarian']
-                    }
-                }
-            });
-
-            // Tampilkan pilih nilai select modal
-            let {role: userRole, id: userID} = req.user;
-            let role = [
-                {id: 'user', value: 'user'},
-                {id: 'admin', value: 'admin'}
-            ];
-    
-
-            // Cari email bedasarkan id dari cookie
-            let name = await member.findOne({
-                attributes: ['email'],
-                where: {
-                    id: userID
-                },
-                raw: true
-            })
+            // Cari user yang rolenya bukan admin maupun librarian
+            let alluser = await user.findAll();
             
             // Ambil Column
-            let coloumn = Object.keys(await member.rawAttributes);
+            let coloumn = Object.keys(await user.rawAttributes);
 
             // Column yang tidak ingin ditampilkan
             const without = ['id', 'createdat', 'updatedat'];
@@ -78,17 +55,16 @@ module.exports = {
             // Render halaman
             res.render('table', {
                 coloumn: coloumn,
-                data: allMember,
-                role: userRole,
+                data: alluser,
+                role: req.user.role,
                 modalwithout: [...without],
                 without: [...without, 'role'],
-                title: 'Member',
-                active: 'member',
+                title: 'user',
+                active: 'user',
                 module: moduleLibrary,
-                name: name.email,
+                name: req.user.email,
                 as: [
-                    moduleLibrary.as({target: 'email', as: 'identifer'}),
-                    moduleLibrary.as({target: 'role', type: 'select', value: role}),
+                    moduleLibrary.as({target: 'email', as: 'identifer'})
                 ],
                 buttonHeader: {
                     add: {
@@ -103,6 +79,7 @@ module.exports = {
             })
     
         } catch (err) {
+            console.log(err)
             const code = err.code || 200;
             const message = err.message.message || err.message
             res.status(code).send(message)
@@ -115,11 +92,11 @@ module.exports = {
     post: async function(req, res){
         try {
             // Load Modal member
-            let { member } = await model();
+            let { user } = await model();
             
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar
-            let validation = await member.findAll({
+            let validation = await user.findAll({
                 where : {
                     email : req.body.email
                 },
@@ -128,15 +105,12 @@ module.exports = {
             
             // Jika Ada
             if (validation.length > 0) throw new respon2({code: 200, message: 'user already'});
-            // Jika ada yang menambahkan user dengan role librarian maka lempar pesan
-            if(req.body.role.toLowerCase() == 'librarian') throw new respon2({code: 200, message: 'You do not have permission to add a user with that role'})
-
 
             // Buat User sesuai yang diinputkan
-            await member.create(req.body, {});
+            await user.create(req.body, {});
             
             // Kirim Respon kepada user
-            res.json(new respon2({message: 'successfully added members', type: true}))
+            res.json(new respon2({message: 'successfully added user', type: true}))
     
         } catch (err) {
             console.log(err);
@@ -153,12 +127,12 @@ module.exports = {
     // Put
     put: async function (req, res) {
         try {
-            let { member } = await model();
+            let { user } = await model();
             let entitasId = req.params.id;
     
             // Validation
             // Check Apakah user dengan id terkait ditemukan
-            let validation = await member.findAll({
+            let validation = await user.findAll({
                 where: {
                     id: entitasId
                 },
@@ -166,10 +140,10 @@ module.exports = {
             });
     
             // Jika user tidak ditemukan maka lempar pesan
-            if(validation.length <= 0) throw new respon2({message: 'member not found', code: 200})
+            if(validation.length <= 0) throw new respon2({message: 'user not found', code: 200})
     
             // Jika Ditemukan maka lanjutkan
-            await member.update(req.body, {
+            await user.update(req.body, {
                 where: {
                     id: entitasId
                 }
@@ -194,11 +168,11 @@ module.exports = {
     // Delete
     delete: async function (req, res) {
         try {
-            let { member } = await model();
+            let { user } = await model();
             let id = req.params.id;
             
             // Validation
-            let validation = await member.findAll({
+            let validation = await user.findAll({
                 where: {
                     id
                 },
@@ -206,16 +180,16 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation.length <= 0 ) throw new respon2({message: 'member not found', code: 200});
+            if ( validation.length <= 0 ) throw new respon2({message: 'user not found', code: 200});
     
-            // Hapus member
-            await member.destroy({
+            // Hapus user
+            await user.destroy({
                 where: {
                     id
                 }
             })
             
-            res.json(new respon2({message: 'successfully deleted member'}))
+            res.json(new respon2({message: 'successfully deleted user'}))
             
         } catch (err) {
             if(err instanceof Error) {
