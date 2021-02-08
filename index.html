@@ -4,26 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="container">
+        <div class="main">
+            <input type="text" id="test">
+        </div>
+    </div>
 </body>
     <script>
-        class test {
-            constructor(name) {
-                this.myname = name
-            }
-
-            showName () {
-                return this.myname
-            }
-
-            showFull () {
-                return `Hello My name is ${this.showName()}.`
-            }
-        }
-
-        let test1 = new test('rhafael');
-        console.log(test1.showFull())
+        const inputTest = document.getElementById('test');
+        inputTest.addEventListener('keyup', function(event){
+            let regex = /^[a-zA-Z0-9]*$/
+            console.log(regex.test(this.value))
+        });
     </script>
 </html>
