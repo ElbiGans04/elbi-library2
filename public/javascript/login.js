@@ -1,3 +1,4 @@
+import { validate, validateEmail } from '/assets/javascript/module.js';
 const submit = document.querySelector('button[type=submit]');
 const formElement = document.querySelector('form.user');
 const formLogin = formElement.getAttribute('action');
@@ -6,11 +7,19 @@ const modalCustom = document.querySelector('.modal-custom');
 let inputButton = document.querySelectorAll('form .form-group input');
 
 submit.addEventListener('click', function(event){
+    // Beri supaya tidak mengirim
     event.preventDefault();
     
-    if(check(inputButton)) {
+    // Check Validasi
+    let test = check(inputButton);
+
+    // Jika semua input valid
+    if( test === true ) {
+
+        // Tambahkan efek loading
         modalCustom.style.display = 'flex';
-        console.log("HI")
+
+        // Buat form dan lakukan request
         const form = new FormData(formElement);
         fetch(formLogin, {
             method: 'POST',
@@ -50,8 +59,10 @@ submit.addEventListener('click', function(event){
                     }
                 }
             })
+    } else {
+      inputButton[test].focus()
     }
-    // Buat Object Form
+    
 
 });
 
@@ -59,46 +70,58 @@ inputButton.forEach(function(e){
   let type = e.getAttribute('type');
   if(type !== 'checkbox') {
     e.addEventListener('keyup', function(event){
-      if(check(inputButton)) {
+      if(check(inputButton) === true) {
         submit.removeAttribute('disabled')
       }
     })
   }
 })
 
-function validateEmail(email) {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-}
 
-function validate(text) {
-  let regex = /^[a-zA-Z0-9]*$/
-  return regex.test(text)
-}
 
 function check (element) {
-  
+
+  // Definisi Index
+  let index = 0;
+
+  // Melooping input element
   for (let el of element) {
+
+    // Mengambil Data yang diperlukan
     let type = el.getAttribute('type');
     let name = el.getAttribute('name');
     let small = el.nextElementSibling;
 
-    // Pastikan bukan checkbox
+    // Pastikan element input bukan type checkbox
     if (type !== 'checkbox') {
+
+      // Jika Input Type Email maka gunakan validate type email
       let test = type == 'email' ? validateEmail(el.value) : validate(el.value);
+
+      // Jika ada input yang tidak diisi atau yang tidak lolos regex maka return false, 
+      // tampilkan element small, dan setel button submit ke false
       if(el.value.length <= 0 || !test) {
         small.classList.remove('d-none');
         small.textContent = `${name} is invalid`;
-        // el.focus();
         submit.setAttribute('disabled', '')
-        return false
+
+        // Kembalikan Index sebagai penanda input ke berapa yang tidak valid
+        return index
+      
+      // Jika ada element yang lolos maka hilangkan pesan kesalahan errornya
       } else {
         small.classList.add('d-none')
-    }
+      }
     
     }
+
+
+    // Tambahkan Index setiap looping
+    index++
+
   }
 
+  // Jika sudah sampai sini maka berarti semua input telah lolos test dan return true
   return true
 
 }
