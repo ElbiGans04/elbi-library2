@@ -16,7 +16,7 @@ Route.get('/', async function(req, res){
     });
     
     const resultUser = await user.findAll({
-      attributes: ['email', 'id'],
+      attributes: ['name', 'id'],
       raw: true
     })
 

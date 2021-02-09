@@ -1,14 +1,10 @@
 module.exports = async function (sequelize) {
     const { DataTypes } = require("sequelize")
     const member = await sequelize.define('user', {
-        email: {
-            type: DataTypes.STRING,
-            validate: {
-                isEmail: true,
-            },
+        nisn: {
+            type: DataTypes.INTEGER,
             allowNull: false
-        },
-        
+        }, 
         name: {
             type: DataTypes.STRING,
             allowNull: false

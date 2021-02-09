@@ -115,7 +115,7 @@ $(document).on('click', '#addActionButton', function(event){
 });
 $(document).on("click", '#addButton', function (event) {
   event.preventDefault();
-
+  
   const formElement = $("#addModal .modal-body form")[0];
   const form = new FormData(formElement);
 

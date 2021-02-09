@@ -20,7 +20,7 @@ module.exports = {
             });
             
             // Jika tidak ditemukan
-            if(result.length <= 0) throw new respon2({message: 'book not found', code: 200});
+            if(!result) throw new respon2({message: 'book not found', code: 200});
 
             // Jika ditemukan convert image ke base 64
             result.dataValues.book_image = result.dataValues.book_image.toString('base64')
@@ -87,7 +87,7 @@ module.exports = {
 
             // Verification
             // check apakah buku dengan title tsb sudah ada
-            let validation = await book.findAll({
+            let validation = await book.count({
                 where : {
                     book_title
                      : req.body.book_title
@@ -97,7 +97,7 @@ module.exports = {
             });
             
             // Jika Ada
-            if (validation.length > 0) throw new respon2({code: 200, message: 'book already'});
+            if (validation > 0) throw new respon2({code: 200, message: 'book already'});
 
             // Buat File Format
             if(!req.file) {

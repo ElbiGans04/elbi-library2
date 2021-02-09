@@ -13,6 +13,7 @@ module.exports = async function () {
     const forget = await require(`./model-forget`)(sequelize);
     const officer = await require(`./model-officer`)(sequelize);
     const role = await require(`./model-role`)(sequelize);
+    const userClass = await require(`./model-class`)(sequelize);
 
     // Assosiasi User dengan order
     await user.hasMany(order, {
@@ -40,16 +41,13 @@ module.exports = async function () {
 
 
 
-    // await member.hasMany(memberRole, {
-    //     foreignKey: 'member_id',
-    //     onDelete: 'RESTRICT',
-    //     onUpdate: 'NO ACTION'
-    // });
-    // await memberRole.belongsToMany(member, {foreignKey: 'member_id', throught});
-
-    
+    // Assosiasi officer dengan role    
     await role.belongsToMany(officer, { through: 'officer_role'});
     await officer.belongsToMany(role, { through: 'officer_role'});
+    
+    // assosiasi user dengan class
+    await userClass.belongsToMany(user, { through: 'user_class'});
+    await user.belongsToMany(userClass, { through: 'user_class'});
 
-    return {sequelize, Op ,officer, user, book, order, forget, role}
+    return {sequelize, Op ,officer, user, book, order, forget, role, userClass}
 }

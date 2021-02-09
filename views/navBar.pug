@@ -1,7 +1,13 @@
 li.nav-item(name="user")
-    a.nav-link(href='/users')
+    a.nav-link.collapsed(href='/users', data-toggle='collapse', data-target='#collapseUtilities', aria-expanded='true', aria-controls='collapseUtilities')
         i.fas.fa-users
-        span user
+        span User
+    #collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Edit class or member
+            a.collapse-item(href='/users') List of library members
+            a.collapse-item(href='/officer') List of officers
+            a.collapse-item(href='/class') User class
 li.nav-item(name="book")
     a.nav-link(href='/books')
         i.fas.fa-book

@@ -19,7 +19,7 @@ module.exports = {
                 }
             });
         
-            if(result.length <= 0) throw new respon2({message: 'user not found', code: 200});
+            if(!result) throw new respon2({message: 'user not found', code: 200});
     
             // Jika Ada maka Kirimkan
             res.json(new respon2({message: 'success', code: 200, data: result}));
@@ -59,12 +59,12 @@ module.exports = {
                 role: req.user.role,
                 modalwithout: [...without],
                 without: [...without, 'role'],
-                title: 'user',
+                title: 'User',
                 active: 'user',
                 module: moduleLibrary,
                 name: req.user.email,
                 as: [
-                    moduleLibrary.as({target: 'email', as: 'identifer'})
+                    moduleLibrary.as({target: 'name', as: 'identifer'})
                 ],
                 buttonHeader: {
                     add: {
@@ -96,15 +96,15 @@ module.exports = {
             
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar
-            let validation = await user.findAll({
+            let validation = await user.count({
                 where : {
-                    email : req.body.email
+                    nisn : req.body.nisn
                 },
                 raw: true
             });
             
             // Jika Ada
-            if (validation.length > 0) throw new respon2({code: 200, message: 'user already'});
+            if (validation > 0) throw new respon2({code: 200, message: 'nisn already'});
 
             // Buat User sesuai yang diinputkan
             await user.create(req.body, {});
@@ -132,7 +132,7 @@ module.exports = {
     
             // Validation
             // Check Apakah user dengan id terkait ditemukan
-            let validation = await user.findAll({
+            let validation = await user.count({
                 where: {
                     id: entitasId
                 },
@@ -140,7 +140,7 @@ module.exports = {
             });
     
             // Jika user tidak ditemukan maka lempar pesan
-            if(validation.length <= 0) throw new respon2({message: 'user not found', code: 200})
+            if(validation <= 0) throw new respon2({message: 'user not found', code: 200})
     
             // Jika Ditemukan maka lanjutkan
             await user.update(req.body, {
@@ -172,7 +172,7 @@ module.exports = {
             let id = req.params.id;
             
             // Validation
-            let validation = await user.findAll({
+            let validation = await user.count({
                 where: {
                     id
                 },
@@ -180,7 +180,7 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation.length <= 0 ) throw new respon2({message: 'user not found', code: 200});
+            if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
     
             // Hapus user
             await user.destroy({

@@ -37,23 +37,7 @@ head
         hr.sidebar-divider
         // Heading
         .sidebar-heading Data
-        li.nav-item(name="user")
-            a.nav-link(href='/users')
-                i.fas.fa-users
-                span User
-        li.nav-item(name="book")
-            a.nav-link(href='/books')
-                i.fas.fa-book
-                span Book
-        li.active.nav-item(name="order")
-            a.nav-link.collapsed(href='/order' data-toggle='collapse' data-target='#collapseUtilities' aria-expanded='true' aria-controls='collapseUtilities')
-                i.fas.fa-shopping-cart
-                span Order
-            #collapseUtilities.collapse.show(aria-labelledby='headingUtilities' data-parent='#accordionSidebar')
-                .bg-white.py-2.collapse-inner.rounded
-                    h6.collapse-header rent or return books
-                    a.collapse-item(href='/rent') Rent 
-                    a.collapse-item.active(href='/rent/return') Return 
+        include navBar.pug
         // Divider
         hr.sidebar-divider.d-none.d-md-block
         // Sidebar Toggler (Sidebar)

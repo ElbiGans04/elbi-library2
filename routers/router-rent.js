@@ -27,7 +27,7 @@ Route.get("/", async function (req, res) {
     // Ambil semua user dengan role user BUKAN ADMIN & LIBRARIAN
     const resultMember = await user.findAll({
       raw: true,
-      attributes: ['id', ["email", "value"]]
+      attributes: ['id', ["name", "value"]]
     });
 
 
@@ -239,7 +239,7 @@ Route.get("/return", async function (req, res) {
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
       const dataOrderMember = await dataOrder[index].getUser({
-        attributes: [["email", "title"], "id"],
+        attributes: [["name", "title"], "id"],
         raw: true,
       });
       const dataOrderBook = await dataOrder[index].getBook({
@@ -286,7 +286,7 @@ Route.get("/return/:id", async function (req, res) {
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
       const dataOrderUser = await dataOrder[index].getUser({
-        attributes: [["email", "title"], "id"],
+        attributes: [["name", "title"], "id"],
         raw: true,
       });
       const dataOrderBook = await dataOrder[index].getBook({
