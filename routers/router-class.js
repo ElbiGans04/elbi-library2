@@ -7,30 +7,30 @@ const respon2 = require('../controllers/respon');
 const respon = require('../controllers/respon');
 
 
-// Route.get('/:id', async function(req, res){
-//     try {
-//             // Import Model
-//             const { userClass } = await model();
-//             const paramID = req.params.id;
+Route.get('/:id', async function(req, res){
+    try {
+            // Import Model
+            const { userClass } = await model();
+            const paramID = req.params.id;
             
-//             const result = await userClass.findOne({
-//                 where: {
-//                     id: paramID
-//                 }
-//             });
+            const result = await userClass.findOne({
+                where: {
+                    id: paramID
+                }
+            });
 
-//             if(!result) throw new respon({message: 'user not found'});
+            if(!result) throw new respon({message: 'user not found'});
 
-//             // Jika ada
+            // Jika ada
             
-//             res.json(new respon({message: 'success', data: result}))
+            res.json(new respon({message: 'success', data: result}))
 
-//     } catch (err) {
-//         console.log(err);
-//         const code = err.code || 200;
-//         res.status(code).json(err);
-//     }
-// });
+    } catch (err) {
+        console.log(err);
+        const code = err.code || 200;
+        res.status(code).json(err);
+    }
+});
 
 Route.get('/*', async function ( req, res ) {
     try {

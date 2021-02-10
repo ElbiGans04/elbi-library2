@@ -46,8 +46,8 @@ module.exports = async function () {
     await officer.belongsToMany(role, { through: 'officer_role'});
     
     // assosiasi user dengan class
-    await userClass.belongsToMany(user, { through: 'user_class'});
-    await user.belongsToMany(userClass, { through: 'user_class'});
+    await userClass.belongsToMany(user, { through: 'user_class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
+    await user.belongsToMany(userClass, { through: 'user_class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
 
     return {sequelize, Op ,officer, user, book, order, forget, role, userClass}
 }

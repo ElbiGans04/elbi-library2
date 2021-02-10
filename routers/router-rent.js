@@ -41,11 +41,14 @@ Route.get("/", async function (req, res) {
       const result2 = await allOlder[value].getUser({
         raw: true,
         attributes: ["id", ["name", `title`]],
-      });
+      }); 
+
 
       allOlder[value].dataValues.book_id = result;
       allOlder[value].dataValues.user_id = result2;
     }
+
+
     
     // Ambil Column dari model
     const coloumn = await Object.keys(order.rawAttributes);

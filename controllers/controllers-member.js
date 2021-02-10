@@ -40,13 +40,30 @@ module.exports = {
     getAll : async function (req, res) {
         try {
             // Ambil Model
-            let { user} = await model();
+            let { user, userClass} = await model();
+
 
             // Cari user yang rolenya bukan admin maupun librarian
             let alluser = await user.findAll();
+
+            // Harus gini { id: 1, title: 'Jacqueline Upton' }
+            for (let el of alluser) {
+                let classCustom = await el.getClasses({
+                    raw: true,
+                    attributes: ['id', [`name`, 'title']]
+                });
+
+               el.dataValues.class = classCustom[0];
+            }
+
+            let resultClass = await userClass.findAll({
+                raw: true,
+                attributes: ['id', ['name', 'value']]
+            })
             
             // Ambil Column
             let coloumn = Object.keys(await user.rawAttributes);
+            coloumn.push('class')
 
             // Column yang tidak ingin ditampilkan
             const without = ['id', 'createdat', 'updatedat'];
@@ -63,7 +80,9 @@ module.exports = {
                 module: moduleLibrary,
                 name: req.user.email,
                 as: [
-                    moduleLibrary.as({target: 'name', as: 'identifer'})
+                    moduleLibrary.as({target: 'name', as: 'identifer'}),
+                    moduleLibrary.as({target: 'class', type: 'select', value: resultClass}),
+                    
                 ],
                 buttonHeader: {
                     add: {
@@ -91,7 +110,7 @@ module.exports = {
     post: async function(req, res){
         try {
             // Load Modal member
-            let { user } = await model();
+            let { user, userClass } = await model();
             
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar
@@ -105,8 +124,17 @@ module.exports = {
             // Jika Ada
             if (validation > 0) throw new respon2({code: 200, message: 'nisn already'});
 
-            // Buat User sesuai yang diinputkan
-            await user.create(req.body, {});
+            let resultClass = await userClass.findOne({
+                where: {
+                    id: req.body.class
+                }
+            });
+
+            if (!resultClass) throw new respon2({code: 200, message: 'invalid class'})
+
+            // // Buat User sesuai yang diinputkan
+            let resultUser = await user.create(req.body, {});
+            await resultClass.setUsers(resultUser);
             
             // Kirim Respon kepada user
             res.json(new respon2({message: 'successfully added user', type: true}))
@@ -126,27 +154,41 @@ module.exports = {
     // Put
     put: async function (req, res) {
         try {
-            let { user } = await model();
+            let { user, userClass } = await model();
             let entitasId = req.params.id;
     
             // Validation
             // Check Apakah user dengan id terkait ditemukan
-            let validation = await user.count({
-                where: {
-                    id: entitasId
-                },
-                raw: true
-            });
-    
-            // Jika user tidak ditemukan maka lempar pesan
-            if(validation <= 0) throw new respon2({message: 'user not found', code: 200})
-    
-            // Jika Ditemukan maka lanjutkan
-            await user.update(req.body, {
+            let validation = await user.findOne({
                 where: {
                     id: entitasId
                 }
-            })
+            });
+
+            // Jika user tidak ditemukan maka lempar pesan
+            if(validation <= 0) throw new respon2({message: 'user not found', code: 200})
+
+            let resultClass = await userClass.findOne({
+                where: {
+                    id: req.body.class
+                }
+            });
+
+            if (!resultClass) throw new respon2({code: 200, message: 'invalid class'})
+    
+    
+            // Jika Ditemukan maka lanjutkan
+            // let result = await user.update(req.body, {
+            //     where: {
+            //         id: entitasId
+            //     }
+            // });
+
+            // Hi
+            // await resultClass.setUsers(validation)
+            console.log(await validation.setClasses(resultClass))
+            // await resultClass.setUsers(result);
+            // console.log(validation)
     
             
             // Kirim Tanggapan
