@@ -1,29 +1,47 @@
 import {check} from './module.js'
-const url = window.location.pathname;
+let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
 
-// Memberi class active pada navbar
+// // // Memberi class active pada navbar \\ \\ \\ 
 const nav = document.querySelector('ul#accordionSidebar');
 const navActive = nav.getAttribute('navbaractive');
 const navList = document.querySelectorAll('#accordionSidebar > li');
+
 navList.forEach(function(element, index){
-  if(element.getAttribute('name') == navActive) {
-    element.classList.add(`active`)
-    const anak = element.children;
-    
-    if(anak.length > 1) {
-      const cucu = Array.from(anak[1].children[0].children);
-      anak[1].classList.add('show');
-      const path = window.location.pathname;
+  const children = element.children;
+  let url = window.location.pathname.split('/');
+
+  // Jika 2 slash
+  if(url.length > 2) {
+    let newUrl = `/${url[url.length - 1]}`;
+    if(newUrl == '/') newUrl = `/${url[url.length - 2]}`;
+  } else {
+    // Ambil Url lagi
+    url = window.location.pathname;
+  }
+
+  // Jika mempunyai 2 element anak berarti nav collaps
+  if( children.length > 1 ) {
+    const anak = children[children.length - 1];
+
+    // Jika mempunyai class
+    if(anak.matches('.collapse')) {
+      const cicit = anak.children[0].children;
       
-      cucu.forEach(function(e){
-        if(e.getAttribute('href') == path) {
-          e.classList.add('active')
+      // Lakukan Pengulangan
+      for ( let el of cicit ) {
+        if( el.getAttribute('href') ==  url ) {
+          anak.classList.add('show')
+          element.classList.add('active')
+          el.classList.add('active')
         }
-      })
+      }
     }
 
+  } else {
+    const anak = element.children[0];
+    if(anak.getAttribute('href') == url) element.classList.add('active');
   }
 });
 
@@ -268,3 +286,22 @@ $(document).on("click", '#deleteButton', function (event) {
 });
 
 // // // Akhir dari delete modal // // //
+
+
+
+
+
+
+
+
+// Menonaktifkan event enter pada element input form 
+const formControl = document.querySelectorAll('.form-control');
+formControl.forEach( function ( element ) {
+  element.addEventListener('keypress', function (event){
+    const code = event.keyCode;
+    if ( code === 13 ) {
+      event.preventDefault();
+      return false
+    }
+  })
+})

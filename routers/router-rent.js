@@ -69,7 +69,6 @@ Route.get("/", async function (req, res) {
         "order_officer_return",
       ],
       title: "Order list",
-      active: "order",
       name: officerEmail,
       module: moduleLibrary,
       role,

@@ -60,7 +60,6 @@ module.exports = {
                 modalwithout: [...without],
                 without: [...without, 'role'],
                 title: 'User',
-                active: 'user',
                 module: moduleLibrary,
                 name: req.user.email,
                 as: [

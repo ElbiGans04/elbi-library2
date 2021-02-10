@@ -55,7 +55,6 @@ module.exports = {
                 modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
                 without:['id', 'createdat', 'updatedat', 'book_type'],
                 title: 'Book',
-                active: 'book',
                 module: moduleLibrary,
                 name : email,
                 as: [
