@@ -16,7 +16,7 @@ module.exports = function ( sequelize ) {
         },
         
         password: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.BLOB('long'),
             allowNull: false,
         }
     }, {
