@@ -43,10 +43,7 @@ const respon2 = require("./controllers/respon");
 
   // // Isi Officer dan beri assosiasi
   // // v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0=
-  let password = moduleLibrary.encryp('123').toString('base64');
-  console.log(moduleLibrary.decryp(password))
-  // console.log(password)
-  // let officer1 = await officer.create({name: 'rhafael', email: 'rhafaelbijaksana04@gmail.com', password})
+  // let officer1 = await officer.create({name: 'rhafael', email: 'rhafaelbijaksana04@gmail.com', password:'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
   // let officer2 = await officer.create({name: 'elbi', email: 'elbijr2@gmail.com', password:'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
   
   // let role1 = await role.create({name: 'librarian'})
@@ -123,7 +120,7 @@ async function roleAuth(req, res, next) {
   try {
     let permission = {
       admin: ['/users', '/officer', '/class'],
-      librarian: ['/users', '/books', '/rent', '/return', '/class', '/officer']
+      librarian: '*'
     };
 
     let url = req.originalUrl;
@@ -141,12 +138,16 @@ async function roleAuth(req, res, next) {
     });
   
     // Jika Tidak Ditemukan
-    if(!findRole) new Error('Role Invalid');
+    if(!findRole) new Error('Role is Invalid');
     
-    // Logic
-    for(let val of permission[userROLE]) {
-      if(val, url.indexOf(val) >= 0) {
-        return next()
+    // Jika == * berarti lewati semua
+    if(permission[userROLE] == '*') {
+      return next()
+    } else {
+      for(let val of permission[userROLE]) {
+        if(val, url.indexOf(val) >= 0) {
+          return next()
+        }
       }
     }
 

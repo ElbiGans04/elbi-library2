@@ -201,7 +201,8 @@ if(buttonAction)
                   -let test = module.jajal(as, value);
                   -let file = test.type || 'input'
                   - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
-                  - let realName = test.target || value
+                  - let realName = test.target || value;
+                  - let defaultVal = test.defaultValue || `on`;
                   .form-group
                     if(file == 'file')
                       img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
@@ -211,7 +212,7 @@ if(buttonAction)
                         each val in test.value
                           option(value=val.id)=val.value
                     else
-                      input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
+                      input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`, data-show=`${defaultVal}`)
 
           .modal-footer
             button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close

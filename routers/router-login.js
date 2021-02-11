@@ -18,7 +18,7 @@ Route.post('/', async function (req, res) {
         let { email, password: password2 } = req.body;
 
         // Hashing
-        password2 = moduleLibrary.encryp(password2);
+        password2 = moduleLibrary.hashing(password2);
     
         let result = await officer.findOne({
             where: {
@@ -36,23 +36,22 @@ Route.post('/', async function (req, res) {
             raw: true
         });
 
-        console.log(result.password)
         if(!result) throw new Error(`accouunt not found`);
-        res.json({message: 'test', type: false, redirect: false})
-        // let {id, email: userEmail, password} = result;
-        // let roles = result['roles.name']
-        // if(password !== password2) throw new Error('password wrong')
+
+        let {id, email: userEmail, password} = result;
+        let roles = result['roles.name']
+        if(password !== password2) throw new Error('password wrong')
 
         
-        // const token = jwt.sign({id, email: userEmail, role: roles}, process.env.APP_PRIVATE_KEY, {
-        //     algorithm: 'RS256',
-        //     expiresIn: '1d'
-        // });
+        const token = jwt.sign({id, email: userEmail, role: roles}, process.env.APP_PRIVATE_KEY, {
+            algorithm: 'RS256',
+            expiresIn: '1d'
+        });
 
-        // res.cookie('token', token, {
-        //     maxAge: process.env.APP_MAX_AGE * 1000
-        // })
-        // res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
+        res.cookie('token', token, {
+            maxAge: process.env.APP_MAX_AGE * 1000
+        })
+        res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
         
     } catch (err) {
         console.log(err)

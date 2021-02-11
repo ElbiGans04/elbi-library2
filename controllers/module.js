@@ -95,6 +95,7 @@ module.exports = class {
     result.as = data.as || "";
     result.type = data.type || "input";
     result.value = data.value || null;
+    result.defaultValue = data.default || "on";
     result.showName =
       data.showName ||
       this.ambilKata(data.target, "_", { space: true, without: data.without });

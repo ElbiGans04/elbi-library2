@@ -64,6 +64,7 @@ Route.get('/', async function(req, res){
             as: [
                 moduleLibrary.as({target: 'name', as: 'identifer'}),
                 moduleLibrary.as({target: 'role', as: 'group', type: 'select', value: resultRole}),
+                moduleLibrary.as({target: 'password', default: 'off'}),
             ],
             buttonHeader: {
                 add: {
@@ -153,7 +154,7 @@ Route.post('/', async function(req, res){
         let result = await officer.create(req.body);
         await result.setRoles(validateRole)
         
-        res.json({message: 'success',})
+        res.json(new respon({message: 'managed to add officers', code: 200, type: true}))
     } catch (err) {
         console.log(err);
         const code = err.code || 200;
@@ -189,12 +190,16 @@ Route.put('/:id', async function(req, res){
 
         // Jika admin menambahkan role librarian
         if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200});    
+        
+        // Hashing
+        req.body.password = moduleLibrary.hashing(req.body.password);
 
         await officer.update(req.body, {
             where: {
                 id: userId
             }
         });
+
 
         await validate.setRoles(validateRole);
 
@@ -218,8 +223,15 @@ Route.delete('/:id', async function(req, res){
             }
         });
 
+        let resultRole = await result.getRoles({
+            raw: true
+        })
+
         // Jika user tidak ketemu
         if(!result) throw new respon({message: 'not found', code: 200});
+
+        // Jika admin ingin menghapus librarian
+        if(req.user.role == 'admin' && resultRole[0].name == 'librarian') throw new respon({ message : 'you dont have permission', code: 200})
 
         await officer.destroy({
             where : {
@@ -227,8 +239,6 @@ Route.delete('/:id', async function(req, res){
             }
         });
 
-
-        console.log(req.params.id)
         res.json({message: 'managed to remove the officer', type: true})
     
     } catch (err) {
