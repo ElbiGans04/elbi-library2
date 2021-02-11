@@ -11,11 +11,14 @@ const navList = document.querySelectorAll('#accordionSidebar > li');
 navList.forEach(function(element, index){
   const children = element.children;
   let url = window.location.pathname.split('/');
-
+  
   // Jika 2 slash
   if(url.length > 2) {
     let newUrl = `/${url[url.length - 1]}`;
+    // Jika huruf belakangnya /
     if(newUrl == '/') newUrl = `/${url[url.length - 2]}`;
+
+    url = newUrl;
   } else {
     // Ambil Url lagi
     url = window.location.pathname;
@@ -33,7 +36,6 @@ navList.forEach(function(element, index){
       for ( let el of cicit ) {
         if( el.getAttribute('href') ==  url ) {
           anak.classList.add('show')
-          element.classList.add('active')
           el.classList.add('active')
         }
       }
