@@ -42,10 +42,14 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            const { book } = await model();
+            const { book, catalog } = await model();
             const result = await book.findAll();
             const {id, email, role} = req.user;
 
+            let resultCatalog = await catalog.findAll({
+                raw: true,
+                attributes: ['id', ['name', 'value']]
+            });
 
             // Render 
             res.render('table', {
@@ -59,7 +63,8 @@ module.exports = {
                 name : email,
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
-                    moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]})
+                    moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
+                    moduleLibrary.as({target: 'catalog', as: 'identifer', data: resultCatalog }),
                 ],
                 buttonHeader: {
                     add: {

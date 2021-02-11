@@ -20,6 +20,8 @@ const indexRoute = require("./routers/router-index");
 const forgetRoute = require("./routers/router-forget");
 const classRoute = require("./routers/router-class");
 const officerRoute = require("./routers/router-officer");
+const catalogRoute = require("./routers/router-catalog");
+
 
 
 // // // Instalasi Project // // //
@@ -37,7 +39,7 @@ const modelIndex = require("./models/model-index");
 const respon2 = require("./controllers/respon");
 
 (async function() {
-  // let { sequelize, officer, role, userClass, user } = await modelIndex();
+  // let { sequelize, officer, role, userClass, user, catalog } = await modelIndex();
   // await sequelize.sync({force: true});
   
 
@@ -60,8 +62,11 @@ const respon2 = require("./controllers/respon");
   // let userClass1 = await userClass.create({name: '12 rpl 1'});
   // let userClass2 = await userClass.create({name: '12 rpl 2'});
 
-  // await userClass1.setUsers(user1)
-  // await userClass2.setUsers(user2)
+  // await userClass1.setUsers(user1);
+  // await userClass2.setUsers(user2);
+
+  // let catalog1 = await catalog.create({name: 'fantasy'});
+  // let catalog2 = await catalog.create({name: 'romance'});
 
   app.get("/", auth, indexRoute);
   app.use("/users", auth, roleAuth, memberRouter);
@@ -74,6 +79,7 @@ const respon2 = require("./controllers/respon");
 
   app.use("/class", auth, roleAuth, classRoute);
   app.use("/officer", auth, roleAuth, officerRoute);
+  app.use("/catalog", auth, roleAuth, catalogRoute);
   app.listen(port, function (err) {
     if (err) throw err;
     console.log(`Server telah dijalankan pada port ${port}`);
