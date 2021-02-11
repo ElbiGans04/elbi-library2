@@ -19,6 +19,7 @@ const rentRoute = require("./routers/router-rent");
 const indexRoute = require("./routers/router-index");
 const forgetRoute = require("./routers/router-forget");
 const classRoute = require("./routers/router-class");
+const officerRoute = require("./routers/router-officer");
 
 
 // // // Instalasi Project // // //
@@ -62,8 +63,6 @@ const respon2 = require("./controllers/respon");
   // await userClass1.setUsers(user1)
   // await userClass2.setUsers(user2)
 
-  
-
   app.get("/", auth, indexRoute);
   app.use("/users", auth, roleAuth, memberRouter);
   app.use("/books", auth, roleAuth, bookRouter);
@@ -73,8 +72,8 @@ const respon2 = require("./controllers/respon");
   app.use('/forget', forgetRoute);
 
 
-  app.use("/class", auth, classRoute)
-
+  app.use("/class", auth, roleAuth, classRoute);
+  app.use("/officer", auth, roleAuth, officerRoute);
   app.listen(port, function (err) {
     if (err) throw err;
     console.log(`Server telah dijalankan pada port ${port}`);
@@ -120,8 +119,8 @@ async function auth(req, res, next) {
 async function roleAuth(req, res, next) {
   try {
     let permission = {
-      admin: ['/users'],
-      librarian: ['/users', '/books', '/rent', '/return']
+      admin: ['/users', '/officer', '/class'],
+      librarian: ['/users', '/books', '/rent', '/return', '/class', '/officer']
     };
 
     let url = req.originalUrl;

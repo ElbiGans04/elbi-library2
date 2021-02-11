@@ -216,7 +216,7 @@ $(document).on('click', `#EditButton`, function (event) {
       if (result) {
         const { message, redirect, type } = result;
         alert(message);
-        window.location.reload();
+        // window.location.reload();
       }
     });
 });

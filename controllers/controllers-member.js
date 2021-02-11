@@ -178,17 +178,13 @@ module.exports = {
     
     
             // Jika Ditemukan maka lanjutkan
-            // let result = await user.update(req.body, {
-            //     where: {
-            //         id: entitasId
-            //     }
-            // });
+            let result = await user.update(req.body, {
+                where: {
+                    id: entitasId
+                }
+            });
 
-            // Hi
-            // await resultClass.setUsers(validation)
-            console.log(await validation.setClasses(resultClass))
-            // await resultClass.setUsers(result);
-            // console.log(validation)
+            await validation.setClasses(resultClass)
     
             
             // Kirim Tanggapan

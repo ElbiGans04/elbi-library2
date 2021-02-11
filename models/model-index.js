@@ -42,8 +42,8 @@ module.exports = async function () {
 
 
     // Assosiasi officer dengan role    
-    await role.belongsToMany(officer, { through: 'officer_role'});
-    await officer.belongsToMany(role, { through: 'officer_role'});
+    await role.belongsToMany(officer, { through: 'officer_role', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
+    await officer.belongsToMany(role, { through: 'officer_role', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
     
     // assosiasi user dengan class
     await userClass.belongsToMany(user, { through: 'user_class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});

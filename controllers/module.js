@@ -160,6 +160,14 @@ module.exports = class {
     hash.write(text, 'base64');
     return hash.digest('base64');
   }
+
+  decryp (text) {
+    return crypto.privateDecrypt(process.env.APP_PRIVATE_KEY, text);
+  }
+
+  encryp (text) {
+    return crypto.publicEncrypt(process.env.APP_PUBLIC_KEY, Buffer.from(text));
+  }
 }
 
 

@@ -3,7 +3,6 @@ const Route = express.Router();
 let model = require('../models/model-index');
 const ModuleTemplate = require('../controllers/module');
 const  moduleLibrary = new ModuleTemplate();
-const respon2 = require('../controllers/respon');
 const respon = require('../controllers/respon');
 
 
@@ -32,7 +31,7 @@ Route.get('/:id', async function(req, res){
     }
 });
 
-Route.get('/*', async function ( req, res ) {
+Route.get('/', async function ( req, res ) {
     try {
     
         // Import Model
