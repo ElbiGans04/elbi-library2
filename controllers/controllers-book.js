@@ -51,20 +51,36 @@ module.exports = {
                 attributes: ['id', ['name', 'value']]
             });
 
+
+            // COloumn without
+            let without = ['id', 'createdat', 'updatedat', 'book_type'];
+            let coloumn = Object.keys(await book.rawAttributes);
+            coloumn.push("catalog");
+
+            for(let el of result) {
+                let result = await el.getCatalogs({
+                    raw: true,
+                    attributes: ['id', ['name', 'title']]
+                });
+
+                el.dataValues.catalog = result[0];
+            }
+
+
             // Render 
             res.render('table', {
-                coloumn: Object.keys(await book.rawAttributes),
+                coloumn,
                 data: result,
                 role,
-                modalwithout:['id', 'createdat', 'updatedat', 'book_type'],
-                without:['id', 'createdat', 'updatedat', 'book_type'],
+                modalwithout:[...without],
+                without,
                 title: 'Book',
                 module: moduleLibrary,
                 name : email,
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
-                    moduleLibrary.as({target: 'catalog', as: 'identifer', data: resultCatalog }),
+                    moduleLibrary.as({target: 'catalog', as: 'identifer', type: 'select', value: resultCatalog }),
                 ],
                 buttonHeader: {
                     add: {
@@ -87,7 +103,8 @@ module.exports = {
 
     post: async function (req,res) {
         try {
-            let { book } = await model();
+            let { book, catalog } = await model();
+            let { catalog: userCatalog } = req.body;
 
             // Verification
             // check apakah buku dengan title tsb sudah ada
@@ -113,10 +130,22 @@ module.exports = {
     
                 // Tambahkan File, Karena file berada direq.file
                 req.body.book_image = req.file.buffer;
-            }
+            };
+
+            // Check apakah 
+            let resultCatalog = await catalog.findOne({
+                where: {
+                    id: userCatalog
+                }
+            });
+
+            // Jika tidak ada
+            if(!resultCatalog) throw new respon2({message: 'category is invalid', code: 200});
+
             
             // Buat
-            await book.create(req.body);
+            let book1 = await book.create(req.body);
+            await resultCatalog.setBooks(book1);
             
             // Beri respone
             res.json(new respon2({message: 'successfully added book', type: true, code: 200}))
@@ -134,20 +163,20 @@ module.exports = {
 
     put: async function (req, res) {
         try {
-            let { book } = await model();
+            let { book, catalog } = await model();
             let entitasId = req.params.id;
+            let { catalog: userCatalog } = req.body;
     
             // Verify
             // Validation
-            let validation = await book.findAll({
+            let validation = await book.findOne({
                 where: {
                     id: entitasId
-                },
-                raw: true
+                }
             });
     
             // Jika book tidak ditemukan
-            if(validation.length <= 0) throw new respon2({message: 'book not found', code: 200})
+            if(!validation) throw new respon2({message: 'book not found', code: 200})
 
             
             // Tambahkan File, Karena file berada direq.file
@@ -159,12 +188,25 @@ module.exports = {
                 req.body.book_image = req.file.buffer;
             }
 
+            // Check apakah 
+            let resultCatalog = await catalog.findOne({
+                where: {
+                    id: userCatalog
+                }
+            });
+            
+            // Jika tidak ada
+            if(!resultCatalog) throw new respon2({message: 'category is invalid', code: 200});
+
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
                 where: {
                     id: entitasId
                 }
-            })
+            });
+            
+            await validation.setCatalogs(resultCatalog)
+            // await resultCatalog.setBooks(validation);
     
     
             res.json(new respon2({message: 'success', type: true, code: 200}))
@@ -187,7 +229,7 @@ module.exports = {
             
             // Verify
             // Validation
-            let validation = await book.findAll({
+            let validation = await book.count({
                 where: {
                     id
                 },
@@ -195,7 +237,7 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation.length <= 0 ) throw new respon2({message: 'book not found', code: 200});
+            if ( validation <= 0) throw new respon2({message: 'book not found', code: 200});
     
             // Hapus book
             await book.destroy({
