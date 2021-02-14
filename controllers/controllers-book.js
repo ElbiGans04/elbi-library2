@@ -42,11 +42,11 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            const { book, catalog } = await model();
+            const { book, category } = await model();
             const result = await book.findAll();
             const {id, email, role} = req.user;
 
-            let resultCatalog = await catalog.findAll({
+            let resultCategory = await category.findAll({
                 raw: true,
                 attributes: ['id', ['name', 'value']]
             });
@@ -55,15 +55,15 @@ module.exports = {
             // COloumn without
             let without = ['id', 'createdat', 'updatedat', 'book_type'];
             let coloumn = Object.keys(await book.rawAttributes);
-            coloumn.push("catalog");
+            coloumn.push(`category`);
 
             for(let el of result) {
-                let result = await el.getCatalogs({
+                let result = await el.getCategories({
                     raw: true,
                     attributes: ['id', ['name', 'title']]
                 });
 
-                el.dataValues.catalog = result[0];
+                el.dataValues.category = result[0];
             }
 
 
@@ -80,7 +80,7 @@ module.exports = {
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
-                    moduleLibrary.as({target: 'catalog', as: 'identifer', type: 'select', value: resultCatalog }),
+                    moduleLibrary.as({target: 'category', as: 'identifer', type: 'select', value: resultCategory }),
                 ],
                 buttonHeader: {
                     add: {
@@ -103,8 +103,8 @@ module.exports = {
 
     post: async function (req,res) {
         try {
-            let { book, catalog } = await model();
-            let { catalog: userCatalog } = req.body;
+            let { book, category } = await model();
+            let { category: usercategory } = req.body;
 
             // Verification
             // check apakah buku dengan title tsb sudah ada
@@ -133,19 +133,19 @@ module.exports = {
             };
 
             // Check apakah 
-            let resultCatalog = await catalog.findOne({
+            let resultCategory = await category.findOne({
                 where: {
-                    id: userCatalog
+                    id: usercategory
                 }
             });
 
             // Jika tidak ada
-            if(!resultCatalog) throw new respon2({message: 'category is invalid', code: 200});
+            if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
 
             
             // Buat
             let book1 = await book.create(req.body);
-            await resultCatalog.setBooks(book1);
+            await resultCategory.setBooks(book1);
             
             // Beri respone
             res.json(new respon2({message: 'successfully added book', type: true, code: 200}))
@@ -163,10 +163,9 @@ module.exports = {
 
     put: async function (req, res) {
         try {
-            let { book, catalog } = await model();
+            let { book, category } = await model();
             let entitasId = req.params.id;
-            let { catalog: userCatalog } = req.body;
-    
+            let { category: userCategory } = req.body; 
             // Verify
             // Validation
             let validation = await book.findOne({
@@ -189,14 +188,14 @@ module.exports = {
             }
 
             // Check apakah 
-            let resultCatalog = await catalog.findOne({
+            let resultCategory = await category.findOne({
                 where: {
-                    id: userCatalog
+                    id: userCategory
                 }
             });
             
             // Jika tidak ada
-            if(!resultCatalog) throw new respon2({message: 'category is invalid', code: 200});
+            if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
 
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
@@ -205,8 +204,7 @@ module.exports = {
                 }
             });
             
-            await validation.setCatalogs(resultCatalog)
-            // await resultCatalog.setBooks(validation);
+            await validation.setCategories(resultCategory)
     
     
             res.json(new respon2({message: 'success', type: true, code: 200}))

@@ -39,7 +39,7 @@ const modelIndex = require("./models/model-index");
 const respon2 = require("./controllers/respon");
 
 (async function() {
-  // let { sequelize, officer, role, userClass, user, catalog } = await modelIndex();
+  // let { sequelize, officer, role, userClass, user, category } = await modelIndex();
   // await sequelize.sync({force: true});
   
 
@@ -65,8 +65,8 @@ const respon2 = require("./controllers/respon");
   // await userClass1.setUsers(user1);
   // await userClass2.setUsers(user2);
 
-  // let catalog1 = await catalog.create({name: 'fantasy'});
-  // let catalog2 = await catalog.create({name: 'romance'});
+  // let category1 = await category.create({name: 'fantasy'});
+  // let category2 = await category.create({name: 'romance'});
 
   app.get("/", auth, indexRoute);
   app.use("/users", auth, roleAuth, memberRouter);
