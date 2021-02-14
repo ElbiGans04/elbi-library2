@@ -1,3 +1,59 @@
+export function navActive () {  
+  // // // Memberi class active pada navbar \\ \\ \\ 
+  const navList = document.querySelectorAll('#accordionSidebar > li');
+
+  navList.forEach(function(element, index){
+    const children = element.children;
+    
+    // Escape url
+    let url = escapeUrl(window.location.pathname);
+  
+    // Jika mempunyai 2 element anak berarti nav collaps
+    if( children.length > 1 ) {
+      const anak = children[children.length - 1];
+  
+      // Jika mempunyai class
+      if(anak.matches('.collapse')) {
+        const cicit = anak.children[0].children;
+        
+        // Lakukan Pengulangan
+        for ( let el of cicit ) {
+          let newUrl = el.getAttribute('href');
+
+          if(newUrl) {
+            let elUrl = escapeUrl(newUrl);
+            if( elUrl ==  url ) {
+              anak.classList.add('show')
+              el.classList.add('active')
+            }
+          }
+        }
+      }
+  
+    } else {
+      const anak = element.children[0];
+      if(anak.getAttribute('href') == url) element.classList.add('active');
+    }
+  });
+}
+
+export function escapeUrl (url) {
+  let result = url.split('/');
+  // Jika 2 slash
+  if(result.length >= 2) {
+    let newresult = `/${result[result.length - 1]}`;
+    // Jika huruf belakangnya /
+    if(newresult == '/') newresult = `/${result[result.length - 2]}`;
+
+    result = newresult;
+  } else {
+    // Ambil result lagi
+    result = window.location.pathname;
+  };
+  
+  return result
+} 
+
 export function check(result) {
   if (!result.ok) {
     alert(result.statusText);
@@ -34,4 +90,25 @@ export function validateEmail(email) {
 export function validate(text) {
   let regex = /^[a-zA-Z0-9]*$/;
   return regex.test(text);
+}
+
+export function getRows(all) {
+  let thead = document.querySelectorAll('#tableUtama thead > tr > th');
+  let tbody = document.querySelectorAll('#tableUtama tbody tr');
+  let result = [];
+
+  tbody.forEach(function(el, idx) {
+    let cell = Array.from(el.children);
+    let newResult = {};
+
+    thead.forEach(function(ell, idxx){
+      if(ell.getAttribute('name') && cell[idxx].children.length == 0) {
+        newResult[ell.textContent] = cell[idxx].textContent
+      }
+    });
+
+    result.push(newResult);
+  })
+
+  return result
 }

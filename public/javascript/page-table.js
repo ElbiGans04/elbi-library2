@@ -1,59 +1,24 @@
-import {check} from './module.js'
+import {check, getRows, navActive} from './module.js'
 let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
-
-// // // Memberi class active pada navbar \\ \\ \\ 
 const nav = document.querySelector('ul#accordionSidebar');
-const navActive = nav.getAttribute('navbaractive');
-const navList = document.querySelectorAll('#accordionSidebar > li');
+const all = getRows();
 
-navList.forEach(function(element, index){
-  const children = element.children;
-  let url = window.location.pathname.split('/');
-  
-  // Jika 2 slash
-  if(url.length > 2) {
-    let newUrl = `/${url[url.length - 1]}`;
-    // Jika huruf belakangnya /
-    if(newUrl == '/') newUrl = `/${url[url.length - 2]}`;
+// Beri kelas pada nav yang aktif
+navActive()
 
-    url = newUrl;
-  } else {
-    // Ambil Url lagi
-    url = window.location.pathname;
-  }
-
-  // Jika mempunyai 2 element anak berarti nav collaps
-  if( children.length > 1 ) {
-    const anak = children[children.length - 1];
-
-    // Jika mempunyai class
-    if(anak.matches('.collapse')) {
-      const cicit = anak.children[0].children;
-      
-      // Lakukan Pengulangan
-      for ( let el of cicit ) {
-        if( el.getAttribute('href') ==  url ) {
-          anak.classList.add('show')
-          el.classList.add('active')
-        }
-      }
-    }
-
-  } else {
-    const anak = element.children[0];
-    if(anak.getAttribute('href') == url) element.classList.add('active');
-  }
-});
 
 /// Datatables inisialisasi // // // 
-if(navActive == 'user' || navActive == 'order') {
+let jajal = nav.querySelector('.active');
+let active = jajal.dataset.show || 1;
+
+if(active == 1) {
   var t = $('#tableUtama').DataTable( {
     "columnDefs": [ {
       "searchable": false,
       "orderable": false,
-      "targets": [0, 3]
+      "targets": [0, columnLength]
       } ],
       "order": [[ 1, 'asc' ]]
   } );
@@ -63,9 +28,20 @@ if(navActive == 'user' || navActive == 'order') {
         cell.innerHTML = i+1;
       } );
   } ).draw();
-} else if (navActive == 'book') {
-  function format ( d ) {
-    return `Publisher: ${d[5]}<br> Page Thickness: ${d[6]}<br> Isbn: ${d[7]}`
+} else if (active == 2) {
+  function format ( d, i ) {
+    let result = '';
+
+    // Ambil Rows saat ini
+    let newRows = getRows()[i];
+
+    for(let idx in d[i]) {
+     if(!newRows[idx]) {
+       result += `${idx}: ${d[i][idx]} <br>`
+     }
+    }
+    
+    return result
   }
   var dt = $('#tableUtama').DataTable( {
       columnDefs: [
@@ -83,7 +59,7 @@ if(navActive == 'user' || navActive == 'order') {
         },
         {
           visible: false,
-          targets: [6,7,8]
+          targets: [2,3,4,6,7,8]
         }
       ],
       order: [[3, "asc"]],
@@ -109,7 +85,7 @@ if(navActive == 'user' || navActive == 'order') {
       }
       else {
           tr.addClass( 'details' );
-          row.child( format( row.data() ) ).show();
+          row.child( format( all, tr.index() ) ).show();
 
           // Add to the 'open' array
           if ( idx === -1 ) {
@@ -125,7 +101,7 @@ if(navActive == 'user' || navActive == 'order') {
         } );
       } );
 } 
-/// Akhir Datatables inisialisasi // // // 
+// /// Akhir Datatables inisialisasi // // // 
 
 
 

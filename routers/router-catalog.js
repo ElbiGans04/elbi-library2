@@ -9,16 +9,16 @@ const respon = require('../controllers/respon');
 Route.get('/:id', async function(req, res){
     try {
             // Import Model
-            const { catalog } = await model();
+            const { category } = await model();
             const paramID = req.params.id;
             
-            const result = await catalog.findOne({
+            const result = await category.findOne({
                 where: {
                     id: paramID
                 }
             });
 
-            if(!result) throw new respon({message: 'catalog not found'});
+            if(!result) throw new respon({message: 'category not found'});
 
             // Jika ada
             
@@ -35,13 +35,13 @@ Route.get('/', async function ( req, res ) {
     try {
     
         // Import Model
-        const { catalog } = await model();
+        const { category } = await model();
 
         // Cari user yang rolenya bukan admin maupun librarian
-        let allClass = await catalog.findAll();
+        let allClass = await category.findAll();
         
         // Ambil Column
-        let coloumn = Object.keys(await catalog.rawAttributes);
+        let coloumn = Object.keys(await category.rawAttributes);
 
         // Column yang tidak ingin ditampilkan
         const without = ['id', 'createdat', 'updatedat'];
@@ -86,22 +86,22 @@ Route.get('/', async function ( req, res ) {
 Route.post('/', async function(req, res){
     try {
         // Import Model
-        const { catalog } = await model();
+        const { category } = await model();
         
         // Check Jika sudah ada
-        let validate = await catalog.count({
+        let validate = await category.count({
             where: {
                 name: req.body.name
             }
         });
     
-        if(validate > 0) throw new respon({message: 'catalog already', code: 200});
+        if(validate > 0) throw new respon({message: 'category already', code: 200});
 
         // Buat 
-        await catalog.create(req.body);
+        await category.create(req.body);
 
         // Kirim Respon Jika berhasil
-        res.json(new respon({message: 'managed to add catalog', type: true}));
+        res.json(new respon({message: 'managed to add category', type: true}));
 
     } catch (err) {
         console.log(err)
@@ -114,10 +114,10 @@ Route.post('/', async function(req, res){
 Route.put('/:id', async function(req, res){
     try {
         // Import Model
-        const { catalog } = await model();
+        const { category } = await model();
         const paramID = req.params.id;
 
-        const result = await catalog.count({
+        const result = await category.count({
             where: {
                 id: paramID
             }
@@ -127,7 +127,7 @@ Route.put('/:id', async function(req, res){
         if(result < 0 ) throw new respon({message: 'not found', code: 200})
 
         // Update
-        await catalog.update(req.body, {
+        await category.update(req.body, {
             where: {
                 id : paramID
             }
@@ -147,10 +147,10 @@ Route.put('/:id', async function(req, res){
 Route.delete('/:id', async function(req, res){
     try {
          // Import Model
-        const { catalog } = await model();
+        const { category } = await model();
         const paramID = req.params.id;
        
-        const result = await catalog.count({
+        const result = await category.count({
                 where: {
                     id: paramID
                 }
@@ -158,7 +158,7 @@ Route.delete('/:id', async function(req, res){
         
         if(result < 0) throw new respon({message: 'user not found'});
 
-        await catalog.destroy({
+        await category.destroy({
             where: {
                 id: paramID
             }

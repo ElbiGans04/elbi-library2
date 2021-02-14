@@ -20,7 +20,7 @@ const indexRoute = require("./routers/router-index");
 const forgetRoute = require("./routers/router-forget");
 const classRoute = require("./routers/router-class");
 const officerRoute = require("./routers/router-officer");
-const catalogRoute = require("./routers/router-catalog");
+const categoryRoute = require("./routers/router-catalog");
 
 
 
@@ -79,7 +79,7 @@ const respon2 = require("./controllers/respon");
 
   app.use("/class", auth, roleAuth, classRoute);
   app.use("/officer", auth, roleAuth, officerRoute);
-  app.use("/catalog", auth, roleAuth, catalogRoute);
+  app.use("/category", auth, roleAuth, categoryRoute);
   app.listen(port, function (err) {
     if (err) throw err;
     console.log(`Server telah dijalankan pada port ${port}`);

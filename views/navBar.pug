@@ -5,18 +5,18 @@ li.nav-item(name="user")
     #member.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
         .bg-white.py-2.collapse-inner.rounded
             h6.collapse-header Edit class or member
-            a.collapse-item(href='/users') List of library Users
-            a.collapse-item(href='/officer') List of officers
-            a.collapse-item(href='/class') User class
+            a.collapse-item(href='/users' data-show="1") List of library Users
+            a.collapse-item(href='/officer' data-show="1") List of officers
+            a.collapse-item(href='/class' data-show="1") User class
 li.nav-item(name="book")
     a.nav-link.collapsed(href='/users', data-toggle='collapse', data-target='#book', aria-expanded='true', aria-controls='collapseUtilities')
         i.fas.fa-book
         span Book catalog
     #book.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
         .bg-white.py-2.collapse-inner.rounded
-            h6.collapse-header Edit catalogs or books
-            a.collapse-item(href='/books') List of books
-            a.collapse-item(href='/catalog') List of catalog
+            h6.collapse-header Edit categories or books
+            a.collapse-item(href='/books' data-show="2") List of books
+            a.collapse-item(href='/category' data-show="1") List of categories
 li.nav-item(name="order")
     a.nav-link.collapsed(href='/order', data-toggle='collapse', data-target='#collapseUtilities', aria-expanded='true', aria-controls='collapseUtilities')
         i.fas.fa-shopping-cart
@@ -24,5 +24,5 @@ li.nav-item(name="order")
     #collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
         .bg-white.py-2.collapse-inner.rounded
             h6.collapse-header rent or return books
-            a.collapse-item(href='/rent') Rent 
+            a.collapse-item(href='/rent' data-show="2") Rent 
             a.collapse-item(href='/rent/return') Return 
