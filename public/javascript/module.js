@@ -94,21 +94,77 @@ export function validate(text) {
 
 export function getRows(all) {
   let thead = document.querySelectorAll('#tableUtama thead > tr > th');
-  let tbody = document.querySelectorAll('#tableUtama tbody tr');
+  let tbody = document.querySelectorAll('#tableUtama tbody tr[data-id]');
   let result = [];
-
+  
   tbody.forEach(function(el, idx) {
     let cell = Array.from(el.children);
     let newResult = {};
-
+    
     thead.forEach(function(ell, idxx){
       if(ell.getAttribute('name') && cell[idxx].children.length == 0) {
         newResult[ell.textContent] = cell[idxx].textContent
       }
     });
-
+    
     result.push(newResult);
   })
-
+  
   return result
+}
+
+export function getIndex (el) {
+  let tbody = document.querySelectorAll('#tableUtama tbody tr[data-id]');
+  let i = 0;
+  for(let e of tbody) {
+    if(e == el) return i
+    i++
+  }
+}
+
+export function validasi (element) {
+
+  // Definisi Index
+  let index = 0;
+
+  // Melooping input element
+  for (let el of element) {
+
+    // Mengambil Data yang diperlukan
+    let type = el.getAttribute('type');
+    let name = el.getAttribute('name');
+    let small = el.nextElementSibling;
+
+    // Pastikan element input bukan type checkbox
+    if (type !== 'checkbox') {
+
+      // Jika Input Type Email maka gunakan validate type email
+      let test = type == 'email' ? validateEmail(el.value) : validate(el.value);
+
+      // Jika ada input yang tidak diisi atau yang tidak lolos regex maka return false, 
+      // tampilkan element small, dan setel button submit ke false
+      if(el.value.length <= 0 || !test) {
+        small.classList.remove('d-none');
+        small.textContent = `${name} is invalid`;
+        submit.setAttribute('disabled', '')
+
+        // Kembalikan Index sebagai penanda input ke berapa yang tidak valid
+        return index
+      
+      // Jika ada element yang lolos maka hilangkan pesan kesalahan errornya
+      } else {
+        small.classList.add('d-none')
+      }
+    
+    }
+
+
+    // Tambahkan Index setiap looping
+    index++
+
+  }
+
+  // Jika sudah sampai sini maka berarti semua input telah lolos test dan return true
+  return true
+
 }

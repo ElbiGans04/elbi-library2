@@ -24,7 +24,14 @@ module.exports = {
 
             // Jika ditemukan convert image ke base 64
             result.dataValues.book_image = result.dataValues.book_image.toString('base64')
-        
+            
+            // Ubah Tanggal
+            let year = result.dataValues.book_launching.slice(0,4)
+            let month = result.dataValues.book_launching.slice(4,6)
+            let day = result.dataValues.book_launching.slice(6,8);
+            result.dataValues.book_launching = `${year}-${month}-${day}`;
+            
+            console.log(result.dataValues.book_launching)
     
             // Jika Ada maka Kirimkan
             res.json(new respon2({message: 'success', code: 200, data: result}));
@@ -58,13 +65,18 @@ module.exports = {
             coloumn.push(`category`);
 
             for(let el of result) {
+                let year = el.dataValues.book_launching.slice(0,4)
+                let month = el.dataValues.book_launching.slice(4,6)
+                let day = el.dataValues.book_launching.slice(6,8);
+                el.dataValues.book_launching = `${year}-${month}-${day}`
+
                 let result = await el.getCategories({
                     raw: true,
                     attributes: ['id', ['name', 'title']]
                 });
 
                 el.dataValues.category = result[0];
-            }
+            };
 
 
             // Render 
@@ -80,6 +92,7 @@ module.exports = {
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
+                    moduleLibrary.as({target: 'book_launching', type: 'date'}),
                     moduleLibrary.as({target: 'category', as: 'identifer', type: 'select', value: resultCategory }),
                 ],
                 buttonHeader: {
@@ -120,6 +133,14 @@ module.exports = {
             // Jika Ada
             if (validation > 0) throw new respon2({code: 200, message: 'book already'});
 
+
+            // Pisahkan format launching
+            let {book_launching} = req.body
+            if ( book_launching.split('-').length != 3 ) throw new respon2({code: 200, message: 'date is invalid'});
+            req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
+
+
+
             // Buat File Format
             if(!req.file) {
                 throw new respon2({code: 200, message: 'please insert image'})
@@ -145,10 +166,10 @@ module.exports = {
             
             // Buat
             let book1 = await book.create(req.body);
-            await resultCategory.setBooks(book1);
+            await book1.setCategories(resultCategory);
             
             // Beri respone
-            res.json(new respon2({message: 'successfully added book', type: true, code: 200}))
+            res.json(new respon2({message: 'successfully added book', code: 200}))
 
         } catch (err) {
             console.log(err)

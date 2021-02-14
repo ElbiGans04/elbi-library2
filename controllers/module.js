@@ -43,6 +43,7 @@ module.exports = class {
   // Ambil Kelas
   ambilKata(word, pemisah, option) {
     let word2 = word.split(pemisah);
+    if(option.reverse) word2 = word2.reverse();
   
     let result = "";
   
@@ -162,13 +163,6 @@ module.exports = class {
     return hash.digest('base64');
   }
 
-  decryp (text) {
-    return crypto.privateDecrypt(process.env.APP_PRIVATE_KEY, text);
-  }
-
-  encryp (text) {
-    return crypto.publicEncrypt(process.env.APP_PUBLIC_KEY, Buffer.from(text));
-  }
 }
 
 

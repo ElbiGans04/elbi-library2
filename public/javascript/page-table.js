@@ -1,4 +1,4 @@
-import {check, getRows, navActive} from './module.js'
+import {check, getIndex, getRows, navActive} from './module.js'
 let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
@@ -31,7 +31,6 @@ if(active == 1) {
 } else if (active == 2) {
   function format ( d, i ) {
     let result = '';
-
     // Ambil Rows saat ini
     let newRows = getRows()[i];
 
@@ -40,6 +39,7 @@ if(active == 1) {
        result += `${idx}: ${d[i][idx]} <br>`
      }
     }
+
     
     return result
   }
@@ -72,7 +72,7 @@ if(active == 1) {
     var tr = $(this).closest('tr');
       // Mendapatkan Datatables API
       var row = dt.row( tr );
-      
+      let index = getIndex(tr[0]);
       // Check Apakah baris sudah dibuka
       var idx = $.inArray( tr.attr('id'), detailRows );
       
@@ -85,7 +85,7 @@ if(active == 1) {
       }
       else {
           tr.addClass( 'details' );
-          row.child( format( all, tr.index() ) ).show();
+          row.child( format( all, index ) ).show();
 
           // Add to the 'open' array
           if ( idx === -1 ) {
@@ -288,4 +288,5 @@ formControl.forEach( function ( element ) {
       return false
     }
   })
-})
+});
+
