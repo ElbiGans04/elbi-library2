@@ -131,7 +131,6 @@ $(document).on("click", '#addButton', function (event) {
         }
       });
   } else {
-    console.log(test)
     this.setAttribute('disabled', '')
   }
 });
@@ -219,7 +218,7 @@ $(document).on('click', `#EditButton`, function (event) {
 });
 
 
-// Event Ketika User Mengupload
+// Tampilkan gambar saat user upload
 $(document).on('change', '#inputUpdateImage, #inputAddImage', function(event){
   const gambar = this.parentElement.children[0];
   console.log('check')
@@ -247,9 +246,6 @@ $(document).on('change', '#inputUpdateImage, #inputAddImage', function(event){
 
 
 // // // Delete Modal // // // 
-const tombolDelete = document.querySelectorAll(
-  "#tableUtama > tbody > tr > td:last-child > .buttonActionDelete"
-);
 $(document).on("click", '.buttonActionDelete', function (event) {
   $('#deleteModal').modal('show')
   const row = $(event.target).closest('tr')[0];

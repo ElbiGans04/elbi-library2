@@ -26,3 +26,11 @@ li.nav-item(name="order")
             h6.collapse-header rent or return books
             a.collapse-item(href='/rent' data-show="2") Rent 
             a.collapse-item(href='/rent/return') Return 
+li.nav-item(name="report")
+    a.nav-link.collapsed(href='/report', data-toggle='collapse', data-target='#problem', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-exclamation-triangle
+        span Problem
+    #problem.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Problem
+            a.collapse-item(href='/' data-show="1") Damaged or lost books

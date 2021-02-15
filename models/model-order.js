@@ -13,8 +13,8 @@ module.exports = async function (sequelize) {
     },
 
     return_status: {
-      type: DataTypes.STRING,
-      defaultValue: 'not been restored'
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
 
     order_day: {

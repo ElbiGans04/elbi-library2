@@ -187,6 +187,8 @@ module.exports = {
             let { book, category } = await model();
             let entitasId = req.params.id;
             let { category: userCategory } = req.body; 
+
+            
             // Verify
             // Validation
             let validation = await book.findOne({
@@ -217,6 +219,11 @@ module.exports = {
             
             // Jika tidak ada
             if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
+
+            // Pisahkan format launching
+            let {book_launching} = req.body
+            if ( book_launching.split('-').length != 3 ) throw new respon2({code: 200, message: 'date is invalid'});
+            req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
 
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {

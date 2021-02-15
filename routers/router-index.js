@@ -1,19 +1,23 @@
 const express = require('express');
 const Route = express.Router();
 const tabel = require('../models/model-index');
+let Template = require('../controllers/module');
+let moduleLibrary = new Template();
 
 Route.get('/', async function(req, res){
     let { role, id: userID } = req.user;
-    let {order, user} = await tabel();
-    let Template = require('../controllers/module');
-    let moduleLibrary = new Template();
+    let {order, user, officer} = await tabel();
+
+
+    // Cari Orderan dengan 
     const resultActive = await order.findAll({
       where: {
-        return_status: false
+        return_status: 'has been returned'
       },
       attributes: [`id`],
       raw: true, 
     });
+
     
     const resultUser = await user.findAll({
       attributes: ['name', 'id'],
@@ -52,7 +56,7 @@ Route.get('/', async function(req, res){
       lateToPay: lateToPay.length,
       orderDay,
       users: resultUser,
-      name,
+      name: req.user.email,
     })
 });
 

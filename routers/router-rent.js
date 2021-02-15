@@ -34,18 +34,23 @@ Route.get("/", async function (req, res) {
 
     // Mengambil Data dari tabel relasi
     for (let value in allOlder) {
-      const result = await allOlder[value].getBook({
+
+      // Ubah Format waktu
+      let jam = new Date(allOlder[value].dataValues.order_date);
+      allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth()}-${jam.getDate()}`
+
+      // Ubah status
+      allOlder[value].dataValues.return_status = allOlder[value].dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
+
+
+      allOlder[value].dataValues.book_id = await allOlder[value].getBook({
         raw: true,
         attributes: ["id", ["book_title", "title"]],
       });
-      const result2 = await allOlder[value].getUser({
+      allOlder[value].dataValues.user_id = await allOlder[value].getUser({
         raw: true,
         attributes: ["id", ["name", `title`]],
       }); 
-
-
-      allOlder[value].dataValues.book_id = result;
-      allOlder[value].dataValues.user_id = result2;
     }
 
 
@@ -166,7 +171,7 @@ Route.post("/", async function (req, res) {
     // Kirim Respon
     res.json(
       new respon2({
-        message: codeTransaksi,
+        message: "managed to order the book",
         code: 200,
         type: true,
         redirect: true,
@@ -204,7 +209,7 @@ Route.delete("/", async function (req, res) {
 
     // Update
     await order.update(
-      { return_status: 'has been returned', order_officer_return: req.user.email },
+      { return_status: true, order_officer_return: req.user.email },
       {
         where: {
           [Op.and]: {
@@ -233,7 +238,7 @@ Route.get("/return", async function (req, res) {
     const dataOrder = await order.findAll({
       where: {
         [Op.not]: {
-          return_status: 'has been returned',
+          return_status: true,
         },
       },
     });

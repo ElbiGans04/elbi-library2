@@ -7,3 +7,11 @@ li.nav-item(name="user")
             h6.collapse-header Edit class or member
             a.collapse-item(href='/users' data-show="1") List of library Users
             a.collapse-item(href='/officer' data-show="1") List of officers
+li.nav-item(name="report")
+    a.nav-link.collapsed(href='/report', data-toggle='collapse', data-target='#member', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-exclamation-triangle
+        span Problem
+    #member.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Problem
+            a.collapse-item(href='/' data-show="1") Damaged or lost books
