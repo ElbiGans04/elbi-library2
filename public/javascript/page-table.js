@@ -324,4 +324,24 @@ function eventValidasi(formControl) {
   
     })
   });
-}
+};
+
+
+
+// Event Image Modal
+const imageModal = document.querySelectorAll('.image-modal');
+const modal = document.getElementById('imageModal');
+imageModal.forEach(function(element, index){
+  element.addEventListener('click', function(event){
+    const img = modal.children[0];
+    modal.style.display = 'flex'
+    // console.log(img)
+    img.setAttribute('src', this.getAttribute('src'))
+  })
+});
+
+
+// Event Close
+modal.children[1].addEventListener('click', function(event){
+  modal.style.display = 'none'
+});

@@ -101,6 +101,10 @@ Route.get("/", async function (req, res) {
           type: "select",
           value: resultMember,
         }),
+        moduleLibrary.as({
+          target: "order_date",
+          showName: "Date Order"
+        }),
       ],
       buttonAction: false,
     });
@@ -263,6 +267,7 @@ Route.get("/return", async function (req, res) {
       dataOrder,
       show: [`member_id`, `book_id`],
       moduleCustom: moduleLibrary,
+      name: req.user.email
     });
   } catch (err) {
     console.log(err);

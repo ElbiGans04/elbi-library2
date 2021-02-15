@@ -111,7 +111,7 @@ head
                           -let dataAs = dataModule.as || ''
                           if(dataModule.type == 'file')
                             td(data-as=dataAs)
-                              img.img-thumbnail(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
+                              img.img-thumbnail.image-modal(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
                           else
                             //- - console.log(rows)
                             if(typeof rows == 'object')
@@ -250,7 +250,9 @@ if(buttonAction)
         button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
         button#addButton.btn.btn-primary(type='button' aria-label='add button') Add
 
-
+div#imageModal 
+  img(src="", alt="")
+  span.close &times;
 // Script Dasar
 script(src='/assets/template/vendor/jquery/jquery.min.js')
 script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')

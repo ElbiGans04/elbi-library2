@@ -60,17 +60,7 @@ if(action) {
                 $(tableInformation).children('td.finesDay').html(`${days} Day`)
                 $(tableInformation).children('td.feeFInes').html(`${fee} + ${denda}`)
                 $(tableInformation).children('td.total').html(`<strong>Rp. ${total}</strong>`)
-               
-                // book_id: {title: "Attack On Titan", id: 1, fines: 1000}
-                // id: 4
-                // id_transaction: "8aiHB6jx2m9wZeArfLrPvpXshW"
-                // order_date: 1613376930381
-                // order_day: 5
-                // order_officer_buy: "rhafaelbijaksana04@gmail.com"
-                // order_officer_return: null
-                // order_price: "1000"
-                // return_status: false
-                // user_id: {title: "Jacqueline Upton", id: 1}
+            
             });
     });
     // Book
@@ -102,7 +92,7 @@ if(action) {
         $(tableInformation).children('td.total').html(`Rp. ${total}`)
     
         transaksi.setAttribute('value', id)
-    })
+    });
 
 }    
 
