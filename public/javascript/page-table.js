@@ -1,4 +1,4 @@
-import {check, getIndex, getRows, navActive} from './module.js'
+import {check, getIndex, getRows, navActive, validasi} from './module.js'
 let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
@@ -8,7 +8,7 @@ const all = getRows();
 // Beri kelas pada nav yang aktif
 navActive()
 
-
+// console.log($('#addModal .modal-body form input'))
 /// Datatables inisialisasi // // // 
 let jajal = nav.querySelector('.active');
 let active = jajal.dataset.show || 1;
@@ -111,23 +111,29 @@ $(document).on('click', '#addActionButton', function(event){
 });
 $(document).on("click", '#addButton', function (event) {
   event.preventDefault();
+  let allInput = this.parentElement.previousElementSibling.querySelectorAll('input');
   
-  const formElement = $("#addModal .modal-body form")[0];
-  const form = new FormData(formElement);
-
-  fetch(url, {
-    method: "post",
-    body: form,
-  })
-    .then((result) => check(result))
-    .then((result) => {
-      if (result) {
-        console.log(result)
-        const { message, redirect, type } = result;
-        alert(message);
-        if(type) window.location.reload();
-      }
-    });
+  let test = validasi(allInput, this);
+  if(test === true) {
+    const formElement = $("#addModal .modal-body form")[0];
+    const form = new FormData(formElement);
+  
+    fetch(url, {
+      method: "post",
+      body: form,
+    })
+      .then((result) => check(result))
+      .then((result) => {
+        if (result) {
+          const { message, redirect, type } = result;
+          alert(message);
+          if(type) window.location.reload();
+        }
+      });
+  } else {
+    console.log(test)
+    this.setAttribute('disabled', '')
+  }
 });
 // // // Akhir Add Modal // // // 
 
@@ -188,21 +194,28 @@ $(document).on('click', `#EditButton`, function (event) {
   const formElement = document.querySelector(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form "
   );
-  const id = formElement.dataset.id;
 
-  const form = new FormData(formElement);
-  fetch(`${url}/${id}`, {
-    method: "put",
-    body: form,
-  })
-    .then((result) => check(result))
-    .then((result) => {
-      if (result) {
-        const { message, redirect, type } = result;
-        alert(message);
-        // window.location.reload();
-      }
-    });
+  const inputElement = formElement.querySelectorAll('input');
+  let test = validasi(inputElement, this)
+  if(test === true) {
+    const id = formElement.dataset.id;
+  
+    const form = new FormData(formElement);
+    fetch(`${url}/${id}`, {
+      method: "put",
+      body: form,
+    })
+      .then((result) => check(result))
+      .then((result) => {
+        if (result) {
+          const { message, redirect, type } = result;
+          alert(message);
+          if(type) window.location.reload();
+        }
+      });
+  } else {
+    this.setAttribute('disabled', '')
+  }
 });
 
 
@@ -279,7 +292,7 @@ $(document).on("click", '#deleteButton', function (event) {
 
 
 // Menonaktifkan event enter pada element input form 
-const formControl = document.querySelectorAll('.form-control');
+const formControl = document.querySelectorAll('.modal-body form .form-control');
 formControl.forEach( function ( element ) {
   element.addEventListener('keypress', function (event){
     const code = event.keyCode;
@@ -287,6 +300,32 @@ formControl.forEach( function ( element ) {
       event.preventDefault();
       return false
     }
-  })
+  });
+
 });
 
+
+// memberi event validasi
+
+let formControlAdd = document.querySelectorAll('#addModal .modal-body form input');
+let formControlEdit = document.querySelectorAll('#editModal .modal-body form input');
+eventValidasi(formControlAdd)
+eventValidasi(formControlEdit)
+
+function eventValidasi(formControl) {
+  formControl.forEach(function(element, index){
+    element.addEventListener('keyup', function(event){
+      let footer = this.parentElement.parentElement.parentElement.nextElementSibling.children;
+      let button = footer[footer.length - 1];
+      let test = validasi(formControl, button);
+      
+      // Jika true
+      if(test === true) {
+        button.removeAttribute('disabled');
+      } else {
+        button.setAttribute('disabled', '');
+      }
+  
+    })
+  });
+}

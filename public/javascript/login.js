@@ -1,4 +1,3 @@
-import { check } from './module';
 import { validasi } from '/assets/javascript/module.js';
 const submit = document.querySelector('button[type=submit]');
 const formElement = document.querySelector('form.user');

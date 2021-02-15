@@ -169,7 +169,7 @@ module.exports = {
             await book1.setCategories(resultCategory);
             
             // Beri respone
-            res.json(new respon2({message: 'successfully added book', code: 200}))
+            res.json(new respon2({message: 'successfully added book', type: true, code: 200}))
 
         } catch (err) {
             console.log(err)

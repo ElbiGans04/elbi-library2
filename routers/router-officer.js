@@ -65,6 +65,8 @@ Route.get('/', async function(req, res){
                 moduleLibrary.as({target: 'name', as: 'identifer'}),
                 moduleLibrary.as({target: 'role', as: 'group', type: 'select', value: resultRole}),
                 moduleLibrary.as({target: 'password', default: 'off'}),
+                moduleLibrary.as({target: 'email', type: "email"}),
+                
             ],
             buttonHeader: {
                 add: {
@@ -199,11 +201,9 @@ Route.put('/:id', async function(req, res){
                 id: userId
             }
         });
-
-
         await validate.setRoles(validateRole);
 
-        res.json({message: 'hi', type: false})
+        res.json({message: 'successfully updated the attendant', type: true})
     
     } catch (err) {
         console.log(err);

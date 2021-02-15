@@ -213,6 +213,7 @@ if(buttonAction)
                           option(value=val.id)=val.value
                     else
                       input.form-control(id=`inputUpdate${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`, data-show=`${defaultVal}`)
+                    small.form-text.text-danger.d-none
 
           .modal-footer
             button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
@@ -230,7 +231,7 @@ if(buttonAction)
           each value in coloumn
             if(hello(value, modalwithout))
               -let test = module.jajal(as, value);
-              -let file = test.type || 'input'
+              -let file = test.type || 'text'
               -let selectValue = test.value || 'input'
               - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
               - let realName = test.target || value
@@ -244,7 +245,7 @@ if(buttonAction)
                       option(value=rows.id)=rows.value
                 else 
                   input.form-control(id=`inputAdd${name}`, type=file, aria-describedby=`${name}Help`, placeholder=`Enter ${name}` name=`${realName}` autocomplate=`off`)
-
+                small.form-text.text-danger.d-none
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
         button#addButton.btn.btn-primary(type='button' aria-label='add button') Add
