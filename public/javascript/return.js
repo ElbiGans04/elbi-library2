@@ -41,8 +41,36 @@ if(action) {
                     option += `<option value="${id}" data-transaction="${e.id_transaction}">${title}</option>`
                 }) 
                 selectBook.innerHTML = option;
-                transaksi.setAttribute('value', result[0].id_transaction)
-                updateDisplay()
+                transaksi.setAttribute('value', result[0].id_transaction);
+
+                let date = parseInt(result[0].order_date);
+                let waktu = new Date(date);
+                waktu.setDate(waktu.getDate() + parseInt(result[0].order_day))
+                let {days} = getTime(waktu);
+                if(days < 0) days = 0
+                let denda = days * result[0].book_id.fines;
+                let fee = result[0].order_price * result[0].order_day;
+                let total = parseInt(fee) + parseInt(denda);    
+
+                console.log(result[0].book_id.fines)
+                console.log(result[0].book_id)
+                $(tableInformation).children('td.fee').html(result[0].order_price)
+                $(tableInformation).children('td.feeDay').html(`${result[0].order_day} Day`)
+                // $(tableInformation).children('td.fines').html(result.book_id.fines)
+                $(tableInformation).children('td.finesDay').html(`${days} Day`)
+                $(tableInformation).children('td.feeFInes').html(`${fee} + ${denda}`)
+                $(tableInformation).children('td.total').html(`<strong>Rp. ${total}</strong>`)
+               
+                // book_id: {title: "Attack On Titan", id: 1, fines: 1000}
+                // id: 4
+                // id_transaction: "8aiHB6jx2m9wZeArfLrPvpXshW"
+                // order_date: 1613376930381
+                // order_day: 5
+                // order_officer_buy: "rhafaelbijaksana04@gmail.com"
+                // order_officer_return: null
+                // order_price: "1000"
+                // return_status: false
+                // user_id: {title: "Jacqueline Upton", id: 1}
             });
     });
     // Book
@@ -56,6 +84,9 @@ if(action) {
     
     
         // Logic
+        date = parseInt(date);
+        let waktu = new Date(date);
+        waktu.setDate(waktu.getDate() + parseInt(day))
         let {days} = getTime(date);
         if(days < 0) days = 0
         let denda = days * fines;

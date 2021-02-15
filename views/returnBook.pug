@@ -112,7 +112,10 @@ head
                                     tr 
                                         th Length of time :
                                         td.feeDay !{rows.order_day} Day
-                                    - let {days} = moduleCustom.getTime(rows.order_date)
+                                    - rows.order_date = parseInt(rows.order_date);
+                                    - let waktu = new Date(rows.order_date);
+                                    - waktu.setDate(waktu.getDate() + rows.order_day)
+                                    - let {days} = moduleCustom.getTime(waktu)
                                     - let denda = days * rows.book_id.fines
                                     - let fee = rows.order_price * rows.order_day;
                                     - let total = parseInt(fee) + parseInt(denda);

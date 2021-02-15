@@ -143,7 +143,7 @@ Route.post("/", async function (req, res) {
 
     // Masukan Nilai tambahan
     let waktu = new Date();
-    waktu.setDate(waktu.getDate() + parseInt(req.body.order_day));
+    // waktu.setDate(waktu.getDate() + parseInt(req.body.order_day));
     waktu = waktu.getTime();
     const codeTransaksi = moduleLibrary.randomString(26);
 
@@ -244,18 +244,18 @@ Route.get("/return", async function (req, res) {
     });
 
     // Ambil Data dari foreign Key
-    for (let index in dataOrder) {
-      const dataOrderMember = await dataOrder[index].getUser({
+    for (let element of dataOrder) {
+      const dataOrderMember = await element.getUser({
         attributes: [["name", "title"], "id"],
         raw: true,
       });
-      const dataOrderBook = await dataOrder[index].getBook({
+      const dataOrderBook = await element.getBook({
         attributes: [["book_title", "title"], "id", [`book_fines`, "fines"]],
         raw: true,
       });
 
-      dataOrder[index].dataValues.user_id = dataOrderMember;
-      dataOrder[index].dataValues.book_id = dataOrderBook;
+      element.dataValues.user_id = dataOrderMember;
+      element.dataValues.book_id = dataOrderBook;
     }
     
     // Render halaman
