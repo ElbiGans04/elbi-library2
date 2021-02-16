@@ -5,6 +5,7 @@ const ModuleTemplate = require("../controllers/module");
 const moduleLibrary = new ModuleTemplate();
 const respon2 = require("../controllers/respon");
 const { Op } = require("sequelize");
+const url = require('url');
 
 // Definisikan
 Route.get("/", async function (req, res) {
@@ -16,7 +17,24 @@ Route.get("/", async function (req, res) {
     const { order, book, user, Op } = await tabel();
 
     // Ambil Semua Orderan
-    const allOlder = await order.findAll();
+    let allOlder;
+    
+    // Bedasarkan Kondisi tertentu
+    let {group} = url.parse(req.url, true).query;
+    if(group === undefined || group.toLowerCase() == "all") allOlder = await order.findAll();
+    else {
+        let resultOfOrder = await order.findAll({
+            where: {
+                return_status: group
+            }
+        });
+
+        // Jika tidak ada
+        if(resultOfOrder.length <= 0) allOlder = await order.findAll();  
+        else allOlder = resultOfOrder
+    };
+
+
 
     // Ambil Semua Buku
     const resultBook = await book.findAll({
@@ -30,7 +48,7 @@ Route.get("/", async function (req, res) {
       attributes: ['id', ["name", "value"]]
     });
 
-
+    
 
     // Mengambil Data dari tabel relasi
     for (let value in allOlder) {
@@ -80,15 +98,15 @@ Route.get("/", async function (req, res) {
       name: officerEmail,
       module: moduleLibrary,
       role,
+      group: [
+        {id: 1, value:'has been returned'},
+        {id: 0, value:'not been restored'}
+      ],
       buttonHeader: {
         add: {
           class: "fas fa-user mr-2",
           id: "addActionButton",
-        },
-        convert_to_excel: {
-          class: 'fas fa-download fa-sm text-white-50 mr-2',
-          id: 'convertToExcel'
-        },
+        }
       },
       as: [
         moduleLibrary.as({

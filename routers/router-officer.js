@@ -4,6 +4,7 @@ const model = require('../models/model-index');
 const ModuleTemplate = require('../controllers/module');
 const  moduleLibrary = new ModuleTemplate();
 const respon = require('../controllers/respon');
+let url = require('url');
 
 Route.get('/', async function(req, res){ 
     try {
@@ -20,9 +21,23 @@ Route.get('/', async function(req, res){
 
         // Jika user sekarang mempunyai role admin maka tampilkan petugas dengan role admin
         // Jika dia mempunyai role librarian maka tampilkan semua
-        let resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await officer.findAll();
-
-
+        let resultOfficer;
+        let {group} = url.parse(req.url, true).query;
+        if(group === undefined || group.toLowerCase() == "all") resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await officer.findAll();
+        else {
+            let resultOfClass = await role.findOne({
+                where: {
+                    id: group
+                }
+            });
+            
+            // Jika tidak ketemu
+            if(!resultOfClass) resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await officer.findAll();
+            else {
+                resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers()  : await resultOfClass.getOfficers()
+            }
+        }
+        
         // ambil untuk modal 
         let opt = req.user.role == 'admin' ? {name: `admin`} : {};
         let resultRole = await role.findAll({
@@ -68,6 +83,7 @@ Route.get('/', async function(req, res){
                 moduleLibrary.as({target: 'email', type: "email"}),
                 
             ],
+            group: resultRole,
             buttonHeader: {
                 add: {
                   class: 'fas fa-user mr-2',

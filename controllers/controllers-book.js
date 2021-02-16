@@ -3,6 +3,7 @@ const respon2 = require('./respon');
 const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
+const url = require('url');
 
 // Export
 module.exports = {
@@ -50,14 +51,31 @@ module.exports = {
     getAll: async function (req, res) {
         try {
             const { book, category } = await model();
-            const result = await book.findAll();
+            let result;
             const {id, email, role} = req.user;
+
+            let {group} = url.parse(req.url, true).query;
+            if(group === undefined || group.toLowerCase() == "all") result = await book.findAll();
+            else {
+                let resultOfClass = await category.findOne({
+                    where: {
+                        id: group
+                    }
+                });
+
+                // Jika tidak ada
+                if(!resultOfClass) result = await book.findAll();  
+                else {
+                    result = await resultOfClass.getBooks()
+                }
+            }
 
             let resultCategory = await category.findAll({
                 raw: true,
                 attributes: ['id', ['name', 'value']]
             });
 
+            console.log(result)
 
             // COloumn without
             let without = ['id', 'createdat', 'updatedat', 'book_type'];
@@ -75,7 +93,7 @@ module.exports = {
                     attributes: ['id', ['name', 'title']]
                 });
 
-                el.dataValues.category = result[0];
+                el.dataValues.book_category = result[0];
             };
 
 
@@ -101,6 +119,7 @@ module.exports = {
                         id: 'addActionButton'
                     },
                 },
+                group: resultCategory,
                 buttonAction: {
                     delete: true,
                     update: true

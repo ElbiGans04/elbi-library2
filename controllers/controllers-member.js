@@ -2,7 +2,7 @@ let model = require('../models/model-index');
 const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
 const respon2 = require('./respon')
-
+const url = require('url');
 
 
 module.exports = {
@@ -41,20 +41,38 @@ module.exports = {
         try {
             // Ambil Model
             let { user, userClass} = await model();
-
+            let alluser;
 
             // Cari user yang rolenya bukan admin maupun librarian
-            let alluser = await user.findAll();
+            let {group} = url.parse(req.url, true).query;
+            if(group === undefined || group.toLowerCase() == "all") alluser = await user.findAll();
+            else {
+                let resultOfClass = await userClass.findOne({
+                    where: {
+                        id: group
+                    }
+                });
 
+                // Jika tidak ada
+                if(!resultOfClass) alluser = await user.findAll();  
+                else {
+                    alluser = await resultOfClass.getUsers()
+                }
+            }
+
+
+            
+            
             // Harus gini { id: 1, title: 'Jacqueline Upton' }
             for (let el of alluser) {
                 let classCustom = await el.getClasses({
                     raw: true,
                     attributes: ['id', [`name`, 'title']]
                 });
-
-               el.dataValues.class = classCustom[0];
+                
+                el.dataValues.user_class = classCustom[0];
             }
+            
 
             let resultClass = await userClass.findAll({
                 raw: true,
@@ -64,7 +82,6 @@ module.exports = {
             // Ambil Column
             let coloumn = Object.keys(await user.rawAttributes);
             coloumn.push('class')
-
             // Column yang tidak ingin ditampilkan
             const without = ['id', 'createdat', 'updatedat'];
 
@@ -82,15 +99,16 @@ module.exports = {
                 as: [
                     moduleLibrary.as({target: 'name', as: 'identifer'}),
                     moduleLibrary.as({target: 'nisn', type: 'number'}),
-                    moduleLibrary.as({target: 'class', type: 'select', value: resultClass}),
+                    moduleLibrary.as({target: 'user_class',showName: 'class', type: 'select', value: resultClass}),
                     
                 ],
                 buttonHeader: {
                     add: {
                       class: 'fas fa-user mr-2',
                       id: 'addActionButton'
-                    }
+                    },
                 },
+                group: resultClass,
                 buttonAction: {
                     update: true,
                     delete: true
@@ -115,11 +133,10 @@ module.exports = {
             
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar
-            let validation = await user.count({
+            let validation = await user.findOne({
                 where : {
                     nisn : req.body.nisn
-                },
-                raw: true
+                }
             });
             
             // Jika Ada
@@ -135,7 +152,7 @@ module.exports = {
 
             // // Buat User sesuai yang diinputkan
             let resultUser = await user.create(req.body, {});
-            await resultClass.setUsers(resultUser);
+            await resultUser.setClasses(resultClass);
             
             // Kirim Respon kepada user
             res.json(new respon2({message: 'successfully added user', type: true}))
@@ -206,26 +223,26 @@ module.exports = {
     // Delete
     delete: async function (req, res) {
         try {
-            // let { user } = await model();
-            // let id = req.params.id;
+            let { user } = await model();
+            let id = req.params.id;
             
-            // // Validation
-            // let validation = await user.count({
-            //     where: {
-            //         id
-            //     },
-            //     raw: true
-            // });
+            // Validation
+            let validation = await user.count({
+                where: {
+                    id
+                },
+                raw: true
+            });
     
-            // // Jika TIdak terdapat user
-            // if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
+            // Jika TIdak terdapat user
+            if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
     
-            // // Hapus user
-            // await user.destroy({
-            //     where: {
-            //         id
-            //     }
-            // })
+            // Hapus user
+            await user.destroy({
+                where: {
+                    id
+                }
+            })
             
             res.json(new respon2({message: 'successfully deleted user'}))
             

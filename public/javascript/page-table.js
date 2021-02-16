@@ -9,6 +9,13 @@ const modalCustom = document.querySelector('.modal-custom');
 // Beri kelas pada nav yang aktif
 navActive()
 
+// Ambil Url
+let showGroup = document.getElementById('showGroup')
+let newUrl = window.location.href.split('?');
+window.history.pushState({}, 'Elbi Library', newUrl[0])
+if(newUrl[1]) if(newUrl[1].indexOf('group') !== -1) showGroup.value = newUrl[1].split('=')[1] || 0;
+
+
 // console.log($('#addModal .modal-body form input'))
 /// Datatables inisialisasi // // // 
 let jajal = nav.querySelector('.active');
@@ -393,4 +400,11 @@ function fnExcelReport(selection){
         sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
 
     return (sa);
-}
+};
+
+$(document).on('change', '#showGroup', function(event){
+  modalCustom.style.display = 'flex';
+  let url = window.location.pathname;
+  
+  window.location = `${url}?group=${this.value}`
+});

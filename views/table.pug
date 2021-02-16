@@ -79,9 +79,12 @@ head
         .card.shadow.mb-4
           .card-header.py-3
             .row 
-              .col-sm-3
-                select(class="custom-select custom-select-sm form-control form-control-sm") 
-                  option hei
+              .col-sm-2
+                if(group)
+                  select#showGroup(class="custom-select custom-select-sm form-control form-control-sm") 
+                    option(value="all") All
+                    each element in group
+                      option(value=element.id)=element.value
             h6.m-0.font-weight-bold.text-primary 
           .card-body
             .table-responsive
