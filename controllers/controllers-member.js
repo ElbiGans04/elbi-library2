@@ -81,6 +81,7 @@ module.exports = {
                 name: req.user.email,
                 as: [
                     moduleLibrary.as({target: 'name', as: 'identifer'}),
+                    moduleLibrary.as({target: 'nisn', type: 'number'}),
                     moduleLibrary.as({target: 'class', type: 'select', value: resultClass}),
                     
                 ],
@@ -205,26 +206,26 @@ module.exports = {
     // Delete
     delete: async function (req, res) {
         try {
-            let { user } = await model();
-            let id = req.params.id;
+            // let { user } = await model();
+            // let id = req.params.id;
             
-            // Validation
-            let validation = await user.count({
-                where: {
-                    id
-                },
-                raw: true
-            });
+            // // Validation
+            // let validation = await user.count({
+            //     where: {
+            //         id
+            //     },
+            //     raw: true
+            // });
     
-            // Jika TIdak terdapat user
-            if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
+            // // Jika TIdak terdapat user
+            // if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
     
-            // Hapus user
-            await user.destroy({
-                where: {
-                    id
-                }
-            })
+            // // Hapus user
+            // await user.destroy({
+            //     where: {
+            //         id
+            //     }
+            // })
             
             res.json(new respon2({message: 'successfully deleted user'}))
             

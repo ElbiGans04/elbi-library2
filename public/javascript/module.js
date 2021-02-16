@@ -92,6 +92,11 @@ export function validate(text) {
   return regex.test(text);
 }
 
+export function validateNumber(text) {
+  let regex = /^[0-9]*$/;
+  return regex.test(text);
+}
+
 export function validateDate(text) {
   let regex = /\d{4}-\d{2}-\d{2}/;
   return regex.test(text);
@@ -148,6 +153,7 @@ export function validasi (element, submit) {
       let test;
       if(type == 'email') test = validateEmail(el.value);
       else if(type == 'date') test = validateDate(el.value)
+      else if(type == 'number') test = validateNumber(el.value)
       else test = validate(el.value)
       
       // console.log(test, el.value)

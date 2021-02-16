@@ -85,6 +85,10 @@ Route.get("/", async function (req, res) {
           class: "fas fa-user mr-2",
           id: "addActionButton",
         },
+        convert_to_excel: {
+          class: 'fas fa-download fa-sm text-white-50 mr-2',
+          id: 'convertToExcel'
+        },
       },
       as: [
         moduleLibrary.as({

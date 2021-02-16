@@ -99,7 +99,7 @@ module.exports = {
                     add: {
                         class: 'fas fa-book mr-2',
                         id: 'addActionButton'
-                    }
+                    },
                 },
                 buttonAction: {
                     delete: true,

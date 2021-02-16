@@ -3,7 +3,11 @@ module.exports = async function () {
     const sequelize = new Sequelize(process.env.APP_DATABASE, process.env.APP_USER, process.env.APP_PASSWORD, {
         dialect: process.env.APP_DIALECT,
         host: process.env.APP_HOST,
-        logging: false
+        logging: false,
+        pool: {
+            max: 10,
+            min: 1
+        }
     });
 
     

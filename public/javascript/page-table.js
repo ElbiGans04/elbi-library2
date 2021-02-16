@@ -4,6 +4,7 @@ const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
 const nav = document.querySelector('ul#accordionSidebar');
 const all = getRows();
+const modalCustom = document.querySelector('.modal-custom');
 
 // Beri kelas pada nav yang aktif
 navActive()
@@ -117,11 +118,13 @@ $(document).on("click", '#addButton', function (event) {
   if(test === true) {
     const formElement = $("#addModal .modal-body form")[0];
     const form = new FormData(formElement);
+    modalCustom.style.display = `flex`;
   
     fetch(url, {
       method: "post",
       body: form,
     })
+      .finally(result => modalCustom.style.display = 'none')
       .then((result) => check(result))
       .then((result) => {
         if (result) {
@@ -153,6 +156,7 @@ $(document).on("click", '#addButton', function (event) {
 
 $(document).on("click",'.buttonActionEdit', function (event) {
   $('#editModal').modal('show');
+  modalCustom.style.display = 'flex';
   const row = $(event.target).closest('tr')[0];
   const id = row.dataset.id;
   const form = document.querySelector(
@@ -164,6 +168,7 @@ $(document).on("click",'.buttonActionEdit', function (event) {
   );
   
   fetch(`${url}/${id}`)
+    .finally(result => modalCustom.style.display = 'none')
     .then((result) => check(result))
     .then((result) => {
       const { data } = result;
@@ -192,18 +197,19 @@ $(document).on("click",'.buttonActionEdit', function (event) {
 $(document).on('click', `#EditButton`, function (event) {
   const formElement = document.querySelector(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form "
-  );
-
-  const inputElement = formElement.querySelectorAll('input');
-  let test = validasi(inputElement, this)
-  if(test === true) {
-    const id = formElement.dataset.id;
-  
-    const form = new FormData(formElement);
-    fetch(`${url}/${id}`, {
-      method: "put",
-      body: form,
-    })
+    );
+    modalCustom.style.display = 'flex'
+    const inputElement = formElement.querySelectorAll('input');
+    let test = validasi(inputElement, this)
+    if(test === true) {
+      const id = formElement.dataset.id;
+      
+      const form = new FormData(formElement);
+      fetch(`${url}/${id}`, {
+        method: "put",
+        body: form,
+      })
+      .finally(result => modalCustom.style.display = 'none')
       .then((result) => check(result))
       .then((result) => {
         if (result) {
@@ -263,11 +269,13 @@ $(document).on("click", '#deleteButton', function (event) {
   const modalBody = document.querySelector(
     "#deleteModal > .modal-dialog > .modal-content > .modal-body"
   );
-
+  modalCustom.style.display = 'flex'
+  
   const id = modalBody.dataset.id;
   fetch(`${url}/${id}`, {
     method: "delete",
   })
+  .finally(result => modalCustom.style.display = 'none')
     .then((result) => check(result))
     .then((result) => {
       if (result) {
@@ -345,3 +353,44 @@ imageModal.forEach(function(element, index){
 modal.children[1].addEventListener('click', function(event){
   modal.style.display = 'none'
 });
+
+
+// let generateToExcel = document.getElementById('convertToExcel');
+// generateToExcel.addEventListener('click', function(event){
+//   fnExcelReport('tableUtama')
+// });
+
+
+function fnExcelReport(selection){
+    var tab_text="<table border='2px'><tr bgcolor='#87AFC6'>";
+    var textRange; var j=0; let sa;
+    let tab = document.getElementById(selection); // id of table
+
+
+    for(j = 0 ; j < tab.rows.length ; j++) 
+    {     
+        tab_text=tab_text+tab.rows[j].innerHTML+"</tr>";
+        //tab_text=tab_text+"</tr>";
+    }
+
+    tab_text=tab_text+"</table>";
+    tab_text= tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+    tab_text= tab_text.replace(/<img[^>]*>/gi,""); // remove if u want images in your table
+    tab_text= tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+
+    var ua = window.navigator.userAgent;
+    var msie = ua.indexOf("MSIE "); 
+
+    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+    {
+        txtArea1.document.open("txt/html","replace");
+        txtArea1.document.write(tab_text);
+        txtArea1.document.close();
+        txtArea1.focus(); 
+        sa=txtArea1.document.execCommand("SaveAs",true,"Say Thanks to Sumit.xls");
+    }  
+    else                 //other browser not tested on IE 11
+        sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));  
+
+    return (sa);
+}
