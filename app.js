@@ -14,15 +14,12 @@ const moduleLibrary = new ModuleLibrary();
 const memberRouter = require("./routers/router-member");
 const bookRouter = require("./routers/router-book");
 const login = require("./routers/router-login");
-const logout = require("./routers/router-logout");
 const rentRoute = require("./routers/router-rent");
 const indexRoute = require("./routers/router-index");
 const forgetRoute = require("./routers/router-forget");
-const classRoute = require("./routers/router-class");
 const officerRoute = require("./routers/router-officer");
-const categoryRoute = require("./routers/router-catalog");
 const convertRoute = require("./routers/router-convert");
-
+const group = require('./routers/router-generate');
 
 
 // // // Instalasi Project // // //
@@ -74,14 +71,26 @@ const respon2 = require("./controllers/respon");
   app.use("/books", auth, roleAuth, bookRouter);
   app.use("/rent", auth, roleAuth, rentRoute);
   app.use("/login", login);
-  app.use("/logout", logout);
+  app.get("/logout", function(req, res){
+    res.cookie('token', {}, {
+        maxAge: -1000000
+    });
+
+    console.log("Cookie Telah Dihapus");
+    res.redirect('/login')
+  });
   app.use('/forget', forgetRoute);
 
 
-  app.use("/class", auth, roleAuth, classRoute);
+  app.use("/class", auth, roleAuth, group('userClass', 'Class'));
+  app.use("/category", auth, roleAuth, group('category', 'Category'));
+
+  
   app.use("/officer", auth, roleAuth, officerRoute);
-  app.use("/category", auth, roleAuth, categoryRoute);
   app.use("/convert", auth, roleAuth, convertRoute);
+
+
+
   app.listen(port, function (err) {
     if (err) throw err;
     console.log(`Server telah dijalankan pada port ${port}`);
