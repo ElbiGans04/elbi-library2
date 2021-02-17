@@ -21,6 +21,7 @@ const forgetRoute = require("./routers/router-forget");
 const classRoute = require("./routers/router-class");
 const officerRoute = require("./routers/router-officer");
 const categoryRoute = require("./routers/router-catalog");
+const convertRoute = require("./routers/router-convert");
 
 
 
@@ -80,6 +81,7 @@ const respon2 = require("./controllers/respon");
   app.use("/class", auth, roleAuth, classRoute);
   app.use("/officer", auth, roleAuth, officerRoute);
   app.use("/category", auth, roleAuth, categoryRoute);
+  app.use("/convert", auth, roleAuth, convertRoute);
   app.listen(port, function (err) {
     if (err) throw err;
     console.log(`Server telah dijalankan pada port ${port}`);
@@ -162,34 +164,7 @@ async function roleAuth(req, res, next) {
     } else {
       throw new Error(`you don't have permission`)
     }
-    // permission[userROLE].forEach(function(el, idx){
-    //   // // Jika Url Benar
-    //   // if(url.indexOf(el) >= 0) {
-    //   //   // Teruskan Ke middleware
-    //   //   next()
-    //   // } else {
-
-    //   //   // Jika request berupa get
-    //   //   if(req.method == 'GET') {
-    //   //     return res.redirect('/');
-    //   //   } else {
-    //   //     throw new Error('not permission')
-    //   //   }
-
-    //   // }
-    // });
     
-    // if( moduleLibrary.termasuk(permission[userROLE], url) ) {
-    //   next();
-    // } else {
-      // if(req.method == 'GET') {
-      //   return res.redirect('/login');
-      // } else {
-      //   throw new Error('not permission')
-      // }
-    // }
-
-    // next()    
   } catch (err) {
     console.log(err)
     const code = err.code || 403;

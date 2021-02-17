@@ -70,8 +70,6 @@ Route.get("/", async function (req, res) {
         attributes: ["id", ["name", `title`]],
       }); 
     }
-
-
     
     // Ambil Column dari model
     const coloumn = await Object.keys(order.rawAttributes);
@@ -106,6 +104,10 @@ Route.get("/", async function (req, res) {
         add: {
           class: "fas fa-user mr-2",
           id: "addActionButton",
+        },
+        convert_to_excel: {
+          class: "fas fa-download mr-2",
+          id: 'convertToExcel'
         }
       },
       as: [
