@@ -31,8 +31,7 @@ module.exports = {
             let month = result.dataValues.book_launching.slice(4,6)
             let day = result.dataValues.book_launching.slice(6,8);
             result.dataValues.book_launching = `${year}-${month}-${day}`;
-            
-            console.log(result.dataValues.book_launching)
+        
     
             // Jika Ada maka Kirimkan
             res.json(new respon2({message: 'success', code: 200, data: result}));
@@ -50,37 +49,44 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            const { book, category } = await model();
+            const { book, category, publisher } = await model();
+            const {email, role} = req.user;
             let result;
-            const {id, email, role} = req.user;
 
+            // Ambil Url
             let {group} = url.parse(req.url, true).query;
             if(group === undefined || group.toLowerCase() == "all") result = await book.findAll();
             else {
-                let resultOfClass = await category.findOne({
+                let resultOfGroup = await category.findOne({
                     where: {
                         id: group
                     }
                 });
 
                 // Jika tidak ada
-                if(!resultOfClass) result = await book.findAll();  
+                if(!resultOfGroup) result = await book.findAll();  
                 else {
-                    result = await resultOfClass.getBooks()
+                    result = await resultOfGroup.getBooks()
                 }
             }
+
 
             let resultCategory = await category.findAll({
                 raw: true,
                 attributes: ['id', ['name', 'value']]
             });
 
-            console.log(result)
+            let resultPublisher = await publisher.findAll({
+                raw: true,
+                attributes: ['id', ['name', 'value']]
+            });
+
 
             // COloumn without
             let without = ['id', 'createdat', 'updatedat', 'book_type'];
             let coloumn = Object.keys(await book.rawAttributes);
             coloumn.push(`category`);
+            coloumn.push(`publisher`);
 
             for(let el of result) {
                 let year = el.dataValues.book_launching.slice(0,4)
@@ -92,10 +98,16 @@ module.exports = {
                     raw: true,
                     attributes: ['id', ['name', 'title']]
                 });
+                let result2 = await el.getPublishers({
+                    raw: true,
+                    attributes: ['id', ['name', 'title']]
+                });
 
                 el.dataValues.book_category = result[0];
-            };
+                el.dataValues.publisher = result2[0];
 
+               
+            };
 
             // Render 
             res.render('table', {
@@ -111,7 +123,8 @@ module.exports = {
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
                     moduleLibrary.as({target: 'book_launching', type: 'date'}),
-                    moduleLibrary.as({target: 'category', as: 'identifer', type: 'select', value: resultCategory }),
+                    moduleLibrary.as({target: 'category',  type: 'select', value: resultCategory }),
+                    moduleLibrary.as({target: 'publisher',  type: 'select', value: resultPublisher }),
                 ],
                 buttonHeader: {
                     add: {
@@ -135,8 +148,9 @@ module.exports = {
 
     post: async function (req,res) {
         try {
-            let { book, category } = await model();
+            let { book, category, publisher } = await model();
             let { category: usercategory } = req.body;
+
 
             // Verification
             // check apakah buku dengan title tsb sudah ada
@@ -151,7 +165,6 @@ module.exports = {
             
             // Jika Ada
             if (validation > 0) throw new respon2({code: 200, message: 'book already'});
-
 
             // Pisahkan format launching
             let {book_launching} = req.body
@@ -182,13 +195,22 @@ module.exports = {
             // Jika tidak ada
             if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
 
+            // Check apakah 
+            let resultPublisher = await publisher.findOne({
+                where: {
+                    id: req.body.publisher
+                }
+            });
+
+            // Jika tidak ada
+            if(!resultPublisher) throw new respon2({message: 'publisher is invalid', code: 200});
             
             // Buat
             let book1 = await book.create(req.body);
+            await book1.setPublishers(resultPublisher);
             await book1.setCategories(resultCategory);
-            
             // Beri respone
-            res.json(new respon2({message: 'successfully added book', type: true, code: 200}))
+            res.json(new respon2({message: 'successfully added book', code: 200}))
 
         } catch (err) {
             console.log(err)
@@ -203,7 +225,7 @@ module.exports = {
 
     put: async function (req, res) {
         try {
-            let { book, category } = await model();
+            let { book, category, publisher } = await model();
             let entitasId = req.params.id;
             let { category: userCategory } = req.body; 
 
@@ -229,6 +251,12 @@ module.exports = {
                 req.body.book_image = req.file.buffer;
             }
 
+            
+            // Pisahkan format launching
+            let {book_launching} = req.body
+            if ( book_launching.split('-').length != 3 ) throw new respon2({code: 200, message: 'date is invalid'});
+            req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
+            
             // Check apakah 
             let resultCategory = await category.findOne({
                 where: {
@@ -238,11 +266,16 @@ module.exports = {
             
             // Jika tidak ada
             if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
+            
+            // Check apakah 
+            let resultPublisher = await publisher.findOne({
+                where: {
+                    id: req.body.publisher
+                }
+            });
 
-            // Pisahkan format launching
-            let {book_launching} = req.body
-            if ( book_launching.split('-').length != 3 ) throw new respon2({code: 200, message: 'date is invalid'});
-            req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
+            // Jika tidak ada
+            if(!resultPublisher) throw new respon2({message: 'publisher is invalid', code: 200});
 
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
@@ -251,7 +284,9 @@ module.exports = {
                 }
             });
             
+
             await validation.setCategories(resultCategory)
+            await validation.setPublishers(resultPublisher)
     
     
             res.json(new respon2({message: 'success', type: true, code: 200}))

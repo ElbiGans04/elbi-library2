@@ -12,16 +12,18 @@ module.exports = async function (sequelize) {
         },
 
         book_type: {
-            type: DataTypes.STRING
+            type: DataTypes.STRING,
+            allowNull: false
         },
 
         book_price: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-
+        
         book_fines : {
-            type: DataTypes.INTEGER
+            type: DataTypes.INTEGER,
+            allowNull: false
         },
 
         book_stock: {
@@ -49,14 +51,6 @@ module.exports = async function (sequelize) {
         },
 
         book_author: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            validate: {
-                // isAlphanumeric: true
-            }
-        },
-
-        book_publisher: {
             type: DataTypes.STRING,
             allowNull: false,
             validate: {

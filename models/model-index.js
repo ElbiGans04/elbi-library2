@@ -19,6 +19,7 @@ module.exports = async function () {
     const role = await require(`./model-role`)(sequelize);
     const userClass = await require(`./model-class`)(sequelize);
     const category = await require(`./model-category`)(sequelize);
+    const publisher = await require(`./model-publisher`)(sequelize);
 
     // Assosiasi User dengan order
     await user.hasMany(order, {
@@ -36,13 +37,18 @@ module.exports = async function () {
     });
     await forget.belongsTo(officer, {foreignKey: 'officer_id'});
 
-    // Assosiasi Buku
+    // Assosiasi Buku dengan order
     await book.hasMany(order, {
         foreignKey: 'book_id',
-        onDelete: 'RESTRICT',
-        onUpdate: 'NO ACTION'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
     });
     await order.belongsTo(book, {foreignKey: 'book_id'});
+
+
+    // assosiasi buku dengan publisher
+    await publisher.belongsToMany(book, { through: 'book_publisher', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
+    await book.belongsToMany(publisher, { through: 'book_publisher', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
 
     // assosiasi buku dengan kategory
     await category.belongsToMany(book, { through: 'book_category', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
@@ -57,5 +63,5 @@ module.exports = async function () {
     await userClass.belongsToMany(user, { through: 'user_class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
     await user.belongsToMany(userClass, { through: 'user_class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
 
-    return {sequelize, Op ,officer, user, book, order, forget, role, userClass, category}
+    return {sequelize, Op ,officer, user, book, order, forget, role, userClass, category, publisher}
 }
