@@ -85,8 +85,8 @@ module.exports = {
             // COloumn without
             let without = ['id', 'createdat', 'updatedat', 'book_type'];
             let coloumn = Object.keys(await book.rawAttributes);
-            coloumn.push(`category`);
-            coloumn.push(`publisher`);
+            coloumn = [...coloumn, `category`, `publisher`]
+
 
             for(let el of result) {
                 let year = el.dataValues.book_launching.slice(0,4)
@@ -243,13 +243,17 @@ module.exports = {
 
             
             // Tambahkan File, Karena file berada direq.file
-            if(req.file) {
-                // Buat File Format
+            // Buat File Format
+            if(!req.file) {
+                throw new respon2({code: 200, message: 'please insert image'})
+            } else {
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
                 req.body.book_type = format
+    
+                // Tambahkan File, Karena file berada direq.file
                 req.body.book_image = req.file.buffer;
-            }
+            };
 
             
             // Pisahkan format launching
@@ -326,6 +330,8 @@ module.exports = {
                 }
             })
             
+
+            // Kirim Respon
             res.json(new respon2({message: 'successfully deleted book', type: true, code: 200}))
             
         } catch (err) {
@@ -338,4 +344,11 @@ module.exports = {
             res.status(code).json(err)
         }
     }
+
+}
+
+
+// Ubah Format Waktu
+function waktu (kata) {
+    
 }

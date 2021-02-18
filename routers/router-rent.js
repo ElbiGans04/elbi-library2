@@ -170,9 +170,7 @@ Route.post("/", async function (req, res) {
       throw new respon2({ message: "out of stock", code: 200 });
 
     // Masukan Nilai tambahan
-    let waktu = new Date();
-    // waktu.setDate(waktu.getDate() + parseInt(req.body.order_day));
-    waktu = waktu.getTime();
+    let waktu = new Date().getTime();
     const codeTransaksi = moduleLibrary.randomString(26);
 
     // Masukan Data

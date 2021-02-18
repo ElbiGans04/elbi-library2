@@ -107,8 +107,8 @@ module.exports = class {
   
   getTime(waktu) {
     const waktuNow = new Date().getTime();
-    const distance = waktuNow - waktu;
-  
+    const distance = waktuNow - waktu.getTime();
+    console.log(distance)
     let days = Math.floor(distance / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
       (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -123,6 +123,24 @@ module.exports = class {
       minutes,
       seconds,
     };
+
+    // let waktuNow = Date.now();
+    // const distance = waktu.getTime() - waktuNow ;
+    // console.log(`Now: ${waktuNow}. Past: ${waktu.getTime()}. distance: ${distance}`)
+    // let days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    // const hours = Math.floor(
+    //   (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    // );
+    // const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    // const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // if(days < 0) days = 0;
+    // return {
+    //   days,
+    //   hours,
+    //   minutes,
+    //   seconds,
+    // };
   }
 
 
