@@ -65,9 +65,7 @@ export function check(result) {
 
 export function getTime(waktu, day) {
   waktu = new Date(parseInt(waktu));
-  console.log(waktu.getDate(), day)
   waktu.setDate(waktu.getDate() + parseInt(day))
-  console.log(waktu.getDate())
 
   let waktuNow = Date.now();
   const distance = waktuNow - waktu.getTime();

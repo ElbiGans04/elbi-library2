@@ -59,11 +59,9 @@ module.exports = {
                     alluser = await resultOfClass.getUsers()
                 }
             }
-
-
             
             
-            // Harus gini { id: 1, title: 'Jacqueline Upton' }
+            // Ambil Data dari tabel relasi
             for (let el of alluser) {
                 let classCustom = await el.getClasses({
                     raw: true,
@@ -74,14 +72,17 @@ module.exports = {
             }
             
 
+            // Ambil Class untuk modal select
             let resultClass = await userClass.findAll({
                 raw: true,
                 attributes: ['id', ['name', 'value']]
-            })
+            });
+            
             
             // Ambil Column
             let coloumn = Object.keys(await user.rawAttributes);
             coloumn.push('class')
+
             // Column yang tidak ingin ditampilkan
             const without = ['id', 'createdat', 'updatedat'];
 
@@ -99,7 +100,7 @@ module.exports = {
                 as: [
                     moduleLibrary.as({target: 'name', as: 'identifer'}),
                     moduleLibrary.as({target: 'nisn', type: 'number'}),
-                    moduleLibrary.as({target: 'user_class',showName: 'class', type: 'select', value: resultClass}),
+                    moduleLibrary.as({target: 'class',showName: 'class', type: 'select', value: resultClass}),
                     
                 ],
                 buttonHeader: {

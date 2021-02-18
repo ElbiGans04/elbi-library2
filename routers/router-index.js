@@ -41,7 +41,7 @@ Route.get('/', async function(req, res){
       if(allOlder.length > 0) orderDay += el.order_day
     });
 
-    if(allOlder.length > 0) orderDay = orderDay / allOlder.length
+    if(allOlder.length > 0) orderDay = Math.floor(orderDay / allOlder.length)
     
     resultUser.forEach(function(e,i){
       if(e.id == userID) {

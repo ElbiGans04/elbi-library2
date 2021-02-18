@@ -30,8 +30,6 @@ Route.get("/", async function (req, res) {
             }
         });
 
-        console.log(group)
-
         // Jika tidak ada
         if(resultOfOrder.length <= 0) allOlder = await order.findAll();  
         else allOlder = resultOfOrder
@@ -216,17 +214,17 @@ Route.post("/", async function (req, res) {
 Route.delete("/", async function (req, res) {
   try {
     // Import model
-    const { order } = await tabel();
+    const { order, book } = await tabel();
 
     // Ambil yang diinputkan user
-    let { user, book, id_transaction } = req.body;
+    let { user, book : userBook, id_transaction } = req.body;
 
     // Check Apakah Orderan tsb ada
     const resultOrder = await order.findAll({
       where: {
         [Op.and]: {
           user_id: user,
-          book_id: book,
+          book_id: userBook,
           id_transaction,
         },
       },
@@ -236,19 +234,39 @@ Route.delete("/", async function (req, res) {
     if (resultOrder.length <= 0)
       throw new respon2({ message: "not found. Please check again" });
 
+    // Check apakah buku ada
+    let resultBook = await book.findOne({
+      where: {
+        id: userBook
+      },
+      raw: true,
+      attributes: ['book_stock']
+    });
+
+    if(!resultBook) throw new respon2({message: 'book not found'});
+    console.log(resultBook)
+
     // Update
     await order.update(
-      { return_status: true, order_officer_return: req.user.email },
+      { return_status: true, order_officer_return: req.user.email, book },
       {
         where: {
           [Op.and]: {
             user_id: user,
-            book_id: book,
+            book_id: userBook,
             id_transaction,
           },
         },
       }
     );
+    
+    // tambahkan stock lagi
+    await book.update({
+      book_stock: resultBook.book_stock + 1
+    }, {
+      where: {
+      id: userBook
+    }})
 
     // Kirim Respon
     res.json(new respon2({ message: "success", code: 200, type: true, redirect: '/rent' }));
@@ -266,9 +284,7 @@ Route.get("/return", async function (req, res) {
     // Cari order yang belum dikembalikan
     const dataOrder = await order.findAll({
       where: {
-        [Op.not]: {
-          return_status: true,
-        },
+          return_status: false,
       },
     });
 
