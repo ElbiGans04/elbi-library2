@@ -18,6 +18,9 @@ Route.get('/', async function(req, res){
       raw: true, 
     });
 
+    // Cari 
+    const resultOfficer = await officer.count()
+
     
     const resultUser = await user.findAll({
       attributes: ['name', 'id'],
@@ -34,7 +37,7 @@ Route.get('/', async function(req, res){
     let name = '';
     // Menghitung orderan yang jatuh tempo dan menghitung rata" orderan
     allOlder.forEach(function(el, i){
-      let { days } = moduleLibrary.getTime(el.order_date);
+      let { days } = moduleLibrary.getTime(el.order_date, el.order_day);
       if(days > 0) lateToPay.push(days)
 
       // Hitung rata rata orderan
@@ -51,11 +54,12 @@ Route.get('/', async function(req, res){
 
     res.render('index', {
       role,
-      resultActive,
-      allOlder,
+      resultActive: resultActive.length,
+      allOlder: allOlder.length,
       lateToPay: lateToPay.length,
       orderDay,
-      users: resultUser,
+      users: resultUser.length,
+      officer: resultOfficer,
       name: req.user.email,
     })
 });

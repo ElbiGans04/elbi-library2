@@ -21,7 +21,7 @@ if (action) {
       .then((result) => check(result))
       .then((result) => {
         alert(result.message);
-        // window.location.reload();
+        window.location.reload();
       });
   });
 
