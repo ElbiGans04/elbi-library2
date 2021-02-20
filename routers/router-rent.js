@@ -60,9 +60,6 @@ Route.get("/", async function (req, res) {
       // Ubah status
       allOlder[value].dataValues.return_status = allOlder[value].dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
 
-    //  if(moduleLibrary.getTime(jam.getTime()).days === 0) {
-    //    orderNoLate.push(allOlder[value])
-    //  }
 
       allOlder[value].dataValues.book_id = await allOlder[value].getBook({
         raw: true,
@@ -219,7 +216,7 @@ Route.post("/", async function (req, res) {
   }
 });
 
-Route.delete("/", async function (req, res) {
+Route.post("/return", async function (req, res) {
   try {
     // Import model
     const { order, book } = await tabel();
@@ -276,6 +273,7 @@ Route.delete("/", async function (req, res) {
       id: userBook
     }})
 
+
     // Kirim Respon
     res.json(new respon2({ message: "success", code: 200, type: true, redirect: '/rent' }));
   } catch (err) {
@@ -309,12 +307,14 @@ Route.get("/return", async function (req, res) {
 
       element.dataValues.user_id = dataOrderMember;
       element.dataValues.book_id = dataOrderBook;
-    }
+    };
+
     
     // Render halaman
     res.render("returnBook", {
+      title: 'Return Book',
       dataOrder,
-      show: [`member_id`, `book_id`],
+      type: 'return',
       moduleCustom: moduleLibrary,
       name: req.user.email
     });
@@ -367,4 +367,121 @@ Route.get("/return/:id", async function (req, res) {
     res.status(code).json(err);
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route.get('/renew', async function (req, res){
+  const { order } = await tabel();
+  let orderNoLate = [], result = await order.findAll({
+    where: {
+      return_status: false
+    }
+  });
+  
+
+  for(let element of result) {
+    let date = new Date(element.dataValues.order_date);
+    date = date.setDate(date.getDate() + parseInt(element.dataValues.order_day))
+
+
+    // Ambil Yang Belum lewat
+    if(date > Date.now()) {
+      // Push
+      orderNoLate.push(element)
+
+      // Logic
+      let jam = new Date(element.dataValues.order_date);
+      element.dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
+
+      // Ubah status
+      element.dataValues.return_status = element.dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
+
+
+      element.dataValues.book_id = await element.getBook({
+        raw: true,
+        attributes: ["id", ["book_title", "title"], ['book_fines', 'fines']],
+      });
+      element.dataValues.user_id = await element.getUser({
+        raw: true,
+        attributes: ["id", ["name", `title`]],
+      }); 
+    };
+  };
+
+  
+  // Render halaman
+  res.render("returnBook", {
+    title: 'Extend the book rental period',
+    dataOrder: orderNoLate,
+    moduleCustom: moduleLibrary,
+    type: 'renew',
+    name: req.user.email
+  });
+});
+
+
+Route.post('/renew', async function(req, res){
+  try {
+    let {day, user: user_id, book: book_id, id_transaction} = req.body;
+    let { order } = await tabel();
+    if(day === undefined || day.length <= 0 || parseInt(day) > 10) throw new respon2({message: 'invalid day', code:200})
+
+    // Cari Apakah ada
+    let validation = await order.findOne({
+      where: {
+        user_id,
+        book_id,
+        id_transaction
+      }
+    });
+
+    // Jika tidak ada 
+    if(!validation) throw new respon2({message: 'not found', code: 200});
+
+    let newDate = parseInt(day) + parseInt(validation.dataValues.order_day)
+
+
+    // Check apakah orderan memiliki denda
+    const dateNew = new Date(validation.dataValues.order_date);
+    dateNew.setDate(dateNew.getDate() + parseInt(validation.dataValues.order_day));    
+    if(dateNew.getTime() < Date.now()) throw new respon2({message: 'pay the fine in advance', code: 200})
+    
+
+    // Jika ada
+    await order.update({
+      order_day: newDate
+    }, {
+      where: {
+        user_id,
+        book_id,
+        id_transaction
+      }
+    })
+  
+    res.json(new respon2({message: 'success', code: 200}))
+  } catch (err) {
+    console.log(err);
+    const code = err.code || 200;
+    res.status(code).json(err)
+  }
+})
+
+
+
+
+
+// Export 
 module.exports = Route;

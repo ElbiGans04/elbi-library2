@@ -1,7 +1,5 @@
 import { check, getTime, navActive } from "./module.js";
-const tableInformation = document.querySelectorAll(
-  "#information table tbody tr"
-);
+const tableInformation = document.querySelectorAll("#information table tbody tr");
 const action = document.getElementById("buttonAction");
 const modalCustom = document.querySelector('.modal-custom');
 
@@ -13,15 +11,17 @@ if (action) {
     const formElement = document.querySelector(".container-fluid form");
     modalCustom.style.display = 'flex'
     const formData = new FormData(formElement);
-    fetch("/rent", {
-      method: "delete",
+    let url = `${window.location.pathname}`;
+  
+    fetch(url, {
+      method: "post",
       body: formData,
     })
       .finally(result => modalCustom.style.display = 'none')
       .then((result) => check(result))
       .then((result) => {
         alert(result.message);
-        window.location.reload();
+        // window.location.reload();
       });
   });
 
@@ -56,16 +56,15 @@ if (action) {
  
 
         let { days } = getTime(result[0].order_date, result[0].order_day);
+        console.log(result[0].order_date, days)
         if (days < 0) days = 0;
         let denda = days * result[0].book_id.fines;
         let fee = result[0].order_price * result[0].order_day;
         let total = parseInt(fee) + parseInt(denda);
 
+
         $(tableInformation).children("td.fee").html(result[0].order_price);
-        $(tableInformation)
-          .children("td.feeDay")
-          .html(`${result[0].order_day} Day`);
-          console.log(result)
+        $(tableInformation).children("td.feeDay").html(`${result[0].order_day} Day`);
         $(tableInformation).children('td.fines').html(`${result[0].book_id.fines}`)
         $(tableInformation).children("td.finesDay").html(`${days} Day`);
         $(tableInformation).children("td.feeFInes").html(`${fee} + ${denda}`);

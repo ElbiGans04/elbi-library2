@@ -4,7 +4,8 @@ head
     meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
     meta(name='description' content='')
     meta(name='author' content='')
-    title Return The Book
+    - 
+    title Elbi Library | #{title.split(' ')[0]}
     link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
     link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
     link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
@@ -89,7 +90,7 @@ head
             .container-fluid 
                 .row
                     .col-sm-12
-                        h3.mb-4.text-gray-800 Return The book
+                        h3.mb-4.text-gray-800= title
                 .row
                     if(dataOrder.length <= 0) 
                         h1.text-center No Transactions :)
@@ -119,41 +120,48 @@ head
                                     .form-group
                                         label Id Transaction
                                         input.form-control(readonly="readonly", value=dataOrder[0].dataValues.id_transaction, name="id_transaction")
+                                    if(type === 'renew')
+                                        .form-group
+                                            label Day :
+                                            input.form-control(type="number" name="day")
 
+                        if(type === 'return')
+                            .col-sm-12.mt-3
+                                div.alert.alert-info#information(role="alert" style="width:100%").p-5
+                                    h4.mb-5
+                                        strong Information
+                                    -const rows = dataOrder[0].dataValues
+                                    table.mb-5
+                                        tr 
+                                            th Rental fee per day :
+                                            td.fee=rows.order_price
+                                        tr 
+                                            th Length of time :
+                                            td.feeDay !{rows.order_day} Day
+                                        - let {days} = moduleCustom.getTime(rows.order_date, rows.order_day);
+                                        - let denda = days * rows.book_id.fines
+                                        - let fee = rows.order_price * rows.order_day;
+                                        - let total = parseInt(fee) + parseInt(denda);
+                                        tr  
+                                            th how long it takes to return late :
+                                            td.finesDay !{days} Day
+                                        tr 
+                                            th fines per day :
+                                            td.fines=rows.book_id.fines
+                                        tr
+                                            th Fee + Fines :
+                                            td.feeFInes #{rows.order_price * rows.order_day} + #{denda}
 
-                        .col-sm-12.mt-3
-                            div.alert.alert-info#information(role="alert" style="width:100%").p-5
-                                h4.mb-5
-                                    strong Information
-                                -const rows = dataOrder[0].dataValues
-                                table.mb-5
-                                    tr 
-                                        th Rental fee per day :
-                                        td.fee=rows.order_price
-                                    tr 
-                                        th Length of time :
-                                        td.feeDay !{rows.order_day} Day
-                                    - let {days} = moduleCustom.getTime(rows.order_date)
-                                    - let denda = days * rows.book_id.fines
-                                    - let fee = rows.order_price * rows.order_day;
-                                    - let total = parseInt(fee) + parseInt(denda);
-                                    tr  
-                                        th how long it takes to return late :
-                                        td.finesDay !{days} Day
-                                    tr 
-                                        th fines per day :
-                                        td.fines=rows.book_id.fines
-                                    tr
-                                        th Fee + Fines :
-                                        td.feeFInes #{rows.order_price * rows.order_day} + #{denda}
+                                        tr
+                                            th total :
+                                            td.total
+                                                strong.total.
+                                                    RP. !{total}
 
-                                    tr
-                                        th total :
-                                        td.total
-                                            strong.total.
-                                                RP. !{total}
-
-                                button.btn-sm.btn.btn-primary#buttonAction.d-block Pay now
+                                    button.btn-sm.btn.btn-primary#buttonAction.d-block Pay now
+                        else 
+                            .col-sm-12 
+                                button.btn-sm.btn.btn-primary#buttonAction.d-block Extend Now
         - function hello(value, without) {
             -   for (let e in without) {
             -       if(without[e].toLowerCase() == value.toLowerCase()) {

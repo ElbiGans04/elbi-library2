@@ -6,7 +6,8 @@ module.exports = async function () {
         logging: false,
         pool: {
             max: 10,
-            min: 1
+            min: 1,
+            idle: 10000
         }
     });
 
