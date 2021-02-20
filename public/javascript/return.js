@@ -60,13 +60,13 @@ if (action) {
         let denda = days * result[0].book_id.fines;
         let fee = result[0].order_price * result[0].order_day;
         let total = parseInt(fee) + parseInt(denda);
-        console.log(days, denda, fee);
 
         $(tableInformation).children("td.fee").html(result[0].order_price);
         $(tableInformation)
           .children("td.feeDay")
           .html(`${result[0].order_day} Day`);
-        // $(tableInformation).children('td.fines').html(result.book_id.fines)
+          console.log(result)
+        $(tableInformation).children('td.fines').html(`${result[0].book_id.fines}`)
         $(tableInformation).children("td.finesDay").html(`${days} Day`);
         $(tableInformation).children("td.feeFInes").html(`${fee} + ${denda}`);
         $(tableInformation)

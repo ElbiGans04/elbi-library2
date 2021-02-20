@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const port = process.env.APP_PORT || 3000;
 const { multer } = require("./middleware/multer");
 
+
 // Router
 const memberRouter = require("./routers/router-member");
 const bookRouter = require("./routers/router-book");
@@ -89,6 +90,7 @@ const respon2 = require("./controllers/respon");
     res.redirect("/login");
   });
   app.use("/forget", forgetRoute);
+  
 
   app.use("/class", auth, roleAuth, group("userClass", "Class"));
   app.use("/category", auth, roleAuth, group("category", "Category"));

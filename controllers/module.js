@@ -107,15 +107,16 @@ module.exports = class {
   
   getTime(waktu) {
     waktu = new Date(parseInt(waktu))
-    const waktuNow = new Date().getTime();
+    const waktuNow = Date.now();
     const distance = waktuNow - waktu.getTime();
+    
     let days = Math.floor(distance / (1000 * 60 * 60 * 24));
     const hours = Math.floor(
       (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
     );
+    
     const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
     if(days < 0) days = 0;
     return {
       days,

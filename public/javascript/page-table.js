@@ -205,10 +205,10 @@ $(document).on('click', `#EditButton`, function (event) {
   const formElement = document.querySelector(
     "#editModal > .modal-dialog > .modal-content > .modal-body > form "
     );
-    modalCustom.style.display = 'flex'
     const inputElement = formElement.querySelectorAll('input');
     let test = validasi(inputElement, this)
     if(test === true) {
+      modalCustom.style.display = 'flex'
       const id = formElement.dataset.id;
       
       const form = new FormData(formElement);
@@ -363,22 +363,40 @@ modal.children[1].addEventListener('click', function(event){
 
 
 $(document).on('click', '#convertToExcel', function(event){
-  fetch('/convert')
-    .then(result => result.blob())
-    .then(blob => {
-      var url = window.URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url;
-      a.download = `ElbiLibrary-${Date.now()}.xlsx`;
-      document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-      a.click();    
-      a.remove(); 
-    });
+  $('#convertModal').modal('show')
+  // fetch('/convert')
+  //   .then(result => result.blob())
+  //   .then(blob => {
+  //     var url = window.URL.createObjectURL(blob);
+  //     var a = document.createElement('a');
+  //     a.href = url;
+  //     a.download = `ElbiLibrary-${Date.now()}.xlsx`;
+  //     document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+  //     a.click();    
+  //     a.remove(); 
+  //   });
 });
 
+$(document).on('click', '#convertButton', function(event){
+  let formElement = $(this).closest('.modal-footer').prev().children()[0];
+  fetch(`/convert/${$('#convert').val()}`)
+  .then(result => result.blob())
+  .then(blob => {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = `ElbiLibrary-${Date.now()}.xlsx`;
+          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+          a.click();    
+          a.remove(); 
+    })
+})
+
+
+
+// Event Ketika Group Diganti
 $(document).on('change', '#showGroup', function(event){
   modalCustom.style.display = 'flex';
   let url = window.location.pathname;
-  
   window.location = `${url}?group=${this.value}`
 });

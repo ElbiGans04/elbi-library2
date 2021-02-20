@@ -14,10 +14,10 @@ Route.get("/", async function (req, res) {
     let { role, id: userID, email: officerEmail } = req.user;
 
     // Import Model
-    const { order, book, user, Op } = await tabel();
+    const { order, book, user } = await tabel();
 
     // Ambil Semua Orderan
-    let allOlder;
+    let allOlder, orderNoLate = [];
     
     // Bedasarkan Kondisi tertentu
     let {group} = url.parse(req.url, true).query;
@@ -34,7 +34,6 @@ Route.get("/", async function (req, res) {
         if(resultOfOrder.length <= 0) allOlder = await order.findAll();  
         else allOlder = resultOfOrder
     };
-
 
 
     // Ambil Semua Buku
@@ -56,11 +55,14 @@ Route.get("/", async function (req, res) {
 
       // Ubah Format waktu
       let jam = new Date(allOlder[value].dataValues.order_date);
-      allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth()}-${jam.getDate()}`
+      allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
 
       // Ubah status
       allOlder[value].dataValues.return_status = allOlder[value].dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
 
+    //  if(moduleLibrary.getTime(jam.getTime()).days === 0) {
+    //    orderNoLate.push(allOlder[value])
+    //  }
 
       allOlder[value].dataValues.book_id = await allOlder[value].getBook({
         raw: true,
@@ -70,7 +72,8 @@ Route.get("/", async function (req, res) {
         raw: true,
         attributes: ["id", ["name", `title`]],
       }); 
-    }
+    };
+
     
     // Ambil Column dari model
     const coloumn = await Object.keys(order.rawAttributes);
@@ -103,7 +106,7 @@ Route.get("/", async function (req, res) {
       ],
       buttonHeader: {
         add: {
-          class: "fas fa-user mr-2",
+          class: "fas fa-plus mr-2",
           id: "addActionButton",
         },
         convert_to_excel: {
@@ -130,6 +133,11 @@ Route.get("/", async function (req, res) {
           target: "order_date",
           showName: "Date Order"
         }),
+        moduleLibrary.as({
+          target: "order_day",
+          type: 'number'
+        }),
+
       ],
       buttonAction: false,
     });
@@ -226,6 +234,7 @@ Route.delete("/", async function (req, res) {
           user_id: user,
           book_id: userBook,
           id_transaction,
+          return_status: false
         },
       },
     });
@@ -244,7 +253,6 @@ Route.delete("/", async function (req, res) {
     });
 
     if(!resultBook) throw new respon2({message: 'book not found'});
-    console.log(resultBook)
 
     // Update
     await order.update(

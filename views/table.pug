@@ -183,7 +183,7 @@ a.scroll-to-top.rounded(href='#page-top')
         a.btn.btn-primary(href='/logout') Logout
 // Modal Multiguna
 if(buttonAction)
-  if(buttonAction.delete)
+  if(buttonAction.delete === true)
     #deleteModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
       .modal-dialog(role='document')
         .modal-content
@@ -194,7 +194,7 @@ if(buttonAction)
           .modal-body Please select a row first 
           .modal-footer
             button#deleteButton.btn.btn-danger(type='button' aria-label='delete button') Delete
-  if(buttonAction.update)
+  if(buttonAction.update === true)
     #editModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
       .modal-dialog(role='document')
         .modal-content
@@ -226,7 +226,6 @@ if(buttonAction)
           .modal-footer
             button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
             button#EditButton.btn.btn-primary(type='button' aria-label='Edit button') Edit
-// Modal Multiguna
 #addModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
@@ -258,12 +257,32 @@ if(buttonAction)
         button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
         button#addButton.btn.btn-primary(type='button' aria-label='add button') Add
 
+#convertModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#multigunaHeader.modal-title Convert To Excel
+        button.close(type='button' data-dismiss='modal' aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body 
+        form(action="") 
+          .form-group   
+            label(for="convert") Convert : 
+            select.form-control#convert(name="convert")
+              option(value="all") All 
+              option(value="1") Completed transactions
+              option(value="0") unfinished transactions
+      .modal-footer 
+        button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
+        button#convertButton.btn.btn-primary(type='button' aria-label='add button') Convert Now
 div#imageModal 
   img(src="", alt="")
   span.close &times;
 .modal-custom(style=`position="fixed"; width: "100%"; height: "100%"; background-color: "#666"`)
     .spinner-border.text-primary(role="status")
       span.sr-only Loading...
+if (additional) 
+  .modal-collect !{additional}
 // Script Dasar
 script(src='/assets/template/vendor/jquery/jquery.min.js')
 script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')

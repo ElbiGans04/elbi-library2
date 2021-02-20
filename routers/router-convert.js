@@ -3,15 +3,28 @@ const Route = express.Router();
 const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
 const model = require('../models/model-index');
-const excel = require('../middleware/jsexcell');
+const excel = require('excel4node');
+const {style, styleColumn} = require('../middleware/jsexcell');
 const path = require('path');
 const fs = require('fs');
 
-Route.get('/', async function(req, res){
+Route.get('/:group', async function(req, res){
     try {
-
+        let group = parseInt(req.params.group);
         let { order } = await model();
-        let allOlder = await order.findAll();
+        let allOlder;
+        let wb = new excel.Workbook({
+            author: 'Elbi Library'
+        });
+
+        let lembarKerja = wb.addWorksheet('Sheet 1');
+        
+        // Sesuaikan dengan kondisi
+        if(group === 1) allOlder = await order.findAll({where: {return_status: true}});
+        else if(group === 0) allOlder = await order.findAll({where: {return_status: false}})
+        else allOlder = await order.findAll();
+
+        // Ambil Attribute
         let attributes = await order.rawAttributes
     
         // Mengambil Data dari tabel relasi
@@ -41,10 +54,10 @@ Route.get('/', async function(req, res){
               let name = moduleLibrary.ambilKata(col, '_', {without: [0]});
               if(name.toLowerCase() === "id" && idx !== 1) name = `Name ${moduleLibrary.ambilKata(col, '_', {without: [1]})}`;
               
-              excel.ws
+              lembarKerja
                 .cell(1, idx)
                 .string(name)
-                .style(excel.styleColumn)
+                .style(styleColumn)
     
               // Increment
               idx++
@@ -72,22 +85,22 @@ Route.get('/', async function(req, res){
                 }
     
                 if(typeof value === 'number') {
-                    excel.ws
+                    lembarKerja
                         .cell(index + 1, index2)
                         .number(value)
-                        .style(excel.style)
+                        .style(style)
     
                 } else if (typeof value === 'string') {
-                    excel.ws
+                    lembarKerja
                         .cell(index + 1, index2)
                         .string(value)
-                        .style(excel.style)
+                        .style(style)
                     } else {
                         if(value) {
-                            excel.ws
+                            lembarKerja
                                 .cell(index + 1, index2)
                                 .string(value.title)
-                                .style(excel.style)
+                                .style(style)
                         }
                         
                     }
@@ -100,11 +113,11 @@ Route.get('/', async function(req, res){
         // Beri Jarak bedasarkan panjang
         data.forEach(function(e, i){
             let max = e.sort((a,b) => a - b)[e.length - 1];
-            excel.ws.column(i + 1).setWidth(max + 10)
+            lembarKerja.column(i + 1).setWidth(max + 10)
         })  
     
           let name = `Elbi-Library-${Date.now()}.xlsx`;
-          excel.wb.write(name, function(err){
+          wb.write(name, function(err){
               if(err) throw err
               else {
                   res.download(`${path.resolve(__dirname, `../${name}`)}`, function(err){
