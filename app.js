@@ -97,6 +97,9 @@ const respon2 = require("./controllers/respon");
   app.use("/publisher", auth, roleAuth, group("publisher", "Publisher"));
   app.use("/officer", auth, roleAuth, officerRoute);
   app.use("/convert", auth, roleAuth, convertRoute);
+  app.get("/about", auth, function(req, res){
+    res.render('about', {role: req.user.role, name: req.user.email})
+  })
 
   app.listen(port, function (err) {
     if (err) throw err;

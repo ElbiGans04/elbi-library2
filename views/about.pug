@@ -1,0 +1,134 @@
+head
+  meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible' content='IE=edge')
+  meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  meta(name='description' content='')
+  meta(name='author' content='')
+  title Elbi Library | About
+  link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
+  link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
+  link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
+  link(href='/assets/template/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
+// Page Wrapper
+#wrapper
+  // Sidebar
+  ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion.disableButton
+    // Sidebar - Brand
+    a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
+      .sidebar-brand-icon.rotate-n-15
+        i.fas.fa-book-open
+      .sidebar-brand-text.mx-3 Elbi Library
+    // Divider
+    hr.sidebar-divider.my-0
+    // Nav Item - Dashboard
+    li.nav-item(name="dashboard")
+      a.nav-link(href='/')
+        i.fas.fa-fw.fa-tachometer-alt
+        span.ml-1 Dashboard
+    // Divider
+    hr.sidebar-divider
+    .sidebar-heading Data
+    if(role == 'librarian')
+      include navBar.pug
+    else if (role == 'admin')
+      include navBarAdmin.pug
+
+    // Divider
+    hr.sidebar-divider.d-none.d-md-block
+    // Sidebar Toggler (Sidebar)
+    .text-center.d-none.d-md-inline
+      button#sidebarToggle.rounded-circle.border-0
+  // End of Sidebar
+  // Content Wrapper
+  #content-wrapper.d-flex.flex-column
+    // Main Content
+    #content
+      // Topbar
+      nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
+        button#sidebarToggleTop.btn.btn-link.d-md-none.rounded-circle.mr-3
+          i.fa.fa-bars
+        ul.navbar-nav.ml-auto
+          li.nav-item.dropdown.no-arrow
+            a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{name}
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #${Math.floor(Math.random()*16777215).toString(16)}`)
+                span !{name.slice(0,2)}
+            
+            .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
+              a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
+                i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
+                |                     Logout
+      
+      
+      .container-fluid 
+          .card-body
+            .table-responsive
+                .col-sm-12 
+                    h1.diplay.text-center About Application
+                .col-sm-12.mt-5
+                  .table-responsive
+                    table.table.table-bordered.display(cellspacing="0" style="width:100%")
+                      tbody 
+                        tr 
+                          td Application name
+                          td Elbi Library
+                        tr  
+                          td Start date of application creation
+                          td 18 January 2021
+                        tr 
+                          td Date of completion of application creation
+                          td 21 February 2021
+                        tr  
+                          td Original author
+                          td 
+                            a(href="http://elbi.vercel.app" target="_blank") Rhafael Bijaksana
+                        tr  
+                          td Dbms used
+                          td Postgresql & Mysql
+                        tr 
+                          td Programming language used
+                          td NodeJs / Javascript
+                        tr 
+                          td Framework used
+                          td Express Js
+
+
+
+      // /.container-fluid
+      // End of Main Content
+      // Footer
+      footer.sticky-footer.bg-white
+        .container.my-auto
+          .copyright.text-center.my-auto
+            span
+              | Copyright &copy; By Elbi 2020 | made with love 
+              i.fas.fa-heart
+      // End of Footer
+      // End of Content Wrapper
+// End of Page Wrapper
+// Scroll to Top Button
+a.scroll-to-top.rounded(href='#page-top')
+  i.fas.fa-angle-up
+// Logout Modal
+#logoutModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#exampleModalLabel.modal-title Ready to Leave?
+        button.close(type='button' data-dismiss='modal' aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body
+        | Select &quot;Logout&quot; below if you are ready to end your current session.
+      .modal-footer
+        button.btn.btn-secondary(type='button' data-dismiss='modal')
+          | Cancel
+        a.btn.btn-primary(href='/logout') Logout
+
+// Script Dasar
+script(src='/assets/template/vendor/jquery/jquery.min.js')
+script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')
+script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
+script(src='/assets/template/js/sb-admin-2.min.js')
+script(src="/assets/template/vendor/datatables/jquery.dataTables.min.js")
+script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")
+script(type="module" src="/assets/javascript/about.js")
