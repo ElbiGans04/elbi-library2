@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
-module.exports = function (sequelize) {
-    return sequelize.define('publisher', {
-        name: DataTypes.STRING
-    })
-}
+const db = require('./model-index');
+module.exports = db.define('publisher', {
+    name: DataTypes.STRING
+}, {timestamps: false});

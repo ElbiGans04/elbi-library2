@@ -31,22 +31,17 @@ app.set("view engine", "pug");
 app.set("views", "./views");
 
 const modelIndex = require("./models/model-index");
+const modelUser = require("./models/model-user");
+const modelClass = require("./models/model-user");
 const respon2 = require("./controllers/respon");
 
 (async function () {
-  let {
-    sequelize,
-    officer,
-    role,
-    userClass,
-    user,
-    category,
-    book,
-    publisher,
-  } = await modelIndex();
+  // assosiasi user dengan class
+  await modelClass.belongsToMany(modelUser, { through: 'user_class', as: 'class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
+  await modelUser.belongsToMany(modelClass, { through: 'user_class', as: 'user', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
+  await modelIndex.sync({force: true})
 
   // await sequelize.sync({force: true});
-
   // // Isi Officer dan beri assosiasi
   // // v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0=
   // let officer1 = await officer.create({name: 'rhafael', email: 'rhafaelbijaksana04@gmail.com', password:'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
@@ -73,7 +68,7 @@ const respon2 = require("./controllers/respon");
 
 
   app.get("/", auth, indexRoute);
-  app.use("/users", auth, roleAuth, memberRouter);
+  app.use("/users", auth,  memberRouter);
   app.use("/books", auth, roleAuth, bookRouter);
   app.use("/rent", auth, roleAuth, rentRoute);
   app.use("/login", login);
@@ -110,7 +105,7 @@ const respon2 = require("./controllers/respon");
 async function auth(req, res, next) {
   try {
     const token = req.cookies.token;
-    let { officer } = await modelIndex();
+    const officer = require('./models/model-officer');
 
     // Jika Token Tidak ada
     if (!token) throw new Error("token not found");
@@ -152,7 +147,7 @@ async function roleAuth(req, res, next) {
 
     let url = req.originalUrl;
     // Import Model
-    let { role } = await modelIndex();
+    let role = require('./models/model-role');
 
     // User
     let { role: userROLE } = req.user;

@@ -1,14 +1,13 @@
-module.exports = function( sequelize ) {
-    const { DataTypes } = require('sequelize');
-    return sequelize.define('forget', {
-        token: {
-            type: DataTypes.STRING
-        },
-
-        tokenExp: {
-            type: DataTypes.BIGINT(20)
-        }
-    }, {
-        timestamps: false
-    })
-}
+const { DataTypes } = require('sequelize');
+const db = require('./model-index');
+module.exports = db.define('forget', {
+    token: {
+        type: DataTypes.STRING
+    },
+    
+    tokenExp: {
+        type: DataTypes.BIGINT(20)
+    }
+}, {
+    timestamps: false
+})

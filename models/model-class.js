@@ -1,6 +1,5 @@
 const { DataTypes, STRING } = require('sequelize');
-module.exports = function (sequelize) {
-    return sequelize.define('class', {
-        name: STRING
-    })
-}
+const db = require('./model-index');
+module.exports = db.define('class', {
+    name: STRING
+})

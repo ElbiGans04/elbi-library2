@@ -1,19 +1,18 @@
-let model = require('../models/model-index');
+let model = require('../models/model-user');
+let modelClass = require('../models/model-class')
 const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
 const respon2 = require('./respon')
 const url = require('url');
 
-
 module.exports = {
     get : async function(req, res) {
         try {
-            let { user } = await model();
             const id = req.params.id;
 
             
             // Auth
-            let result = await user.findOne({
+            let result = await model.findOne({
                 where: {
                     id
                 }
@@ -39,22 +38,20 @@ module.exports = {
     // Get All
     getAll : async function (req, res) {
         try {
-            // Ambil Model
-            let { user, userClass} = await model();
             let alluser;
 
             // Cari user yang rolenya bukan admin maupun librarian
             let {group} = url.parse(req.url, true).query;
-            if(group === undefined || group.toLowerCase() == "all") alluser = await user.findAll();
+            if(group === undefined || group.toLowerCase() == "all") alluser = await model.findAll();
             else {
-                let resultOfClass = await userClass.findOne({
+                let resultOfClass = await modelClass.findOne({
                     where: {
                         id: group
                     }
                 });
 
                 // Jika tidak ada
-                if(!resultOfClass) alluser = await user.findAll();  
+                if(!resultOfClass) alluser = await model.findAll();  
                 else {
                     alluser = await resultOfClass.getUsers()
                 }
@@ -63,6 +60,7 @@ module.exports = {
             
             // Ambil Data dari tabel relasi
             for (let el of alluser) {
+                console.log(el)
                 let classCustom = await el.getClasses({
                     raw: true,
                     attributes: ['id', [`name`, 'title']]
@@ -73,14 +71,14 @@ module.exports = {
             
 
             // Ambil Class untuk modal select
-            let resultClass = await userClass.findAll({
+            let resultClass = await modelClass.findAll({
                 raw: true,
                 attributes: ['id', ['name', 'value']]
             });
             
             
             // Ambil Column
-            let coloumn = Object.keys(await user.rawAttributes);
+            let coloumn = Object.keys(await model.rawAttributes);
             coloumn.push('class')
 
             // Column yang tidak ingin ditampilkan
@@ -129,12 +127,9 @@ module.exports = {
     // Post
     post: async function(req, res){
         try {
-            // Load Modal member
-            let { user, userClass } = await model();
-            
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar
-            let validation = await user.findOne({
+            let validation = await model.findOne({
                 where : {
                     nisn : req.body.nisn
                 }
@@ -143,7 +138,7 @@ module.exports = {
             // Jika Ada
             if (validation > 0) throw new respon2({code: 200, message: 'nisn already'});
 
-            let resultClass = await userClass.findOne({
+            let resultClass = await modelClass.findOne({
                 where: {
                     id: req.body.class
                 }
@@ -152,7 +147,7 @@ module.exports = {
             if (!resultClass) throw new respon2({code: 200, message: 'invalid class'})
 
             // // Buat User sesuai yang diinputkan
-            let resultUser = await user.create(req.body, {});
+            let resultUser = await model.create(req.body, {});
             await resultUser.setClasses(resultClass);
             
             // Kirim Respon kepada user
@@ -173,12 +168,11 @@ module.exports = {
     // Put
     put: async function (req, res) {
         try {
-            let { user, userClass } = await model();
             let entitasId = req.params.id;
     
             // Validation
             // Check Apakah user dengan id terkait ditemukan
-            let validation = await user.findOne({
+            let validation = await model.findOne({
                 where: {
                     id: entitasId
                 }
@@ -187,7 +181,7 @@ module.exports = {
             // Jika user tidak ditemukan maka lempar pesan
             if(validation <= 0) throw new respon2({message: 'user not found', code: 200})
 
-            let resultClass = await userClass.findOne({
+            let resultClass = await modelClass.findOne({
                 where: {
                     id: req.body.class
                 }
@@ -197,7 +191,7 @@ module.exports = {
     
     
             // Jika Ditemukan maka lanjutkan
-            let result = await user.update(req.body, {
+            let result = await model.update(req.body, {
                 where: {
                     id: entitasId
                 }
@@ -224,11 +218,10 @@ module.exports = {
     // Delete
     delete: async function (req, res) {
         try {
-            let { user } = await model();
             let id = req.params.id;
             
             // Validation
-            let validation = await user.count({
+            let validation = await model.count({
                 where: {
                     id
                 },
@@ -239,7 +232,7 @@ module.exports = {
             if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
     
             // Hapus user
-            await user.destroy({
+            await model.destroy({
                 where: {
                     id
                 }
