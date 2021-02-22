@@ -231,18 +231,6 @@ $(document).on('click', `#EditButton`, function (event) {
 });
 
 
-// Tampilkan gambar saat user upload
-$(document).on('change', '#inputUpdateImage, #inputAddImage', function(event){
-  const gambar = this.parentElement.children[0];
-  console.log('check')
-  const file = this.files[0];
-  const read = new FileReader();
-  read.readAsDataURL(file);
-  read.onload = () => {
-    gambar.setAttribute('src', read.result)
-  }
-});
-
 // // // Akhir Dari edit modal // // // 
 
 

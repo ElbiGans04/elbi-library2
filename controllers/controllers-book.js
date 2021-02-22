@@ -249,7 +249,6 @@ module.exports = {
             // Tambahkan File, Karena file berada direq.file
             // Buat File Format
             if(req.file) {
-                throw new respon2({code: 200, message: 'please insert image'})
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
                 req.body.book_type = format

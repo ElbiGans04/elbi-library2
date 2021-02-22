@@ -212,8 +212,6 @@ if(buttonAction)
                   - let realName = test.target || value;
                   - let defaultVal = test.defaultValue || `on`;
                   .form-group
-                    if(file == 'file')
-                      img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
                     label(for=`inputUpdate${name}`)=name
                     if(file == 'select') 
                       select.form-control(name=realName)
@@ -243,8 +241,6 @@ if(buttonAction)
               - let name = test.showName || module.ambilKata(value, '_', {space: true,without: [0]});
               - let realName = test.target || value
               .form-group
-                if(file == 'file')
-                  img#inputUpdateImage.d-block.img-thumbnail(src="" alt="")
                 label(for=`inputAdd${name}`)=name
                 if(file == 'select') 
                   select.form-control(name=value)
