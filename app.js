@@ -18,6 +18,7 @@ const forgetRoute = require("./routers/router-forget");
 const officerRoute = require("./routers/router-officer");
 const convertRoute = require("./routers/router-convert");
 const group = require("./routers/router-generate");
+const report = require('./routers/router-report');
 
 // // // Instalasi Project // // //
 app.use("/assets", express.static("./public"));
@@ -116,7 +117,8 @@ const respon2 = require("./controllers/respon");
   app.use("/convert", auth, roleAuth, convertRoute);
   app.get("/about", auth, function(req, res){
     res.render('about', {role: req.user.role, name: req.user.email})
-  })
+  });
+  app.use("/report", auth, roleAuth, report)
 
   app.listen(port, function (err) {
     if (err) throw err;
