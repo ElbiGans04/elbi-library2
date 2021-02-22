@@ -28,9 +28,9 @@ head
     // Divider
     hr.sidebar-divider
     .sidebar-heading Data
-    if(role == 'librarian')
+    if(profile.role == 'librarian')
       include navBar.pug
-    else if (role == 'admin')
+    else if (profile.role == 'admin')
       include navBarAdmin.pug
 
     // Divider
@@ -50,9 +50,9 @@ head
         ul.navbar-nav.ml-auto
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{name}
-              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #${Math.floor(Math.random()*16777215).toString(16)}`)
-                span !{name.slice(0,2)}
+              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{profile.email}
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
+                span !{profile.email.slice(0,2)}
             
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
               a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
@@ -71,26 +71,26 @@ head
                       tbody 
                         tr 
                           td Application name
-                          td Elbi Library
+                          td #{module.decryptPriv(result.appName)}
                         tr  
                           td Start date of application creation
-                          td 18 January 2021
+                          td #{module.decryptPriv(result.start)}
                         tr 
                           td Date of completion of application creation
-                          td 21 February 2021
+                          td #{module.decryptPriv(result.end)}
                         tr  
                           td Original author
                           td 
-                            a(href="http://elbi.vercel.app" target="_blank") Rhafael Bijaksana
+                            a(href="http://elbi.vercel.app" target="_blank") #{module.decryptPriv(result.author)}
                         tr  
                           td Dbms used
-                          td Postgresql & Mysql
+                          td #{module.decryptPriv(result.dbms)}
                         tr 
                           td Programming language used
-                          td NodeJs / Javascript
+                          td #{module.decryptPriv(result.language)}
                         tr 
                           td Framework used
-                          td Express Js
+                          td #{module.decryptPriv(result.framework)}
 
 
 

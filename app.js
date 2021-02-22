@@ -6,7 +6,7 @@ const cookie = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const port = process.env.APP_PORT || 3000;
 const { multer } = require("./middleware/multer");
-
+const model = require('./db/models/index')
 
 // Router
 const memberRouter = require("./routers/router-member");
@@ -37,58 +37,6 @@ const respon2 = require("./controllers/respon");
 (async function () {
   // await modelIndex.sequelize.sync({force: true});
   // await modelIndex.sequelize.drop()
-  // let createOfficer = await modelIndex.officer.create({name: 'fael', email: 'rhafaelbijaksana04@gmail.com', password: 'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
-  // let createClass = await modelIndex.role.bulkCreate([
-  // {
-  //   name: 'librarian',
-  // },
-  // {
-  //   name: 'admin',
-  // },
-
-  // ]);
-
-  // await modelIndex.
-  // await createOfficer.setClasses(createClass[0])
-  // assosiasi user dengan class
-  // {
-  //   about: about,
-  //   book: book,
-  //   category: category,
-  //   class: class,
-  //   forget: forget,
-  //   officer: officer,
-  //   order: order,
-  //   publisher: publisher,
-  //   role: role,
-  //   user: user
-  // }
-
-  // await sequelize.sync({force: true});
-  // // Isi Officer dan beri assosiasi
-  // // v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0=
-  // let officer1 = await officer.create({name: 'rhafael', email: 'rhafaelbijaksana04@gmail.com', password:'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
-  // let officer2 = await officer.create({name: 'elbi', email: 'elbijr2@gmail.com', password:'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
-
-  // let role1 = await role.create({name: 'librarian'})
-  // let role2 = await role.create({name: 'admin'});
-
-  // await officer1.setRoles(role1)
-  // await officer2.setRoles(role2)
-
-  // // isi users dan assosisasi
-  // let user1 = await user.create({name: 'Jacqueline Upton', nisn: '54044'});
-  // let user2 = await user.create({name: 'Steven Gleichner I', nisn: '67533'});
-
-  // let userClass1 = await userClass.create({name: '12 rpl 1'});
-  // let userClass2 = await userClass.create({name: '12 rpl 2'});
-
-  // await userClass1.setUsers(user1);
-  // await userClass2.setUsers(user2);
-
-  // let category1 = await category.create({name: 'fantasy'});
-  // let category2 = await category.create({name: 'romance'});
-
 
   app.get("/", auth, indexRoute);
   app.use("/users", auth,  memberRouter);
@@ -109,14 +57,15 @@ const respon2 = require("./controllers/respon");
   });
   app.use("/forget", forgetRoute);
   
-
   app.use("/class", auth, roleAuth, group("class", "Class"));
   app.use("/category", auth, roleAuth, group("category", "Category"));
   app.use("/publisher", auth, roleAuth, group("publisher", "Publisher"));
   app.use("/officer", auth, roleAuth, officerRoute);
   app.use("/convert", auth, roleAuth, convertRoute);
-  app.get("/about", auth, function(req, res){
-    res.render('about', {role: req.user.role, name: req.user.email})
+  app.get("/about", auth, async function(req, res){
+    let result = await model.about.findOne({raw: true});
+    const moduleLibrary = require('./controllers/module');
+    res.render('about', {profile: req.user, result, module : new moduleLibrary})
   });
   app.use("/report", auth, roleAuth, report)
 

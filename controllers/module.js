@@ -1,4 +1,6 @@
 const crypto = require('crypto');
+const path = require('path');
+const dotenv = require('dotenv').config({path: path.resolve(__dirname, '../config/.env')})
 // untuk menambil kata ke-berapa dari string
 module.exports = class {
   // Ubah Huruf
@@ -181,6 +183,16 @@ module.exports = class {
     let hash = crypto.createHash('SHA256');
     hash.write(text, 'base64');
     return hash.digest('base64');
+  }
+
+  encryptPub(text) {
+    text = crypto.publicEncrypt(`${process.env.APP_PUBLIC_KEY}`, Buffer.from(text))
+    return text.toString('base64')
+  };
+  
+  decryptPriv(text) {
+    text = crypto.privateDecrypt(process.env.APP_PRIVATE_KEY, Buffer.from(text, "base64"))
+    return text.toString('utf-8')
   }
 
 }
