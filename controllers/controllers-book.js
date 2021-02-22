@@ -1,6 +1,6 @@
-let model = require('../models/model-index');
 const respon2 = require('./respon');
 const ModuleTemplate = require('./module');
+let model = require('../db/models/index')
 const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
 const url = require('url');
@@ -9,7 +9,7 @@ const url = require('url');
 module.exports = {
     get: async function(req, res) {
         try {
-            let { book } = await model();
+            let book = model.book;
             const id = req.params.id;
             
             // Validation
@@ -49,8 +49,9 @@ module.exports = {
 
     getAll: async function (req, res) {
         try {
-            const { book, category, publisher } = await model();
-            const {email, role} = req.user;
+            const book = model.book;
+            const category = model.category;
+            const publisher = model.publisher;
             let result;
 
             // Ambil Url
@@ -113,12 +114,11 @@ module.exports = {
             res.render('table', {
                 coloumn,
                 data: result,
-                role,
                 modalwithout:[...without],
                 without,
                 title: 'Book',
                 module: moduleLibrary,
-                name : email,
+                profile: req.user,
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
@@ -148,7 +148,9 @@ module.exports = {
 
     post: async function (req,res) {
         try {
-            let { book, category, publisher } = await model();
+            const book = model.book;
+            const category = model.category;
+            const publisher = model.publisher;
             let { category: usercategory } = req.body;
 
 
@@ -225,7 +227,9 @@ module.exports = {
 
     put: async function (req, res) {
         try {
-            let { book, category, publisher } = await model();
+            const book = model.book;
+            const category = model.category;
+            const publisher = model.publisher;
             let entitasId = req.params.id;
             let { category: userCategory } = req.body; 
 
@@ -244,9 +248,8 @@ module.exports = {
             
             // Tambahkan File, Karena file berada direq.file
             // Buat File Format
-            if(!req.file) {
+            if(req.file) {
                 throw new respon2({code: 200, message: 'please insert image'})
-            } else {
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
                 req.body.book_type = format
@@ -308,7 +311,7 @@ module.exports = {
 
     delete: async function (req, res) {
         try {
-            let { book } = await model();
+            const book = model.book;
             let id = req.params.id;
             
             // Verify
@@ -348,7 +351,3 @@ module.exports = {
 }
 
 
-// Ubah Format Waktu
-function waktu (kata) {
-    
-}

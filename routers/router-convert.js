@@ -2,7 +2,7 @@ const express = require('express');
 const Route = express.Router();
 const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
-const model = require('../models/model-index');
+const model = require('../db/models/index');
 const excel = require('excel4node');
 const {style, styleColumn} = require('../middleware/jsexcell');
 const path = require('path');
@@ -11,7 +11,7 @@ const fs = require('fs');
 Route.get('/:group', async function(req, res){
     try {
         let group = parseInt(req.params.group);
-        let { order } = await model();
+        const order = model.order;
         let allOlder;
         let wb = new excel.Workbook({
             author: 'Elbi Library'
@@ -31,7 +31,7 @@ Route.get('/:group', async function(req, res){
         for (let value in allOlder) {
     
             // Ubah Format waktu
-            let jam = new Date(allOlder[value].dataValues.order_date);
+            let jam = new Date(parseInt(allOlder[value].dataValues.order_date));
             allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth()}-${jam.getDate()}`
       
             // Ubah status

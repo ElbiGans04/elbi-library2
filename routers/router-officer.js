@@ -1,6 +1,6 @@
 const express = require('express');
 const Route = express.Router();
-const model = require('../models/model-index');
+let model = require('../db/models/index')
 const ModuleTemplate = require('../controllers/module');
 const  moduleLibrary = new ModuleTemplate();
 const respon = require('../controllers/respon');
@@ -8,12 +8,8 @@ let url = require('url');
 
 Route.get('/', async function(req, res){ 
     try {
-        // Import Model
-        const { role, officer } = await model();
-
-
         // Cari role
-        let allClass = await role.findOne({
+        let allClass = await model.role.findOne({
             where: {
                 name: 'admin'
             }
@@ -23,16 +19,16 @@ Route.get('/', async function(req, res){
         // Jika dia mempunyai role librarian maka tampilkan semua
         let resultOfficer;
         let {group} = url.parse(req.url, true).query;
-        if(group === undefined || group.toLowerCase() == "all") resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await officer.findAll();
+        if(group === undefined || group.toLowerCase() == "all") resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await model.officer.findAll();
         else {
-            let resultOfClass = await role.findOne({
+            let resultOfClass = await model.role.findOne({
                 where: {
                     id: group
                 }
             });
             
             // Jika tidak ketemu
-            if(!resultOfClass) resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await officer.findAll();
+            if(!resultOfClass) resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await model.officer.findAll();
             else {
                 resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers()  : await resultOfClass.getOfficers()
             }
@@ -40,7 +36,7 @@ Route.get('/', async function(req, res){
         
         // ambil untuk modal 
         let opt = req.user.role == 'admin' ? {name: `admin`} : {};
-        let resultRole = await role.findAll({
+        let resultRole = await model.role.findAll({
             where: opt,
             raw: true,
             attributes: ['id', ['name', 'value']]
@@ -58,24 +54,22 @@ Route.get('/', async function(req, res){
 
         
         // Ambil Column
-        let coloumn = Object.keys(await officer.rawAttributes);
+        let coloumn = Object.keys(await model.officer.rawAttributes);
         coloumn.push('role');
         
 
         // Column yang tidak ingin ditampilkan
         const without = ['id', 'createdat', 'updatedat', 'officer_role'];
 
-        
         // Render halaman
         res.render('table', {
             coloumn,
             data: resultOfficer,
-            role: req.user.role,
+            profile: req.user,
             modalwithout: [...without],
             without: [...without],
             title: 'Officer',
             module: moduleLibrary,
-            name: req.user.email,
             as: [
                 moduleLibrary.as({target: 'name', as: 'identifer'}),
                 moduleLibrary.as({target: 'role', as: 'group', type: 'select', value: resultRole}),
@@ -106,12 +100,10 @@ Route.get('/', async function(req, res){
 
 Route.get('/:id', async function(req, res){
     try {   
-        // Import Model
-        const { role, officer } = await model();
         const userID = req.params.id;
 
         // Check
-        let roleAdmin = await role.findOne({
+        let roleAdmin = await model.role.findOne({
             where: {
                 name: 'admin'
             }
@@ -124,7 +116,7 @@ Route.get('/:id', async function(req, res){
             raw: true
         }
 
-        let result = req.user.role == 'admin' ? await roleAdmin.getOfficers(opsi) : await officer.findAll(opsi);
+        let result = req.user.role == 'admin' ? await roleAdmin.getOfficers(opsi) : await model.officer.findAll(opsi);
         result = result[0];
 
         if(!result) throw new respon({message: 'user not found', code: 200});
@@ -141,10 +133,9 @@ Route.get('/:id', async function(req, res){
 Route.post('/', async function(req, res){
     try {
         const { email } = req.body;
-        const { role, officer } = await model();
         
         // Check
-        const validate = await officer.count({
+        const validate = await model.officer.count({
             where: {
                 email
             }
@@ -156,7 +147,7 @@ Route.post('/', async function(req, res){
         // Jika email sudah terdaftar
         if(validate > 0) throw new respon({message: 'email already register', code: 200});
 
-        const validateRole = await role.findOne({
+        const validateRole = await model.role.findOne({
             where: {
                 id: req.body.role
             }
@@ -169,7 +160,7 @@ Route.post('/', async function(req, res){
         if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200});
 
         // Tambahkan
-        let result = await officer.create(req.body);
+        let result = await model.officer.create(req.body);
         await result.setRoles(validateRole)
         
         res.json(new respon({message: 'managed to add officers', code: 200, type: true}))
@@ -182,11 +173,10 @@ Route.post('/', async function(req, res){
 
 Route.put('/:id', async function(req, res){
     try {
-        const { role, officer } = await model();
         const userId = req.params.id;
 
         // Check
-        const validate = await officer.findOne({
+        const validate = await model.officer.findOne({
             where: {
                 id: userId
             }
@@ -197,7 +187,7 @@ Route.put('/:id', async function(req, res){
 
 
         // Check Role
-        const validateRole = await role.findOne({
+        const validateRole = await model.role.findOne({
             where: {
                 id: req.body.role
             }
@@ -212,7 +202,7 @@ Route.put('/:id', async function(req, res){
         // Hashing
         req.body.password = moduleLibrary.hashing(req.body.password);
 
-        await officer.update(req.body, {
+        await model.officer.update(req.body, {
             where: {
                 id: userId
             }
@@ -230,10 +220,9 @@ Route.put('/:id', async function(req, res){
 
 Route.delete('/:id', async function(req, res){
     try {
-        const { role, officer } = await model();
         const userId = req.params.id;
         
-        const result = await officer.findOne({
+        const result = await model.officer.findOne({
             where: {
                 id: userId
             }
@@ -249,7 +238,7 @@ Route.delete('/:id', async function(req, res){
         // Jika admin ingin menghapus librarian
         if(req.user.role == 'admin' && resultRole[0].name == 'librarian') throw new respon({ message : 'you dont have permission', code: 200})
 
-        await officer.destroy({
+        await model.officer.destroy({
             where : {
                 id: userId
             }

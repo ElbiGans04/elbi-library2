@@ -1,26 +1,22 @@
 const express = require('express');
 const Route = express.Router()
 const respon2 = require('../controllers/respon');
-const model = require('../models/model-index');
+const index = require(`../db/models/index`);
 const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
 const jwt = require('jsonwebtoken');
 
-
 // Definisikan
-Route.get('/', function (req, res) {
-    res.render('login')
-});
+Route.get('/', (req, res) => res.render('login'));
 
 Route.post('/', async function (req, res) {
     try {
-        const { officer, role } = await model();
         let { email, password: password2 } = req.body;
 
         // Hashing
         password2 = moduleLibrary.hashing(password2);
     
-        let result = await officer.findOne({
+        let result = await index.officer.findOne({
             where: {
                 email,
             },
@@ -28,7 +24,7 @@ Route.post('/', async function (req, res) {
                 exclude: ['createdAt', 'updatedAt']
             },
             include: {
-                model: role,
+                model: index.role,
                 through: {
                     attributes: []
                 },
@@ -51,6 +47,9 @@ Route.post('/', async function (req, res) {
         res.cookie('token', token, {
             maxAge: process.env.APP_MAX_AGE * 1000
         })
+
+
+        // Kirim Respon
         res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
         
     } catch (err) {
@@ -64,4 +63,9 @@ Route.post('/', async function (req, res) {
     }
     
 })
+
+
+
+
+// Export
 module.exports = Route

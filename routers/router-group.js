@@ -2,15 +2,16 @@ module.exports = function (model, name) {
     const ModuleTemplate = require('../controllers/module');
     const  moduleLibrary = new ModuleTemplate();
     const respon = require('../controllers/respon');
-    
-    this.db = require('../models/model-index');
+
+
+    this.db = require('../db/models/index');
     this.model = model;
 
 
     this.get = async (req, res) => {
         try {
             // Import Model
-            let model = await this.db()
+            let model = await this.db;
             const paramID = req.params.id;
             
             const result = await model[this.model].findOne({
@@ -36,7 +37,7 @@ module.exports = function (model, name) {
         try {
         
             // Import Model
-            const model = await this.db()
+            const model = this.db
     
             // Cari user yang rolenya bukan admin maupun librarian
             let allClass = await model[this.model].findAll();
@@ -52,8 +53,7 @@ module.exports = function (model, name) {
             res.render('table', {
                 coloumn: coloumn,
                 data: allClass,
-                role: req.user.role,
-                name: req.user.email,
+                profile: req.user,
                 modalwithout: [...without],
                 without: [...without, 'role'],
                 title: name,
@@ -72,6 +72,7 @@ module.exports = function (model, name) {
                     delete: true
                 }
             })
+            
     
         } catch (err) {
             console.log(err)
@@ -86,7 +87,7 @@ module.exports = function (model, name) {
     this.post = async (req, res) => {
         try {
             // Import Model
-            let model = await this.db();
+            let model = await this.db;
             
             // Check Jika sudah ada
             let validate = await model[this.model].count({
@@ -117,7 +118,7 @@ module.exports = function (model, name) {
     this.put = async (req, res) => {
         try {
             // Import Model
-            const model = await this.db();
+            const model = await this.db;
             const paramID = req.params.id;
     
             const result = await model[this.model].count({
@@ -154,7 +155,7 @@ module.exports = function (model, name) {
     this.delete = async (req, res) => {
         try {
              // Import Model
-            const model = await this.db();
+            const model = await this.db;
             const paramID = req.params.id;
            
             const result = await model[this.model].count({

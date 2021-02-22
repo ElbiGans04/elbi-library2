@@ -30,16 +30,38 @@ app.use(cookie());
 app.set("view engine", "pug");
 app.set("views", "./views");
 
-const modelIndex = require("./models/model-index");
-const modelUser = require("./models/model-user");
-const modelClass = require("./models/model-user");
+const modelIndex = require("./db/models/index");
 const respon2 = require("./controllers/respon");
 
 (async function () {
+  // await modelIndex.sequelize.sync({force: true});
+  // await modelIndex.sequelize.drop()
+  // let createOfficer = await modelIndex.officer.create({name: 'fael', email: 'rhafaelbijaksana04@gmail.com', password: 'v6nPZnCrdcgRaic4lHYf8WY1NSLdykrTKZiB1A/7eB0='})
+  // let createClass = await modelIndex.role.bulkCreate([
+  // {
+  //   name: 'librarian',
+  // },
+  // {
+  //   name: 'admin',
+  // },
+
+  // ]);
+
+  // await modelIndex.
+  // await createOfficer.setClasses(createClass[0])
   // assosiasi user dengan class
-  await modelClass.belongsToMany(modelUser, { through: 'user_class', as: 'class', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
-  await modelUser.belongsToMany(modelClass, { through: 'user_class', as: 'user', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
-  await modelIndex.sync({force: true})
+  // {
+  //   about: about,
+  //   book: book,
+  //   category: category,
+  //   class: class,
+  //   forget: forget,
+  //   officer: officer,
+  //   order: order,
+  //   publisher: publisher,
+  //   role: role,
+  //   user: user
+  // }
 
   // await sequelize.sync({force: true});
   // // Isi Officer dan beri assosiasi
@@ -87,7 +109,7 @@ const respon2 = require("./controllers/respon");
   app.use("/forget", forgetRoute);
   
 
-  app.use("/class", auth, roleAuth, group("userClass", "Class"));
+  app.use("/class", auth, roleAuth, group("class", "Class"));
   app.use("/category", auth, roleAuth, group("category", "Category"));
   app.use("/publisher", auth, roleAuth, group("publisher", "Publisher"));
   app.use("/officer", auth, roleAuth, officerRoute);
@@ -105,7 +127,7 @@ const respon2 = require("./controllers/respon");
 async function auth(req, res, next) {
   try {
     const token = req.cookies.token;
-    const officer = require('./models/model-officer');
+    const officer = modelIndex.officer;
 
     // Jika Token Tidak ada
     if (!token) throw new Error("token not found");
@@ -153,7 +175,7 @@ async function roleAuth(req, res, next) {
     let { role: userROLE } = req.user;
 
     // Cari
-    let findRole = await role.findOne({
+    let findRole = await modelIndex.role.findOne({
       where: {
         name: userROLE,
       },

@@ -1,6 +1,6 @@
 const express = require("express");
 const Route = express.Router();
-const tabel = require("../models/model-index");
+const model = require(`../db/models/index`);
 const ModuleTemplate = require("../controllers/module");
 const moduleLibrary = new ModuleTemplate();
 const respon2 = require("../controllers/respon");
@@ -10,11 +10,10 @@ const url = require('url');
 // Definisikan
 Route.get("/", async function (req, res) {
   try {
-    // Ambil Role dan id dari req.user
-    let { role, id: userID, email: officerEmail } = req.user;
-
     // Import Model
-    const { order, book, user } = await tabel();
+    const order = model.order;
+    const book = model.book;
+    const user = model.user;
 
     // Ambil Semua Orderan
     let allOlder, orderNoLate = [];
@@ -54,7 +53,7 @@ Route.get("/", async function (req, res) {
     for (let value in allOlder) {
 
       // Ubah Format waktu
-      let jam = new Date(allOlder[value].dataValues.order_date);
+      let jam = new Date(parseInt(allOlder[value].dataValues.order_date));
       allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
 
       // Ubah status
@@ -81,7 +80,6 @@ Route.get("/", async function (req, res) {
     // Render Halaman
     res.render("table", {
       data: allOlder,
-      role,
       coloumn,
       without,
       modalwithout: [
@@ -94,9 +92,8 @@ Route.get("/", async function (req, res) {
         "order_officer_return",
       ],
       title: "Order list",
-      name: officerEmail,
       module: moduleLibrary,
-      role,
+      profile: req.user,
       group: [
         {id: 1, value:'has been returned'},
         {id: 0, value:'not been restored'}
@@ -155,7 +152,8 @@ Route.post("/", async function (req, res) {
     const bookId = req.body.book_id;
 
     // Import Model
-    const { order, book } = await tabel();
+    const order = model.order;
+    const book = model.book;
 
     // // Validasi
 
@@ -190,6 +188,7 @@ Route.post("/", async function (req, res) {
       order_officer_buy: email,
     });
 
+
     // Update Stock Buku
     await book.update(
       { book_stock: bookData.book_stock - 1 },
@@ -218,8 +217,9 @@ Route.post("/", async function (req, res) {
 
 Route.post("/return", async function (req, res) {
   try {
-    // Import model
-    const { order, book } = await tabel();
+    // Import Model
+    const order = model.order;
+    const book = model.book;
 
     // Ambil yang diinputkan user
     let { user, book : userBook, id_transaction } = req.body;
@@ -285,7 +285,7 @@ Route.post("/return", async function (req, res) {
 
 Route.get("/return", async function (req, res) {
   try {
-    const { order } = await tabel();
+    const order = model.order;
 
     // Cari order yang belum dikembalikan
     const dataOrder = await order.findAll({
@@ -328,7 +328,7 @@ Route.get("/return", async function (req, res) {
 Route.get("/return/:id", async function (req, res) {
   try {
     const paramId = req.params.id;
-    const { order } = await tabel();
+    const order = model.order;
 
     // Cari bedasarkan yang diberi
     const dataOrder = await order.findAll({
@@ -384,7 +384,8 @@ Route.get("/return/:id", async function (req, res) {
 
 
 Route.get('/renew', async function (req, res){
-  const { order } = await tabel();
+  // Import
+  const order = model.order;
   let orderNoLate = [], result = await order.findAll({
     where: {
       return_status: false
@@ -393,7 +394,7 @@ Route.get('/renew', async function (req, res){
   
 
   for(let element of result) {
-    let date = new Date(element.dataValues.order_date);
+    let date = new Date(parseInt(element.dataValues.order_date));
     date = date.setDate(date.getDate() + parseInt(element.dataValues.order_day))
 
 
@@ -436,7 +437,9 @@ Route.get('/renew', async function (req, res){
 Route.post('/renew', async function(req, res){
   try {
     let {day, user: user_id, book: book_id, id_transaction} = req.body;
-    let { order } = await tabel();
+    
+    // Import
+    const order = model.order;
     if(day === undefined || day.length <= 0 || parseInt(day) > 10) throw new respon2({message: 'invalid day', code:200})
 
     // Cari Apakah ada

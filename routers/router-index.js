@@ -1,13 +1,14 @@
 const express = require('express');
 const Route = express.Router();
-const tabel = require('../models/model-index');
+const model = require('../db/models/index');
 let Template = require('../controllers/module');
 let moduleLibrary = new Template();
 
 Route.get('/', async function(req, res){
-    let { role, id: userID } = req.user;
-    let {order, user, officer} = await tabel();
-
+    let { role, id: userID } = req.user;    
+    const order = model.order;
+    const user = model.user;
+    const officer = model.officer;
 
     // Cari Orderan dengan 
     const resultActive = await order.findAll({
