@@ -32,11 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
   },
   
-  book_fines : {
-      type: DataTypes.INTEGER,
-      allowNull: false
-  },
-  
   book_stock: {
       type: DataTypes.INTEGER,
       allowNull: false,

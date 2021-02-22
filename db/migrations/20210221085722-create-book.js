@@ -25,11 +25,6 @@ module.exports = {
         allowNull: false
     },
     
-    book_fines : {
-        type: Sequelize.INTEGER,
-        allowNull: false
-    },
-    
     book_stock: {
         type: Sequelize.INTEGER,
         allowNull: false,

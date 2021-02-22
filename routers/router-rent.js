@@ -154,9 +154,17 @@ Route.post("/", async function (req, res) {
     // Import Model
     const order = model.order;
     const book = model.book;
+    const about = model.about;
+
+    const {fines} = await about.findOne({
+      where: {
+        id: 1
+      },
+      attributes: ['fines'],
+      raw: true
+    });
 
     // // Validasi
-
     // Cari Buku
     const bookData = await book.findOne({
       where: {
@@ -182,7 +190,7 @@ Route.post("/", async function (req, res) {
       user_id,
       book_id,
       id_transaction: codeTransaksi,
-      order_price: bookData.book_price,
+      order_price: fines,
       order_day,
       order_date: waktu,
       order_officer_buy: email,
@@ -208,6 +216,113 @@ Route.post("/", async function (req, res) {
         redirect: true,
       })
     );
+  } catch (err) {
+    console.log(err);
+    const code = err.code || 200;
+    res.status(code).json(err);
+  }
+});
+
+////////////////////////////////////////////////////////
+////////////////// Return Halaman///////////////////////
+////////////////////////////////////////////////
+
+
+Route.get("/return", async function (req, res) {
+  try {
+    const order = model.order;
+    const {fines} = await model.about.findOne({
+      where: {
+        id: 1
+      },
+      raw: true,
+      attributes: ['fines']
+    });
+
+    // Cari order yang belum dikembalikan
+    const dataOrder = await order.findAll({
+      where: {
+          return_status: false,
+      },
+    });
+
+    // Ambil Data dari foreign Key
+    for (let element of dataOrder) {
+      const dataOrderMember = await element.getUser({
+        attributes: [["name", "title"], "id"],
+        raw: true,
+      });
+      const dataOrderBook = await element.getBook({
+        attributes: [["book_title", "title"], "id"],
+        raw: true,
+      });
+
+      element.dataValues.user_id = dataOrderMember;
+      element.dataValues.book_id = dataOrderBook;
+      element.dataValues.book_id.fines = fines
+    };
+
+    
+    // Render halaman
+    res.render("returnBook", {
+      title: 'Return Book',
+      dataOrder,
+      type: 'return',
+      moduleCustom: moduleLibrary,
+      name: req.user.email
+    });
+  } catch (err) {
+    console.log(err);
+    const code = err.code || 200;
+    res.status(code).json(err);
+  }
+});
+
+Route.get("/return/:id", async function (req, res) {
+  try {
+    const paramId = req.params.id;
+    const order = model.order;
+    const {fines} = await model.about.findOne({
+      where: {
+        id: 1
+      },
+      raw: true,
+      attributes: ['fines']
+    });
+
+    // Cari bedasarkan yang diberi
+    const dataOrder = await order.findAll({
+      where: {
+        [Op.and]: {
+          user_id: paramId,
+          return_status: false,
+        },
+      },
+    });
+
+    // Jika Ga ada
+    if (dataOrder.length <= 0)
+      throw new respon2({ message: "not found. Please check again" });
+
+    // Ambil Data dari foreign Key
+    for (let index in dataOrder) {
+      const dataOrderUser = await dataOrder[index].getUser({
+        attributes: [["name", "title"], "id"],
+        raw: true,
+      });
+      const dataOrderBook = await dataOrder[index].getBook({
+        attributes: [["book_title", "title"], "id", [`book_fines`, "fines"]],
+        raw: true,
+      });
+
+      dataOrder[index].dataValues.user_id = dataOrderUser;
+      dataOrder[index].dataValues.book_id = dataOrderBook;
+      dataOrder[index].dataValues.book_id.fines = fines;
+
+    }
+
+    // Kembalikan
+    res.json(dataOrder);
   } catch (err) {
     console.log(err);
     const code = err.code || 200;
@@ -283,92 +398,6 @@ Route.post("/return", async function (req, res) {
   }
 });
 
-Route.get("/return", async function (req, res) {
-  try {
-    const order = model.order;
-
-    // Cari order yang belum dikembalikan
-    const dataOrder = await order.findAll({
-      where: {
-          return_status: false,
-      },
-    });
-
-    // Ambil Data dari foreign Key
-    for (let element of dataOrder) {
-      const dataOrderMember = await element.getUser({
-        attributes: [["name", "title"], "id"],
-        raw: true,
-      });
-      const dataOrderBook = await element.getBook({
-        attributes: [["book_title", "title"], "id", [`book_fines`, "fines"]],
-        raw: true,
-      });
-
-      element.dataValues.user_id = dataOrderMember;
-      element.dataValues.book_id = dataOrderBook;
-    };
-
-    
-    // Render halaman
-    res.render("returnBook", {
-      title: 'Return Book',
-      dataOrder,
-      type: 'return',
-      moduleCustom: moduleLibrary,
-      name: req.user.email
-    });
-  } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
-  }
-});
-
-Route.get("/return/:id", async function (req, res) {
-  try {
-    const paramId = req.params.id;
-    const order = model.order;
-
-    // Cari bedasarkan yang diberi
-    const dataOrder = await order.findAll({
-      where: {
-        [Op.and]: {
-          user_id: paramId,
-          return_status: false,
-        },
-      },
-    });
-
-    // Jika Ga ada
-    if (dataOrder.length <= 0)
-      throw new respon2({ message: "not found. Please check again" });
-
-    // Ambil Data dari foreign Key
-    for (let index in dataOrder) {
-      const dataOrderUser = await dataOrder[index].getUser({
-        attributes: [["name", "title"], "id"],
-        raw: true,
-      });
-      const dataOrderBook = await dataOrder[index].getBook({
-        attributes: [["book_title", "title"], "id", [`book_fines`, "fines"]],
-        raw: true,
-      });
-
-      dataOrder[index].dataValues.user_id = dataOrderUser;
-      dataOrder[index].dataValues.book_id = dataOrderBook;
-    }
-
-    // Kembalikan
-    res.json(dataOrder);
-  } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
-  }
-});
-
-
 
 
 
@@ -391,6 +420,13 @@ Route.get('/renew', async function (req, res){
       return_status: false
     }
   });
+  const {fines} = await model.about.findOne({
+      where: {
+        id: 1
+      },
+      raw: true,
+      attributes: ['fines']
+  });
   
 
   for(let element of result) {
@@ -404,7 +440,7 @@ Route.get('/renew', async function (req, res){
       orderNoLate.push(element)
 
       // Logic
-      let jam = new Date(element.dataValues.order_date);
+      let jam = new Date(parseInt(element.dataValues.order_date));
       element.dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
 
       // Ubah status
@@ -413,7 +449,7 @@ Route.get('/renew', async function (req, res){
 
       element.dataValues.book_id = await element.getBook({
         raw: true,
-        attributes: ["id", ["book_title", "title"], ['book_fines', 'fines']],
+        attributes: ["id", ["book_title", "title"]],
       });
       element.dataValues.user_id = await element.getUser({
         raw: true,
@@ -458,7 +494,7 @@ Route.post('/renew', async function(req, res){
 
 
     // Check apakah orderan memiliki denda
-    const dateNew = new Date(validation.dataValues.order_date);
+    const dateNew = new Date(parseInt(validation.dataValues.order_date));
     dateNew.setDate(dateNew.getDate() + parseInt(validation.dataValues.order_day));    
     if(dateNew.getTime() < Date.now()) throw new respon2({message: 'pay the fine in advance', code: 200})
     
