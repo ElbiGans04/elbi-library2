@@ -1,4 +1,4 @@
-import {check, getIndex, getRows, navActive, validasi} from './module.js'
+import {check, check2, getIndex, getRows, navActive, validasi} from './module.js'
 let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
@@ -132,14 +132,8 @@ $(document).on("click", '#addButton', function (event) {
       body: form,
     })
       .finally(result => modalCustom.style.display = 'none')
-      .then((result) => check(result))
-      .then((result) => {
-        if (result) {
-          const { message, redirect, type } = result;
-          alert(message);
-          if(type) window.location.reload();
-        }
-      });
+      .then(check)
+      .then(check2);
   } else {
     this.setAttribute('disabled', '')
   }
@@ -176,28 +170,30 @@ $(document).on("click",'.buttonActionEdit', function (event) {
   
   fetch(`${url}/${id}`)
     .finally(result => modalCustom.style.display = 'none')
-    .then((result) => check(result))
+    .then(check)
     .then((result) => {
-      const { data } = result;
-      formInput.forEach(function (e) {
-        const type = e.getAttribute('type');
-        const name = e.getAttribute("name");
-        const show = e.dataset.show;
-        const value = data[name]
-        
-
-        // Jika off
-        if(show == 'on') {
-          if(type == 'file') {
-            const img = e.parentElement.children[0];
-            img.setAttribute('src', `data:image/${result['book_type']};base64,${value}`)
-            
-          } else {
-            e.value = value;
+      const { data, type } = result;
+      if(type === true) {
+        formInput.forEach(function (e) {
+          const type = e.getAttribute('type');
+          const name = e.getAttribute("name");
+          const show = e.dataset.show;
+          const value = data[name]
+          
+  
+          // Jika off
+          if(show == 'on') {
+            if(type == 'file') {
+              const img = e.parentElement.children[0];
+              img.setAttribute('src', `data:image/${result['book_type']};base64,${value}`)
+              
+            } else {
+              e.value = value;
+            }
           }
-        }
-        
-      });
+          
+        });
+      } else alert(result.message)
     });
 });
 
@@ -217,14 +213,9 @@ $(document).on('click', `#EditButton`, function (event) {
         body: form,
       })
       .finally(result => modalCustom.style.display = 'none')
-      .then((result) => check(result))
-      .then((result) => {
-        if (result) {
-          const { message, redirect, type } = result;
-          alert(message);
-          if(type) window.location.reload();
-        }
-      });
+      .then(check)
+      .then(check2);
+
   } else {
     this.setAttribute('disabled', '')
   }
@@ -256,7 +247,7 @@ $(document).on("click", '.buttonActionDelete', function (event) {
     "#deleteModal > .modal-dialog > .modal-content > .modal-body"
   );
   modal.setAttribute("data-id", id);
-  modal.innerHTML = `Are you sure you want to delete <strong>${col.textContent}?</strong>`;
+  modal.innerHTML = `Are you sure you want to delete <strong>${col == undefined ? 'this' : col.textContent}?</strong>`;
 });
 
 $(document).on("click", '#deleteButton', function (event) {
@@ -271,14 +262,8 @@ $(document).on("click", '#deleteButton', function (event) {
     method: "delete",
   })
   .finally(result => modalCustom.style.display = 'none')
-    .then((result) => check(result))
-    .then((result) => {
-      if (result) {
-        const { message, redirect, type } = result;
-        alert(message);
-        window.location.reload();
-      }
-    });
+    .then(check)
+    .then(check2);
 });
 
 // // // Akhir dari delete modal // // //
@@ -349,21 +334,6 @@ modal.children[1].addEventListener('click', function(event){
   modal.style.display = 'none'
 });
 
-
-$(document).on('click', '#convertToExcel', function(event){
-  $('#convertModal').modal('show')
-  // fetch('/convert')
-  //   .then(result => result.blob())
-  //   .then(blob => {
-  //     var url = window.URL.createObjectURL(blob);
-  //     var a = document.createElement('a');
-  //     a.href = url;
-  //     a.download = `ElbiLibrary-${Date.now()}.xlsx`;
-  //     document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-  //     a.click();    
-  //     a.remove(); 
-  //   });
-});
 
 $(document).on('click', '#convertButton', function(event){
   let formElement = $(this).closest('.modal-footer').prev().children()[0];

@@ -23,7 +23,7 @@ module.exports = function (model, name) {
             if(!result) throw new respon({message: 'not found'});
     
             // Jika ada    
-            res.json(new respon({message: 'success', data: result, code: 200}))
+            res.json(new respon({message: 'success', data: result, type: true, alert: true, code: 200, show: true}));
     
         } catch (err) {
             next(err)
@@ -105,7 +105,7 @@ module.exports = function (model, name) {
             await model[this.model].create(req.body);
     
             // Kirim Respon Jika berhasil
-            res.json(new respon({message: 'managed to add', type: true, code: 200}));
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true}));
     
         } catch (err) {
             next(err)
@@ -139,7 +139,7 @@ module.exports = function (model, name) {
             });
     
             // Kirim Respon
-            res.json(new respon({message: 'successfully updated the group', type: true}))
+            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
     
         } catch (err) {
             next(err)
@@ -171,7 +171,7 @@ module.exports = function (model, name) {
                 }
             });
     
-            res.json({message: 'successfully deleted', code: 200, type: true})
+            res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
         } catch (err) {
             next(err)
         }

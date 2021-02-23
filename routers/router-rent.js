@@ -215,14 +215,7 @@ Route.post("/", async function (req, res, next) {
     );
 
     // Kirim Respon
-    res.json(
-      new respon2({
-        message: "managed to order the book",
-        code: 200,
-        type: true,
-        redirect: true,
-      })
-    );
+    res.json(new respon2({message: 'successfully added', type: true, alert: true, code: 200, show: true}))
   } catch (err) {
     next(err)
   }
@@ -333,7 +326,7 @@ Route.get("/return/:id", async function (req, res, next) {
     }
 
     // Kembalikan
-    res.json(dataOrder);
+    res.json(new respon2({message: 'success', data: dataOrder,type: true, alert: true, code: 200, show: true}))
   } catch (err) {
     next(err)
   }
@@ -399,7 +392,7 @@ Route.post("/return", async function (req, res, err) {
 
 
     // Kirim Respon
-    res.json(new respon2({ message: "success", code: 200, type: true, redirect: '/rent' }));
+    res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true}))
   } catch (err) {
     next(err)
   }
@@ -529,7 +522,7 @@ Route.post('/renew', async function(req, res, next){
       }
     })
   
-    res.json(new respon2({message: 'success', code: 200}))
+    res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true}))
   } catch (err) {
     next(err)
   }

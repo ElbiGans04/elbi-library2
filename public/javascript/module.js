@@ -63,6 +63,27 @@ export function check(result) {
   }
 }
 
+
+export function check2(result) {
+  if (result) {
+    // Detrucring
+    const { message, redirect, type, alert: show, delay, code } = result;
+    if(show === true) alert(message);
+    if(redirect !== false) {
+      if(delay) {
+        setTimeout(function(){
+          window.location = `${redirect}`
+        }, delay)
+      } else {
+        window.location = `${redirect}`
+      }
+    } else {
+      if(type === true)  window.location.reload()
+    }
+
+  }
+}
+
 export function getTime(waktu, day) {
   waktu = new Date(parseInt(waktu));
   waktu.setDate(waktu.getDate() + parseInt(day))

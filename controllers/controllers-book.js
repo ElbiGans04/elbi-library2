@@ -1,4 +1,4 @@
-const respon2 = require('./respon');
+const respon = require('./respon');
 const ModuleTemplate = require('./module');
 let model = require('../db/models/index')
 const  moduleLibrary = new ModuleTemplate();
@@ -24,12 +24,12 @@ module.exports = {
             let about = model.about;
             let {appName} = await about.findOne({
                 raw: true,
-                attributes: ['appName', 'name']
+                attributes: ['appName']
             });
 
             
             // Jika tidak ditemukan
-            if(!result) throw new respon2({message: 'book not found', code: 200});
+            if(!result) throw new respon({message: 'book not found', code: 200});
 
             // Jika ditemukan convert image ke base 64
             result.dataValues.book_image = result.dataValues.book_image.toString('base64')
@@ -42,7 +42,7 @@ module.exports = {
         
     
             // Jika Ada maka Kirimkan
-            res.json(new respon2({message: 'success', code: 200, data: result}));
+            res.json(new respon({message: 'success',data: result, type: true, alert: true, code: 200, show: true}))
             
         } catch ( err ) {
             next(err);
@@ -175,18 +175,18 @@ module.exports = {
             });
             
             // Jika Ada
-            if (validation > 0) throw new respon2({code: 200, message: 'book already'});
+            if (validation > 0) throw new respon({code: 200, message: 'book already'});
 
             // Pisahkan format launching
             let {book_launching} = req.body
-            if ( book_launching.split('-').length != 3 ) throw new respon2({code: 200, message: 'date is invalid'});
+            if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid'});
             req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
 
 
 
             // Buat File Format
             if(!req.file) {
-                throw new respon2({code: 200, message: 'please insert image'})
+                throw new respon({code: 200, message: 'please insert image'})
             } else {
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
@@ -204,7 +204,7 @@ module.exports = {
             });
 
             // Jika tidak ada
-            if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
+            if(!resultCategory) throw new respon({message: 'category is invalid', code: 200});
 
             // Check apakah 
             let resultPublisher = await publisher.findOne({
@@ -214,14 +214,14 @@ module.exports = {
             });
 
             // Jika tidak ada
-            if(!resultPublisher) throw new respon2({message: 'publisher is invalid', code: 200});
+            if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200});
             
             // Buat
             let book1 = await book.create(req.body);
             await book1.setPublishers(resultPublisher);
             await book1.setCategories(resultCategory);
             // Beri respone
-            res.json(new respon2({message: 'successfully added book', code: 200, type: true}))
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true}));
 
         } catch (err) {
             next(err);
@@ -246,7 +246,7 @@ module.exports = {
             });
     
             // Jika book tidak ditemukan
-            if(!validation) throw new respon2({message: 'book not found', code: 200})
+            if(!validation) throw new respon({message: 'book not found', code: 200})
 
             
             // Tambahkan File, Karena file berada direq.file
@@ -263,7 +263,7 @@ module.exports = {
             
             // Pisahkan format launching
             let {book_launching} = req.body
-            if ( book_launching.split('-').length != 3 ) throw new respon2({code: 200, message: 'date is invalid'});
+            if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid'});
             req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
             
             // Check apakah 
@@ -274,7 +274,7 @@ module.exports = {
             });
             
             // Jika tidak ada
-            if(!resultCategory) throw new respon2({message: 'category is invalid', code: 200});
+            if(!resultCategory) throw new respon({message: 'category is invalid', code: 200});
             
             // Check apakah 
             let resultPublisher = await publisher.findOne({
@@ -284,7 +284,7 @@ module.exports = {
             });
 
             // Jika tidak ada
-            if(!resultPublisher) throw new respon2({message: 'publisher is invalid', code: 200});
+            if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200});
 
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
@@ -298,7 +298,7 @@ module.exports = {
             await validation.setPublishers(resultPublisher)
     
     
-            res.json(new respon2({message: 'success', type: true, code: 200}))
+            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
     
         } catch (err) {
             next(err)
@@ -320,7 +320,7 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation <= 0) throw new respon2({message: 'book not found', code: 200});
+            if ( validation <= 0) throw new respon({message: 'book not found', code: 200});
     
             // Hapus book
             await book.destroy({
@@ -331,7 +331,7 @@ module.exports = {
             
 
             // Kirim Respon
-            res.json(new respon2({message: 'successfully deleted book', type: true, code: 200}))
+            res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
             
         } catch (err) {
             next(err)

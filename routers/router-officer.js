@@ -126,7 +126,7 @@ Route.get('/:id', async function(req, res, next){
         if(!result) throw new respon({message: 'user not found', code: 200});
     
         // Jika Ada maka Kirimkan
-        res.json(new respon({message: 'success', code: 200, data: result}));
+        res.json(new respon({message: 'success',data: result, type: true, alert: true, code: 200, show: true}))
     } catch (err) {
         next(err)
     }
@@ -165,7 +165,7 @@ Route.post('/', async function(req, res, next){
         let result = await model.officer.create(req.body);
         await result.setRoles(validateRole)
         
-        res.json(new respon({message: 'managed to add officers', code: 200, type: true}))
+        res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true}))
     } catch (err) {
         next(err)
     }
@@ -209,7 +209,7 @@ Route.put('/:id', async function(req, res, next){
         });
         await validate.setRoles(validateRole);
 
-        res.json({message: 'successfully updated the attendant', type: true})
+        res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
     
     } catch (err) {
         next(err)
@@ -242,7 +242,7 @@ Route.delete('/:id', async function(req, res, next){
             }
         });
 
-        res.json({message: 'managed to remove the officer', type: true})
+        res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
     
     } catch (err) {
         next(err)

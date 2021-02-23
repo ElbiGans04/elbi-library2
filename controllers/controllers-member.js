@@ -20,7 +20,7 @@ module.exports = {
             if(!result) throw new respon2({message: 'user not found', code: 200});
     
             // Jika Ada maka Kirimkan
-            res.json(new respon2({message: 'success', code: 200, data: result}));
+            res.json(new respon2({message: 'success',data: result, type: true, alert: true, code: 200, show: true}))
     
         } catch ( err ) {
             next(err)
@@ -148,7 +148,7 @@ module.exports = {
             await resultUser.setClasses(resultClass);
             
             // Kirim Respon kepada user
-            res.json(new respon2({message: 'successfully added user', type: true}))
+            res.json(new respon2({message: 'successfully added', type: true, alert: true, code: 200, show: true}))
     
         } catch (err) {
             next(err);
@@ -192,7 +192,7 @@ module.exports = {
     
             
             // Kirim Tanggapan
-            res.json(new respon2({message: 'success', type: true}))
+            res.json(new respon2({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
     
         } catch (err) {
             next(err)
@@ -223,7 +223,7 @@ module.exports = {
                 }
             })
             
-            res.json(new respon2({message: 'successfully deleted user'}))
+            res.json(new respon2({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
             
         } catch (err) {
             next()
