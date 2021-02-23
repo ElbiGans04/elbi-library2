@@ -21,7 +21,6 @@ module.exports = {
         color: '#ffffff'
       }
     },
-    numberFormat: '$#,##0.00; ($#,##0.00); -',
   },
 
   style: {

@@ -13,10 +13,7 @@ Route.get('/:group', async function(req, res){
         let group = parseInt(req.params.group);
         const order = model.order;
         let allOlder;
-        let wb = new excel.Workbook({
-            author: 'Elbi Library'
-        });
-
+        let wb = new excel.Workbook({author: 'Elbi Library'});
         let lembarKerja = wb.addWorksheet('Sheet 1');
         
         // Sesuaikan dengan kondisi
@@ -48,26 +45,36 @@ Route.get('/:group', async function(req, res){
             }); 
           };
     
-    
+          
+
+          // Buat Attribute
           let idx = 1;
           for(let col in attributes) {
               let name = moduleLibrary.ambilKata(col, '_', {without: [0]});
               if(name.toLowerCase() === "id" && idx !== 1) name = `Name ${moduleLibrary.ambilKata(col, '_', {without: [1]})}`;
               
               lembarKerja
-                .cell(1, idx)
+                .cell(1, idx++)
                 .string(name)
                 .style(styleColumn)
-    
-              // Increment
-              idx++
-          }
+           };
+
+           // Buat Kolom Baru
+           lembarKerja
+            .cell(1, idx++)
+            .string("Fines")
+            .style(styleColumn)
+           lembarKerja
+            .cell(1, idx++)
+            .string("Time late")
+            .style(styleColumn)
+
     
     
           
           let index = 1;
           let data = [];
-    
+          let formula = 0;
           // Melooping entitas
           for(let element of allOlder) {
               let index2 = 1
@@ -83,7 +90,34 @@ Route.get('/:group', async function(req, res){
                     let value2 = typeof value !== 'object' ? `${value}` : `${value.title}`;
                     data[index2 - 1][index - 1] = value2.length;           
                 }
-    
+
+                if(element2 === 'order_price') {
+                    const dayOrder = parseInt(element.dataValues['order_day']);
+                    let date = element.dataValues['order_date'].split('-');
+                    const price = parseInt(value);
+                    
+                    let timeNow = new Date(
+                        parseInt(date[0]), 
+                        parseInt(date[1]), 
+                        parseInt(date[2])
+                    );
+                        
+                    let {days} = moduleLibrary.getTime(timeNow.getTime(), dayOrder);
+                    let totalLate = price * days;
+                    let total = (dayOrder * price) + totalLate;
+                    formula += total;
+
+                    // Masukan Ke baris kerja
+                    lembarKerja.cell(index + 1, idx - 1)
+                        .number(days)
+                        .style(style)
+                    lembarKerja.cell(index + 1, idx - 2)
+                        .number(totalLate)
+                        .style(style)
+                }
+
+
+                // Jika Bernilai Number
                 if(typeof value === 'number') {
                     lembarKerja
                         .cell(index + 1, index2)
@@ -108,8 +142,23 @@ Route.get('/:group', async function(req, res){
               }
     
               index++
-          }
+          };
+
+        // Price dikolom E
+        // Beri Total
+        lembarKerja
+            .cell((index + 2), (idx - 2))
+            .string("Total")
+            .style(styleColumn);
+
     
+        lembarKerja
+            .cell((index + 2), (idx - 1))
+            .number(formula)
+            .style(styleColumn);
+        console.log(formula)
+
+
         // Beri Jarak bedasarkan panjang
         data.forEach(function(e, i){
             let max = e.sort((a,b) => a - b)[e.length - 1];
@@ -128,6 +177,7 @@ Route.get('/:group', async function(req, res){
                   });
             } 
          });
+
     } catch (err) {
         console.log(err.message)
         res.status(200).end()

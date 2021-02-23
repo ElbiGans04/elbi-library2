@@ -109,7 +109,7 @@ module.exports = class {
   
   getTime(waktu, day) {
     waktu = new Date(parseInt(waktu))
-    waktu.setDate(waktu.getDate() + parseInt(day))
+    waktu.setDate(waktu.getDate() + parseInt(day));
     const waktuNow = Date.now();
     const distance = waktuNow - waktu.getTime();
     
