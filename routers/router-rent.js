@@ -311,7 +311,7 @@ Route.get("/return/:id", async function (req, res) {
         raw: true,
       });
       const dataOrderBook = await dataOrder[index].getBook({
-        attributes: [["book_title", "title"], "id", [`book_fines`, "fines"]],
+        attributes: [["book_title", "title"], "id"],
         raw: true,
       });
 
