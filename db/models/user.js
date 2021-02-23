@@ -17,11 +17,17 @@ module.exports = (sequelize, DataTypes) => {
   user.init({
     nisn: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
     }, 
     name: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        validate: {
+          isAlpha: true
+        }
     }
   }, {
     sequelize,

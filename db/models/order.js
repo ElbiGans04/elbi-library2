@@ -15,25 +15,38 @@ module.exports = (sequelize, DataTypes) => {
   };
   order.init({
     id_transaction: {
-      type: DataTypes.STRING
-    },
-    
-    return_status: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    
-    order_day: {
-      type: DataTypes.INTEGER,
-    },
-    
-    order_price: {
       type: DataTypes.STRING,
       allowNull: false
     },
     
+    return_status: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    
+    order_day: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
+    },
+    
+    order_price: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
+    },
+    
     order_date: {
-      type: DataTypes.BIGINT(20)
+      type: DataTypes.BIGINT(20),
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
     },
     
     order_officer_buy : {

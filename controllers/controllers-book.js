@@ -7,7 +7,7 @@ const url = require('url');
 
 // Export
 module.exports = {
-    get: async function(req, res) {
+    get: async function(req, res, next) {
         try {
             let book = model.book;
             const id = req.params.id;
@@ -45,17 +45,11 @@ module.exports = {
             res.json(new respon2({message: 'success', code: 200, data: result}));
             
         } catch ( err ) {
-            console.log(err);
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err);
         }
     },
 
-    getAll: async function (req, res) {
+    getAll: async function (req, res, next) {
         try {
             const book = model.book;
             const category = model.category;
@@ -157,13 +151,11 @@ module.exports = {
             })
 
         } catch (err) {
-            console.log(err.message)
-            const code = err.code || 500;
-            res.status(code).json(err)
+            next(err)
         }
     },
 
-    post: async function (req,res) {
+    post: async function (req,res,next) {
         try {
             const book = model.book;
             const category = model.category;
@@ -232,17 +224,11 @@ module.exports = {
             res.json(new respon2({message: 'successfully added book', code: 200, type: true}))
 
         } catch (err) {
-            console.log(err)
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err);
         }
     },
 
-    put: async function (req, res) {
+    put: async function (req, res, next) {
         try {
             const book = model.book;
             const category = model.category;
@@ -315,17 +301,11 @@ module.exports = {
             res.json(new respon2({message: 'success', type: true, code: 200}))
     
         } catch (err) {
-            console.log(err)
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     },
 
-    delete: async function (req, res) {
+    delete: async function (req, res, next) {
         try {
             const book = model.book;
             let id = req.params.id;
@@ -354,13 +334,7 @@ module.exports = {
             res.json(new respon2({message: 'successfully deleted book', type: true, code: 200}))
             
         } catch (err) {
-            console.log(err);
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     }
 

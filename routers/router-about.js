@@ -5,18 +5,16 @@ const moduleLibrary = new ModuleLibrary();
 const model = require('../db/models/index');
 const respon = require('../controllers/respon');
 
-Route.get('/', async function (req, res){
+Route.get('/', async function (req, res, next){
     try {
         let result = await model.about.findOne({raw: true});
         res.render('about', {profile: req.user, result, module : moduleLibrary})
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200;
-        res.status(code).json(err);
+        next(err);
     }
 });
 
-Route.post('/', async function(req, res){
+Route.post('/', async function(req, res, next){
     try {
         let {app, fines} = req.body;
         const about = model.about;
@@ -33,9 +31,7 @@ Route.post('/', async function(req, res){
         res.json(new respon({message: 'success', code: 200, type: true}))
         
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200;
-        res.status(code).json(err);
+        next(err)
     }
 })
 

@@ -4,7 +4,8 @@ const model = require('../db/models/index');
 let Template = require('../controllers/module');
 let moduleLibrary = new Template();
 
-Route.get('/', async function(req, res){
+Route.get('/', async function(req, res, next){
+  try {
     let { role, id: userID } = req.user;    
     const order = model.order;
     const user = model.user;
@@ -73,6 +74,9 @@ Route.get('/', async function(req, res){
       officer: resultOfficer,
       name: req.user.email,
     })
+  } catch (err) {
+    next(err)
+  }
 });
 
 module.exports = Route

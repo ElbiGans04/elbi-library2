@@ -15,12 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       models.officer.belongsToMany(models.role, { through: 'officer_role', onUpdate: 'CASCADE', onDelete: 'CASCADE'});
     }
   };
-  officer.init({
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
-    
+  officer.init({    
     email: {
         type: DataTypes.STRING,
         allowNull: false,

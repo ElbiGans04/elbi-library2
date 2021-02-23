@@ -8,7 +8,7 @@ const { Op } = require("sequelize");
 const url = require('url');
 
 // Definisikan
-Route.get("/", async function (req, res) {
+Route.get("/", async function (req, res, next) {
   try {
     // Import Model
     const order = model.order;
@@ -145,13 +145,11 @@ Route.get("/", async function (req, res) {
       buttonAction: false,
     });
   } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
+    next(err)
   }
 });
 
-Route.post("/", async function (req, res) {
+Route.post("/", async function (req, res, next) {
   try {
     // Ambil TOken
     const {email} = req.user;
@@ -226,9 +224,7 @@ Route.post("/", async function (req, res) {
       })
     );
   } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
+    next(err)
   }
 });
 
@@ -289,13 +285,11 @@ Route.get("/return", async function (req, res) {
       name: req.user.email
     });
   } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
+    next(err)
   }
 });
 
-Route.get("/return/:id", async function (req, res) {
+Route.get("/return/:id", async function (req, res, next) {
   try {
     const paramId = req.params.id;
     const order = model.order;
@@ -341,13 +335,11 @@ Route.get("/return/:id", async function (req, res) {
     // Kembalikan
     res.json(dataOrder);
   } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
+    next(err)
   }
 });
 
-Route.post("/return", async function (req, res) {
+Route.post("/return", async function (req, res, err) {
   try {
     // Import Model
     const order = model.order;
@@ -409,9 +401,7 @@ Route.post("/return", async function (req, res) {
     // Kirim Respon
     res.json(new respon2({ message: "success", code: 200, type: true, redirect: '/rent' }));
   } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err);
+    next(err)
   }
 });
 
@@ -429,73 +419,77 @@ Route.post("/return", async function (req, res) {
 
 
 
-Route.get('/renew', async function (req, res){
-  // Import
-  const order = model.order;
-  let orderNoLate = [], result = await order.findAll({
-    where: {
-      return_status: false
-    }
-  });
-  const {fines} = await model.about.findOne({
+Route.get('/renew', async function (req, res, next){
+  try {
+    // Import
+    const order = model.order;
+    let orderNoLate = [], result = await order.findAll({
       where: {
-        id: 1
-      },
-      raw: true,
-      attributes: ['fines']
-  });
+        return_status: false
+      }
+    });
+    const {fines} = await model.about.findOne({
+        where: {
+          id: 1
+        },
+        raw: true,
+        attributes: ['fines']
+    });
+    
   
-
-  for(let element of result) {
-    let date = new Date(parseInt(element.dataValues.order_date));
-    date = date.setDate(date.getDate() + parseInt(element.dataValues.order_day))
-
-
-    // Ambil Yang Belum lewat
-    if(date > Date.now()) {
-      // Push
-      orderNoLate.push(element)
-
-      // Logic
-      let jam = new Date(parseInt(element.dataValues.order_date));
-      element.dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
-
-      // Ubah status
-      element.dataValues.return_status = element.dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
-
-
-      element.dataValues.book_id = await element.getBook({
-        raw: true,
-        attributes: ["id", ["book_title", "title"]],
-      });
-      element.dataValues.user_id = await element.getUser({
-        raw: true,
-        attributes: ["id", ["name", `title`]],
-      }); 
+    for(let element of result) {
+      let date = new Date(parseInt(element.dataValues.order_date));
+      date = date.setDate(date.getDate() + parseInt(element.dataValues.order_day))
+  
+  
+      // Ambil Yang Belum lewat
+      if(date > Date.now()) {
+        // Push
+        orderNoLate.push(element)
+  
+        // Logic
+        let jam = new Date(parseInt(element.dataValues.order_date));
+        element.dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
+  
+        // Ubah status
+        element.dataValues.return_status = element.dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
+  
+  
+        element.dataValues.book_id = await element.getBook({
+          raw: true,
+          attributes: ["id", ["book_title", "title"]],
+        });
+        element.dataValues.user_id = await element.getUser({
+          raw: true,
+          attributes: ["id", ["name", `title`]],
+        }); 
+      };
     };
-  };
-
-  // ambil name
-  let about = model.about;
-  let {appName} = await about.findOne({
-      raw: true,
-      attributes: ['appName']
-  });
-
   
-  // Render halaman
-  res.render("returnBook", {
-    appName,
-    title: 'Extend the book rental period',
-    dataOrder: orderNoLate,
-    moduleCustom: moduleLibrary,
-    type: 'renew',
-    name: req.user.email
-  });
+    // ambil name
+    let about = model.about;
+    let {appName} = await about.findOne({
+        raw: true,
+        attributes: ['appName']
+    });
+  
+    
+    // Render halaman
+    res.render("returnBook", {
+      appName,
+      title: 'Extend the book rental period',
+      dataOrder: orderNoLate,
+      moduleCustom: moduleLibrary,
+      type: 'renew',
+      name: req.user.email
+    });
+  } catch (err) {
+    next(err)
+  }
 });
 
 
-Route.post('/renew', async function(req, res){
+Route.post('/renew', async function(req, res, next){
   try {
     let {day, user: user_id, book: book_id, id_transaction} = req.body;
     
@@ -537,9 +531,7 @@ Route.post('/renew', async function(req, res){
   
     res.json(new respon2({message: 'success', code: 200}))
   } catch (err) {
-    console.log(err);
-    const code = err.code || 200;
-    res.status(code).json(err)
+    next(err)
   }
 })
 

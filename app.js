@@ -5,8 +5,9 @@ const dotenv = require("dotenv").config({ path: "./config/.env" });
 const cookie = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const port = process.env.APP_PORT || 3000;
-const { multer } = require("./middleware/multer");
+const { multer, validasiMulter, limits } = require("./middleware/multer");
 const model = require('./db/models/index')
+const respon = require('./controllers/respon');
 
 // Router
 const memberRouter = require("./routers/router-member");
@@ -25,7 +26,7 @@ const about = require('./routers/router-about');
 app.use("/assets", express.static("./public"));
 app.use("/bootstrap", express.static("./node_modules/bootstrap/dist/"));
 app.use("/jquery", express.static("./node_modules/jquery/dist/"));
-app.use(multer({ dest: multer.disk }).single("book_image"));
+app.use(multer({ dest: multer.disk, fileFilter: validasiMulter, limits }).single("book_image"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookie());
@@ -68,6 +69,20 @@ const respon2 = require("./controllers/respon");
   app.use("/report", auth, roleAuth, report)
 
 
+  // Handler
+  app.get('*', (req, res) => res.redirect('/'));
+
+  // Error Handler
+  app.use(function(err, req, res, next) {
+    // // set locals, only providing error in development
+    // res.locals.message = err.message;
+    // res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    // // render the error page
+    res.status(err.status || 200);
+    res.json(new respon({message: err.message}))
+    // res.render('error');
+  });
 
 
 

@@ -9,7 +9,7 @@ const jwt = require('jsonwebtoken');
 // Definisikan
 Route.get('/', (req, res) => res.render('login'));
 
-Route.post('/', async function (req, res) {
+Route.post('/', async function (req, res, next) {
     try {
         let { email, password: password2 } = req.body;
 
@@ -53,13 +53,7 @@ Route.post('/', async function (req, res) {
         res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
         
     } catch (err) {
-        console.log(err)
-        if(err instanceof Error) {
-            if(err.errors) err.message = moduleLibrary.pesanError(err);
-            err = new respon2({message: err.message, code:200});
-        }
-        const code = err.code || 200;
-        res.status(code).json(err)
+        next(err)
     }
     
 })

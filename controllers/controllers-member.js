@@ -5,7 +5,7 @@ const respon2 = require('./respon')
 const url = require('url');
 
 module.exports = {
-    get : async function(req, res) {
+    get : async function(req, res,next) {
         try {
             const id = req.params.id;
 
@@ -23,19 +23,13 @@ module.exports = {
             res.json(new respon2({message: 'success', code: 200, data: result}));
     
         } catch ( err ) {
-            console.log(err)
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     },
 
 
     // Get All
-    getAll : async function (req, res) {
+    getAll : async function (req, res, next) {
         try {
             let alluser;
 
@@ -121,17 +115,14 @@ module.exports = {
     
     
         } catch (err) {
-            console.log(err)
-            const code = err.code || 200;
-            const message = err.message.message || err.message
-            res.status(code).send(message)
+            next(err)
         }
     },
 
 
 
     // Post
-    post: async function(req, res){
+    post: async function(req, res, next){
         try {
             // Vadidation 
             // Check Apakah user dengan email terkait telah terdaftar
@@ -160,19 +151,13 @@ module.exports = {
             res.json(new respon2({message: 'successfully added user', type: true}))
     
         } catch (err) {
-            console.log(err);
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err);
         }
     },
 
 
     // Put
-    put: async function (req, res) {
+    put: async function (req, res, next) {
         try {
             let entitasId = req.params.id;
     
@@ -210,19 +195,13 @@ module.exports = {
             res.json(new respon2({message: 'success', type: true}))
     
         } catch (err) {
-            console.log(err);
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     },
 
 
     // Delete
-    delete: async function (req, res) {
+    delete: async function (req, res, next) {
         try {
             let id = req.params.id;
             
@@ -247,12 +226,7 @@ module.exports = {
             res.json(new respon2({message: 'successfully deleted user'}))
             
         } catch (err) {
-            if(err instanceof Error) {
-                if(err.errors) err.message = moduleLibrary.pesanError(err)
-                err = new respon2({message: err.message, code:200});
-            }
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next()
         }
     }
 };

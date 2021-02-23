@@ -14,14 +14,56 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   about.init({
-    appName: DataTypes.STRING(1000),
-    start: DataTypes.STRING(1000),
-    end: DataTypes.STRING(1000),
-    author: DataTypes.STRING(1000),
-    dbms: DataTypes.STRING(1000),
-    language: DataTypes.STRING(1000),
-    framework: DataTypes.STRING(1000),
-    fines: DataTypes.INTEGER
+    appName: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      validate: {
+        isAlphanumeric: true
+      }
+    },
+    start: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+    },
+    end: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+    },
+    author: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      validate: {
+        isAlphanumeric: true
+      }
+    },
+    dbms: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      validate: {
+        isAlphanumeric: true
+      }
+    },
+    language: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      validate: {
+        isAlphanumeric: true
+      }
+    },
+    framework: {
+      type: DataTypes.STRING(1000),
+      allowNull: false,
+      validate: {
+        isAlphanumeric: true
+      }
+    },
+    fines: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
+    }
   }, {
     sequelize,
     modelName: 'about',

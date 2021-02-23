@@ -8,7 +8,7 @@ const {style, styleColumn} = require('../middleware/jsexcell');
 const path = require('path');
 const fs = require('fs');
 
-Route.get('/:group', async function(req, res){
+Route.get('/:group', async function(req, res, next){
     try {
         let group = parseInt(req.params.group);
         const order = model.order;
@@ -179,8 +179,7 @@ Route.get('/:group', async function(req, res){
          });
 
     } catch (err) {
-        console.log(err.message)
-        res.status(200).end()
+        next(err)
     }
       
 });

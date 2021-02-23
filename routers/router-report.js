@@ -6,21 +6,25 @@ const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
 
 Route.get('/', async function(req, res){
-    // ambil name
-    let about = model.about;
-    let {appName} = await about.findOne({
-        raw: true,
-        attributes: ['appName']
-    });
-    res.render('report', {
-        appName,
-        module: moduleLibrary,
-        title: 'Damaged or lost books',
-        name: req.user.email
-    })
+    try {
+        // ambil name
+        let about = model.about;
+        let {appName} = await about.findOne({
+            raw: true,
+            attributes: ['appName']
+        });
+        res.render('report', {
+            appName,
+            module: moduleLibrary,
+            title: 'Damaged or lost books',
+            name: req.user.email
+        })
+    } catch (err) {
+        next(err)
+    }
 });
 
-Route.get('/:id', async function(req,res){
+Route.get('/:id', async function(req,res, next){
     try {
         const order = model.order;
         const resultOrder = await order.findOne({
@@ -43,14 +47,12 @@ Route.get('/:id', async function(req,res){
 
         res.json(new respon({message: 'success', code: 200, data: resultOrder}))
     } catch (err) {
-        console.log(err)
-        const code = err.code || 200
-        res.status(code).json(err)
+        next(err)
     }
 });
 
 
-Route.post('/', async function(req, res){
+Route.post('/', async function(req, res, next){
     try {
         let { id, user, book } = req.body;
         const order = model.order;
@@ -80,9 +82,7 @@ Route.post('/', async function(req, res){
         res.json({message: 'success', type: true})
         
     } catch (err) {
-        console.log(err)
-        const code = err.code || 200
-        res.status(code).json(err)
+        next(err)
     }
 })
 

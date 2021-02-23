@@ -14,7 +14,13 @@ module.exports = (sequelize, DataTypes) => {
     }
   };
   publisher.init({
-    name: DataTypes.STRING
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isAlpha: true
+      }
+    }
   }, {
     sequelize,
     modelName: 'publisher',

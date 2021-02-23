@@ -8,7 +8,7 @@ module.exports = function (model, name) {
     this.model = model;
 
 
-    this.get = async (req, res) => {
+    this.get = async (req, res, next) => {
         try {
             // Import Model
             let model = await this.db;
@@ -26,14 +26,12 @@ module.exports = function (model, name) {
             res.json(new respon({message: 'success', data: result, code: 200}))
     
         } catch (err) {
-            console.log(err);
-            const code = err.code || 200;
-            res.status(code).json(err);
+            next(err)
         }
     };
 
 
-    this.getAll = async ( req, res ) => {
+    this.getAll = async ( req, res, next ) => {
         try {
         
             // Import Model
@@ -83,16 +81,13 @@ module.exports = function (model, name) {
             
     
         } catch (err) {
-            console.log(err)
-            const code = err.code || 200;
-            const message = err.message.message || err.message
-            res.status(code).send(message)
+            next(err)
         }
     }
 
 
     // Post
-    this.post = async (req, res) => {
+    this.post = async (req, res, next) => {
         try {
             // Import Model
             let model = await this.db;
@@ -113,9 +108,7 @@ module.exports = function (model, name) {
             res.json(new respon({message: 'managed to add', type: true, code: 200}));
     
         } catch (err) {
-            console.log(err)
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     };
 
@@ -123,7 +116,7 @@ module.exports = function (model, name) {
 
 
     // // Put \\ \\
-    this.put = async (req, res) => {
+    this.put = async (req, res, next) => {
         try {
             // Import Model
             const model = await this.db;
@@ -149,9 +142,7 @@ module.exports = function (model, name) {
             res.json(new respon({message: 'successfully updated the group', type: true}))
     
         } catch (err) {
-            console.log(err)
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     };
 
@@ -160,7 +151,7 @@ module.exports = function (model, name) {
 
 
     // Delete
-    this.delete = async (req, res) => {
+    this.delete = async (req, res, next) => {
         try {
              // Import Model
             const model = await this.db;
@@ -182,9 +173,7 @@ module.exports = function (model, name) {
     
             res.json({message: 'successfully deleted', code: 200, type: true})
         } catch (err) {
-            console.log(err);
-            const code = err.code || 200;
-            res.status(code).json(err)
+            next(err)
         }
     }
 }

@@ -6,7 +6,7 @@ const  moduleLibrary = new ModuleTemplate();
 const respon = require('../controllers/respon');
 let url = require('url');
 
-Route.get('/', async function(req, res){ 
+Route.get('/', async function(req, res, next){ 
     try {
         // Cari role
         let allClass = await model.role.findOne({
@@ -79,10 +79,9 @@ Route.get('/', async function(req, res){
             title: 'Officer',
             module: moduleLibrary,
             as: [
-                moduleLibrary.as({target: 'name', as: 'identifer'}),
                 moduleLibrary.as({target: 'role', as: 'group', type: 'select', value: resultRole}),
                 moduleLibrary.as({target: 'password', default: 'off'}),
-                moduleLibrary.as({target: 'email', type: "email"}),
+                moduleLibrary.as({target: 'email', type: "email", as: 'identifer'}),
                 
             ],
             group: resultRole,
@@ -99,14 +98,11 @@ Route.get('/', async function(req, res){
         })
 
     } catch (err) {
-        console.log(err)
-        const code = err.code || 200;
-        const message = err.message.message || err.message
-        res.status(code).send(message)
+        next(err)
     }
 });
 
-Route.get('/:id', async function(req, res){
+Route.get('/:id', async function(req, res, next){
     try {   
         const userID = req.params.id;
 
@@ -132,13 +128,11 @@ Route.get('/:id', async function(req, res){
         // Jika Ada maka Kirimkan
         res.json(new respon({message: 'success', code: 200, data: result}));
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200;
-        res.status(code).json(err);
+        next(err)
     }
 });
 
-Route.post('/', async function(req, res){
+Route.post('/', async function(req, res, next){
     try {
         const { email } = req.body;
         
@@ -173,13 +167,11 @@ Route.post('/', async function(req, res){
         
         res.json(new respon({message: 'managed to add officers', code: 200, type: true}))
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200;
-        res.status(code).json(err)
+        next(err)
     }
 });
 
-Route.put('/:id', async function(req, res){
+Route.put('/:id', async function(req, res, next){
     try {
         const userId = req.params.id;
 
@@ -220,13 +212,11 @@ Route.put('/:id', async function(req, res){
         res.json({message: 'successfully updated the attendant', type: true})
     
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200;
-        res.status(code).json(err)
+        next(err)
     }
 });
 
-Route.delete('/:id', async function(req, res){
+Route.delete('/:id', async function(req, res, next){
     try {
         const userId = req.params.id;
         
@@ -255,9 +245,7 @@ Route.delete('/:id', async function(req, res){
         res.json({message: 'managed to remove the officer', type: true})
     
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200;
-        res.status(code).json(err)
+        next(err)
     }
 })
 

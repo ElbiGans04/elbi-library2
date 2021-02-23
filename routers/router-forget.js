@@ -1,7 +1,7 @@
 const express = require('express');
 const Route = express.Router();
 const respon = require('../controllers/respon');
-const tabel = require('../models/model-index')
+const tabel = require('../db/models/index')
 const mail = require('../middleware/mailer');
 const ModuleLibrary = require('../controllers/module');
 const moduleLibrary = new ModuleLibrary();
@@ -10,10 +10,11 @@ Route.get('/', function(req, res){
     res.render('forget')
 });
 
-Route.post('/', async function(req, res){
+Route.post('/', async function(req, res, next){
     try {
         let {email} = req.body;
-        let { officer, forget } = await tabel();
+        const officer = tabel.officer;
+        const forget = tabel.forget;
 
         let resultOfficer = await officer.findOne({
             where: {
@@ -57,13 +58,11 @@ Route.post('/', async function(req, res){
         
 
     } catch (err) {
-        console.log(err)
-        let code = err.code || 200;
-        res.status(code).json(err);
+        next(err)
     }
 });
 
-Route.get('/:token', async function(req, res){
+Route.get('/:token', async function(req, res, next){
     try {
 
         const token = req.params.token;
@@ -86,13 +85,11 @@ Route.get('/:token', async function(req, res){
             hiddenValue: token
         })
     } catch (err) {
-        console.log(err);
-        const code = err.code || 200
-        res.status(code).json(err)
+        next(err)
     }
 });
 
-Route.post('/update', async function(req, res){
+Route.post('/update', async function(req, res, next){
     try {
 
         const token = req.body.token;
@@ -157,9 +154,7 @@ Route.post('/update', async function(req, res){
         });
         
     } catch (err) {
-        console.log(err);
-        let code = err.code || 200 ;
-        res.status(code).json(err)
+        next(err)
     }
 });
 
