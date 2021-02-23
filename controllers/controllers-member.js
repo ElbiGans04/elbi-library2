@@ -55,6 +55,13 @@ module.exports = {
                     alluser = await resultOfClass.getUsers();
                 }
             }
+
+            // ambil name
+            let about = model.about;
+            let {appName} = await about.findOne({
+                raw: true,
+                attributes: ['appName']
+            });
             
             
             // Ambil Data dari tabel relasi
@@ -85,6 +92,7 @@ module.exports = {
 
             // Render halaman
             res.render('table', {
+                appName,
                 coloumn: coloumn,
                 data: alluser,
                 profile: req.user,

@@ -47,6 +47,14 @@ Route.get("/", async function (req, res) {
       attributes: ['id', ["name", "value"]]
     });
 
+
+    // ambil name
+    let about = model.about;
+    let {appName} = await about.findOne({
+        raw: true,
+        attributes: ['appName']
+    });
+
     
 
     // Mengambil Data dari tabel relasi
@@ -79,6 +87,7 @@ Route.get("/", async function (req, res) {
 
     // Render Halaman
     res.render("table", {
+      appName,
       data: allOlder,
       coloumn,
       without,
@@ -261,10 +270,18 @@ Route.get("/return", async function (req, res) {
       element.dataValues.book_id = dataOrderBook;
       element.dataValues.book_id.fines = fines
     };
+    
+    // ambil name
+    let about = model.about;
+    let {appName} = await about.findOne({
+        raw: true,
+        attributes: ['appName']
+    });
 
     
     // Render halaman
     res.render("returnBook", {
+      appName,
       title: 'Return Book',
       dataOrder,
       type: 'return',
@@ -458,9 +475,17 @@ Route.get('/renew', async function (req, res){
     };
   };
 
+  // ambil name
+  let about = model.about;
+  let {appName} = await about.findOne({
+      raw: true,
+      attributes: ['appName']
+  });
+
   
   // Render halaman
   res.render("returnBook", {
+    appName,
     title: 'Extend the book rental period',
     dataOrder: orderNoLate,
     moduleCustom: moduleLibrary,

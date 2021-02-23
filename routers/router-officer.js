@@ -32,7 +32,14 @@ Route.get('/', async function(req, res){
             else {
                 resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers()  : await resultOfClass.getOfficers()
             }
-        }
+        };
+
+            // ambil name
+            let about = model.about;
+            let {appName} = await about.findOne({
+                raw: true,
+                attributes: ['appName']
+            });
         
         // ambil untuk modal 
         let opt = req.user.role == 'admin' ? {name: `admin`} : {};
@@ -63,6 +70,7 @@ Route.get('/', async function(req, res){
 
         // Render halaman
         res.render('table', {
+            appName,
             coloumn,
             data: resultOfficer,
             profile: req.user,

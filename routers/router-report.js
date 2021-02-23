@@ -2,9 +2,19 @@ const express = require('express');
 const Route = express.Router();
 const model = require('../db/models/index');
 const respon = require('../controllers/respon');
+const ModuleLibrary = require('../controllers/module');
+const moduleLibrary = new ModuleLibrary();
 
-Route.get('/', function(req, res){
+Route.get('/', async function(req, res){
+    // ambil name
+    let about = model.about;
+    let {appName} = await about.findOne({
+        raw: true,
+        attributes: ['appName']
+    });
     res.render('report', {
+        appName,
+        module: moduleLibrary,
         title: 'Damaged or lost books',
         name: req.user.email
     })

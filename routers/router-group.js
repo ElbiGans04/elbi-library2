@@ -41,6 +41,13 @@ module.exports = function (model, name) {
     
             // Cari user yang rolenya bukan admin maupun librarian
             let allClass = await model[this.model].findAll();
+
+            // ambil name
+            let about = model['about'];
+            let {appName} = await about.findOne({
+                raw: true,
+                attributes: ['appName']
+            });
             
             // Ambil Column
             let coloumn = Object.keys(await model[this.model].rawAttributes);
@@ -51,6 +58,7 @@ module.exports = function (model, name) {
     
             // Render halaman
             res.render('table', {
+                appName,
                 coloumn: coloumn,
                 data: allClass,
                 profile: req.user,

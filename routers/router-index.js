@@ -10,6 +10,7 @@ Route.get('/', async function(req, res){
     const user = model.user;
     const officer = model.officer;
 
+
     // Cari Orderan dengan 
     const resultActive = await order.findAll({
       where: {
@@ -17,6 +18,13 @@ Route.get('/', async function(req, res){
       },
       attributes: [`id`],
       raw: true, 
+    });
+
+    // ambil name
+    let about = model.about;
+    let {appName} = await about.findOne({
+        raw: true,
+        attributes: ['appName']
     });
 
     // Cari 
@@ -54,6 +62,8 @@ Route.get('/', async function(req, res){
     })
 
     res.render('index', {
+      module: moduleLibrary,
+      appName,
       role,
       resultActive: resultActive.length,
       allOlder: allOlder.length,

@@ -1,4 +1,4 @@
-import {check} from '/assets/javascript/module.js';
+import {check, navActive} from '/assets/javascript/module.js';
 const transaksi = document.querySelector('#idTransaction');
 const modalCustom = document.querySelector('.modal-custom');
 const information = document.querySelector('#information');
@@ -6,6 +6,9 @@ const user = document.querySelector('.user');
 const book = document.querySelector('.book');
 const total = document.querySelector('.price');
 
+
+// Buat agar aktif
+navActive()
 
 // Event
 transaksi.addEventListener('keyup', function(event){

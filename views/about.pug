@@ -4,7 +4,7 @@ head
   meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
   meta(name='description' content='')
   meta(name='author' content='')
-  title Elbi Library | About
+  title #{module.decryptPriv(result.appName)} | About
   link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
   link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
   link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
@@ -17,7 +17,7 @@ head
     a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
       .sidebar-brand-icon.rotate-n-15
         i.fas.fa-book-open
-      .sidebar-brand-text.mx-3 Elbi Library
+      .sidebar-brand-text.mx-3 #{module.decryptPriv(result.appName).toUpperCase()}
     // Divider
     hr.sidebar-divider.my-0
     // Nav Item - Dashboard
@@ -69,29 +69,43 @@ head
                   .table-responsive
                     table.table.table-bordered.display(cellspacing="0" style="width:100%")
                       tbody 
-                        tr 
-                          td Application name
-                          td #{module.decryptPriv(result.appName)}
-                        tr  
-                          td Start date of application creation
-                          td #{module.decryptPriv(result.start)}
-                        tr 
-                          td Date of completion of application creation
-                          td #{module.decryptPriv(result.end)}
-                        tr  
-                          td Original author
-                          td 
-                            a(href="http://elbi.vercel.app" target="_blank") #{module.decryptPriv(result.author)}
-                        tr  
-                          td Dbms used
-                          td #{module.decryptPriv(result.dbms)}
-                        tr 
-                          td Programming language used
-                          td #{module.decryptPriv(result.language)}
-                        tr 
-                          td Framework used
-                          td #{module.decryptPriv(result.framework)}
-
+                        form()
+                          tr 
+                            td Application name
+                            if(profile.role == 'admin')
+                              td #{module.decryptPriv(result.appName)}
+                            else 
+                              td 
+                                input.form-control(value=`${module.decryptPriv(result.appName)}` name="app")
+                          tr 
+                            td Fines
+                            if(profile.role == 'admin')
+                              td #{result.fines}
+                            else 
+                              td 
+                                input.form-control(value=`${result.fines}` name="fines")
+                          tr  
+                            td Start date of application creation
+                            td #{module.decryptPriv(result.start)}
+                          tr 
+                            td Date of completion of application creation
+                            td #{module.decryptPriv(result.end)}
+                          tr  
+                            td Original author
+                            td 
+                              a(href="http://elbi.vercel.app" target="_blank") #{module.decryptPriv(result.author)}
+                          tr  
+                            td Dbms used
+                            td #{module.decryptPriv(result.dbms)}
+                          tr 
+                            td Programming language used
+                            td #{module.decryptPriv(result.language)}
+                          tr 
+                            td Framework used
+                            td #{module.decryptPriv(result.framework)}
+                if(profile.role == 'librarian')
+                  .col-sm-12-mt-5 
+                    button#action.btn.btn-primary(type="button") Update
 
 
       // /.container-fluid

@@ -20,6 +20,14 @@ module.exports = {
                 }
             });
             
+            // ambil name
+            let about = model.about;
+            let {appName} = await about.findOne({
+                raw: true,
+                attributes: ['appName', 'name']
+            });
+
+            
             // Jika tidak ditemukan
             if(!result) throw new respon2({message: 'book not found', code: 200});
 
@@ -72,6 +80,14 @@ module.exports = {
             }
 
 
+            // ambil name
+            let about = model.about;
+            let {appName} = await about.findOne({
+                raw: true,
+                attributes: ['appName']
+            });
+
+
             let resultCategory = await category.findAll({
                 raw: true,
                 attributes: ['id', ['name', 'value']]
@@ -112,6 +128,7 @@ module.exports = {
 
             // Render 
             res.render('table', {
+                appName,
                 coloumn,
                 data: result,
                 modalwithout:[...without],

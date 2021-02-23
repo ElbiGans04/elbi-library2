@@ -19,6 +19,7 @@ const officerRoute = require("./routers/router-officer");
 const convertRoute = require("./routers/router-convert");
 const group = require("./routers/router-generate");
 const report = require('./routers/router-report');
+const about = require('./routers/router-about');
 
 // // // Instalasi Project // // //
 app.use("/assets", express.static("./public"));
@@ -55,19 +56,20 @@ const respon2 = require("./controllers/respon");
     console.log("Cookie Telah Dihapus");
     res.redirect("/login");
   });
-  app.use("/forget", forgetRoute);
+
   
+  app.use("/forget", forgetRoute);
   app.use("/class", auth, roleAuth, group("class", "Class"));
   app.use("/category", auth, roleAuth, group("category", "Category"));
   app.use("/publisher", auth, roleAuth, group("publisher", "Publisher"));
   app.use("/officer", auth, roleAuth, officerRoute);
   app.use("/convert", auth, roleAuth, convertRoute);
-  app.get("/about", auth, async function(req, res){
-    let result = await model.about.findOne({raw: true});
-    const moduleLibrary = require('./controllers/module');
-    res.render('about', {profile: req.user, result, module : new moduleLibrary})
-  });
+  app.use("/about", auth, about);
   app.use("/report", auth, roleAuth, report)
+
+
+
+
 
   app.listen(port, function (err) {
     if (err) throw err;
@@ -75,6 +77,10 @@ const respon2 = require("./controllers/respon");
   });
 })();
 
+
+
+
+// Auth
 async function auth(req, res, next) {
   try {
     const token = req.cookies.token;
