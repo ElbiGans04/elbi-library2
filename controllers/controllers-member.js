@@ -109,7 +109,8 @@ module.exports = {
                 group: resultClass,
                 buttonAction: {
                     update: true,
-                    delete: true
+                    delete: true,
+                    print: true
                 }
             })
     
@@ -238,8 +239,7 @@ module.exports = {
             let user = model.user;
             let column = Object.keys(await user.rawAttributes);
         
-            // Hilangkan Id
-            column.shift()
+
             // Tambahkan column
             column.push('class');
             
@@ -260,12 +260,12 @@ module.exports = {
             });
 
             result.dataValues.class = resultClass[0].name;
-            result.dataValues = Object.values(result.dataValues);
-            result.dataValues.shift()
+    
 
             res.locals.column = column;
-            res.locals.data = result.dataValues;
+            res.locals.data = Object.values(result.dataValues);
             res.locals.module = moduleLibrary;
+            res.locals.without = ['id']
             
             res.render('detail')
         } catch (err) {

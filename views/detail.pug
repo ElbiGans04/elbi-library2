@@ -23,9 +23,10 @@ head
               tbody
                 -let i = 0;
                 each el in column 
-                 tr
-                    td #{module.ambilKata(el, '_', {})} 
-                    td= data[i]
+                 if(module.gaTermasuk(without, el))
+                    tr
+                        td.font-weight-bold #{module.ambilKata(el, '_', {})} 
+                        td= data[i]
                  -i++
         
 

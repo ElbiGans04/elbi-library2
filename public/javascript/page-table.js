@@ -351,3 +351,12 @@ $(document).on('change', '#showGroup', function(event){
   let url = window.location.pathname;
   window.location = `${url}?group=${this.value}`
 });
+
+
+
+// Event Detail
+$(document).on('click', '.buttonActionPrint', function(event){
+  let row = $(event.target).closest('tr');
+  let id = $(row).data('id');
+  window.location = `${window.location.pathname}/${id}/detail`;
+})

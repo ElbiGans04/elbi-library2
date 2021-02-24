@@ -142,7 +142,9 @@ Route.get("/", async function (req, res, next) {
         }),
 
       ],
-      buttonAction: false,
+      buttonAction: {
+        print: true
+      },
     });
   } catch (err) {
     next(err)
@@ -523,6 +525,65 @@ Route.post('/renew', async function(req, res, next){
     })
   
     res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true}))
+  } catch (err) {
+    next(err)
+  }
+});
+
+
+
+
+// Detail
+Route.get('/:id/detail', async function(req, res, next){
+  try{
+    let rent = model.order;
+    let column = Object.keys(await rent.rawAttributes);
+
+    // Cari
+    let result = await rent.findOne({
+      where: {
+        id: req.params.id
+      }
+    });
+
+    // Tambahkan
+    column.pop();
+    column.pop();
+    column.push('User');
+    column.push('Book');
+
+    // Jika tidak ada
+    if(!result) throw new respon2({message: 'not found', code: 200});
+
+    let resultUser = await result.getUser({
+      raw: true,
+      attributes: ['name']
+    })
+
+    let resultBook = await result.getBook({
+      raw: true,
+      attributes: [['book_title', 'name']]
+    });
+
+    result.dataValues.user = resultUser.name;
+    result.dataValues.book = resultBook.name;
+
+    delete result.dataValues.book_id
+    delete result.dataValues.user_id;
+
+
+    // Ubah 
+    let waktu = new Date(parseInt(result.dataValues.order_date));
+    result.dataValues.order_date = `${waktu.getFullYear()}/${waktu.getMonth() + 1}/${waktu.getDate()}`
+
+
+    res.locals.column = column;
+    res.locals.module = moduleLibrary;
+    res.locals.without = ['id'];
+    res.locals.data = Object.values(result.dataValues);
+
+    // res.send("OK")
+    res.render('detail')
   } catch (err) {
     next(err)
   }
