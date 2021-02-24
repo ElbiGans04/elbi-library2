@@ -34,7 +34,7 @@ Route.get('/:id', async function(req,res, next){
             }
         });
         
-        if(!resultOrder) throw new respon({message: 'not found', code: 404});
+        if(!resultOrder) throw new respon({message: 'not found', code: 200});
         resultOrder.dataValues.book_id = await resultOrder.getBook({
             raw: true,
             attributes: ['id', [`book_title`, 'name'], ['book_price', 'price']]
@@ -45,7 +45,7 @@ Route.get('/:id', async function(req,res, next){
             attributes: ['id', 'name']
         })
 
-        res.json(new respon({message: 'success', code: 200, data: resultOrder}))
+        res.json(new respon({message: 'success', code: 200, data: resultOrder, type: true}))
     } catch (err) {
         next(err)
     }

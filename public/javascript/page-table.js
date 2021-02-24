@@ -36,23 +36,25 @@ if(active == 1) {
         cell.innerHTML = i+1;
       } );
   } ).draw();
-} else if (active == 2) {
+} else {
   function format ( d, i ) {
     let result = '';
     // Ambil Rows saat ini
     let newRows = getRows()[i];
-
+    
     for(let idx in d[i]) {
-     if(!newRows[idx]) {
+      if(!newRows[idx]) {
        result += `${idx}: ${d[i][idx]} <br>`
-     }
+      }
     }
-
+    
     
     return result
   }
+  let targets = active == 2 ? [3,7,8,9,10] : [3, 4, 6, 7];
+
   var dt = $('#tableUtama').DataTable( {
-      columnDefs: [
+    columnDefs: [
         {
           searchable: false,
           orderable: false,
@@ -67,7 +69,7 @@ if(active == 1) {
         },
         {
           visible: false,
-          targets: [2,3,4,6,7,8]
+          targets,
         }
       ],
       order: [[3, "asc"]],

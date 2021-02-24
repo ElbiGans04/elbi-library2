@@ -66,7 +66,7 @@ Route.get('/:token', async function(req, res, next){
     try {
 
         const token = req.params.token;
-        let { forget } = await tabel();
+        const forget = tabel.forget;
         let waktu = new Date();
 
         const result = await forget.findOne({
@@ -93,7 +93,8 @@ Route.post('/update', async function(req, res, next){
     try {
 
         const token = req.body.token;
-        let { officer, forget, Op } = await tabel();
+        const officer = tabel.officer;
+        const forget = tabel.forget;
     
         //hash
         req.body.password = moduleLibrary.hashing(req.body.password)
@@ -129,10 +130,8 @@ Route.post('/update', async function(req, res, next){
         // Delete Token
         await forget.destroy({
             where : {
-                [Op.and] : {
                     token,
                     officer_id: result.officer_id
-                }
             }
         })
 
