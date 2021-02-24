@@ -4,6 +4,6 @@ module.exports = function (data) {
     this.redirect = data.redirect || false;
     this.type = data.type || false;
     this.delay = data.delay || false;
-    this.alert = true;
+    this.alert = data.alert || false;
     if(data.data) this.data = data.data
 }

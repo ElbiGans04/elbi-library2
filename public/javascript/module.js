@@ -77,8 +77,6 @@ export function check2(result) {
       } else {
         window.location = `${redirect}`
       }
-    } else {
-      if(type === true)  window.location.reload()
     }
 
   }
@@ -284,4 +282,20 @@ export function ambilKata(word, pemisah, option) {
   result = result.trim();
 
   return result;
+};
+
+
+
+
+export function disableEnter(selector) {
+  const formControl = Array.from(document.querySelectorAll(selector));
+  formControl.forEach( function ( element ) {
+    element.addEventListener('keypress', function (event){
+      const code = event.keyCode;
+      if ( code === 13 ) {
+        event.preventDefault();
+        return false
+      }
+    });
+  });
 }

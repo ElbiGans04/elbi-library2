@@ -74,14 +74,14 @@ const respon2 = require("./controllers/respon");
 
   // Error Handler
   app.use(function(err, req, res, next) {
-    // // set locals, only providing error in development
-    // res.locals.message = err.message;
-    // res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // // render the error page
-    res.status(err.status || 200);
-    res.json(new respon({message: err.message}))
-    // res.render('error');
+    console.log(err);
+    if (res.headersSent) {
+      return next(err)
+    }
+    
+    err = err instanceof respon === false ? new respon({message: err.message, alert: true}) : err;
+    res.status(err.status || err.code || 200);
+    res.json(err)
   });
 
 

@@ -32,11 +32,11 @@ Route.post('/', async function (req, res, next) {
             raw: true
         });
 
-        if(!result) throw new Error(`accouunt not found`);
+        if(!result) throw new respon2({message: `accouunt not found`, code: 200});
 
         let {id, email: userEmail, password} = result;
         let roles = result['roles.name']
-        if(password !== password2) throw new Error('password wrong')
+        if(password !== password2) throw new respon2({message: 'password wrong', code: 200})
 
         
         const token = jwt.sign({id, email: userEmail, role: roles}, process.env.APP_PRIVATE_KEY, {

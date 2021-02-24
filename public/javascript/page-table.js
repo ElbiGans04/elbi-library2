@@ -1,4 +1,4 @@
-import {check, check2, getIndex, getRows, navActive, validasi} from './module.js'
+import {check, check2, disableEnter, getIndex, getRows, navActive, validasi} from './module.js'
 let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
@@ -278,21 +278,10 @@ $(document).on("click", '#deleteButton', function (event) {
 
 
 // Menonaktifkan event enter pada element input form 
-const formControl = document.querySelectorAll('.modal-body form .form-control');
-formControl.forEach( function ( element ) {
-  element.addEventListener('keypress', function (event){
-    const code = event.keyCode;
-    if ( code === 13 ) {
-      event.preventDefault();
-      return false
-    }
-  });
-
-});
+disableEnter('.modal-body form .form-control');
 
 
 // memberi event validasi
-
 let formControlAdd = document.querySelectorAll('#addModal .modal-body form input');
 let formControlEdit = document.querySelectorAll('#editModal .modal-body form input');
 eventValidasi(formControlAdd)
@@ -337,6 +326,9 @@ modal.children[1].addEventListener('click', function(event){
 });
 
 
+
+
+// Event Convert To Excell
 $(document).on('click', '#convertButton', function(event){
   let formElement = $(this).closest('.modal-footer').prev().children()[0];
   fetch(`/convert/${$('#convert').val()}`)
