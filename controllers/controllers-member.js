@@ -228,5 +228,52 @@ module.exports = {
         } catch (err) {
             next()
         }
+    },
+
+
+
+    // Details
+    detail: async function(req, res, next){
+        try {
+            let user = model.user;
+            let column = Object.keys(await user.rawAttributes);
+        
+            // Hilangkan Id
+            column.shift()
+            // Tambahkan column
+            column.push('class');
+            
+            let result = await user.findOne({
+                where: {
+                    id: req.params.id
+                }
+            });
+            
+            // Jika tidak ada
+            if(!result) throw new respon2({message: 'not found', code: 200});
+
+            let resultClass = await result.getClasses({
+                raw: true,
+                through: {
+                    attributes: []
+                }
+            });
+
+            result.dataValues.class = resultClass[0].name;
+            result.dataValues = Object.values(result.dataValues);
+            result.dataValues.shift()
+
+            res.locals.column = column;
+            res.locals.data = result.dataValues;
+            res.locals.module = moduleLibrary;
+            
+            res.render('detail')
+        } catch (err) {
+            next(err)
+        }
+
+    
     }
 };
+
+

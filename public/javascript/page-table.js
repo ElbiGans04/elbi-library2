@@ -329,8 +329,7 @@ modal.children[1].addEventListener('click', function(event){
 
 
 // Event Convert To Excell
-$(document).on('click', '#convertButton', function(event){
-  let formElement = $(this).closest('.modal-footer').prev().children()[0];
+$(document).on('click', '#convertToExcel', function(event){
   fetch(`/convert/${$('#convert').val()}`)
   .then(result => result.blob())
   .then(blob => {

@@ -25,8 +25,8 @@ module.exports = {
 
   style: {
     alignment: {
-      horizontal: ['center'],
-      vertikal: ['center]']
+      horizontal: 'center',
+      vertikal: 'center]'
       
     },
     font: {

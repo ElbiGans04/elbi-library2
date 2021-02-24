@@ -57,4 +57,23 @@ action.addEventListener('click', function(event){
             .then(check)
             .then(check2)
     }
-})
+});
+
+
+// GATAU KENAPA JIKA MAKE FUNCTION INI AKAN ERROR FILE EXCEL NYA
+// PADAHAL DIHALAMAN LAIN NGGA
+// document.addEventListener('click', function(event){
+//     if(event.target.id === 'covert') {
+//         fetch(`/report/1/convert`)
+//             .then(result => result.blob())
+//             .then(blob => {
+//                     var url = window.URL.createObjectURL(blob);
+//                     var a = document.createElement('a');
+//                     a.href = url;
+//                     a.download = `ElbiLibrary-${Date.now()}.xlsx`;
+//                     document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+//                     a.click();    
+//                     a.remove(); 
+//                 })
+//     }
+// });

@@ -8,4 +8,5 @@ Route.get('/:id', controllersMember.get);
 Route.post('/', controllersMember.post)
 Route.put('/:id', controllersMember.put);
 Route.delete('/:id', controllersMember.delete);
+Route.get('/:id/detail', controllersMember.detail);
 module.exports = Route

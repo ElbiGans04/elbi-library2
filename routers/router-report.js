@@ -3,7 +3,11 @@ const Route = express.Router();
 const model = require('../db/models/index');
 const respon = require('../controllers/respon');
 const ModuleLibrary = require('../controllers/module');
+const path = require('path');
+const fs = require('fs');
 const moduleLibrary = new ModuleLibrary();
+const {style, styleColumn} = require('../middleware/jsexcell');
+const excel = require('excel4node');
 
 Route.get('/', async function(req, res){
     try {
@@ -17,7 +21,8 @@ Route.get('/', async function(req, res){
             appName,
             module: moduleLibrary,
             title: 'Damaged or lost books',
-            name: req.user.email
+            name: req.user.email,
+            covert: true
         })
     } catch (err) {
         next(err)
@@ -128,6 +133,91 @@ Route.post('/:id', async function(req, res, next){
     } catch (err) {
         next(err)
     }
-})
+});
+
+
+// Covert
+Route.get('/:id/covert', async  function(req, res, next){
+    try {
+        const report = model.report;
+        let wb = new excel.Workbook({author: 'Elbi Library'});
+        let lembarKerja = wb.addWorksheet('Sheet 1');
+        let panjang = [];
+        let total = 0;
+        let col = [];
+        let result = await report.findAll();
+        
+    
+        let index = 1;
+        for(let element in result) {
+            let entitas = result[element];
+            let resultUser = await entitas.getUsers({raw: true, attributes: ['name']});
+            let resultBook = await entitas.getBooks({raw: true, attributes: [['book_title', 'name']]});
+            col = [];
+            entitas.dataValues.user = resultUser[0].name;
+            entitas.dataValues.book = resultBook[0].name;
+    
+    
+            // Logic
+            let child = Object.values(entitas);
+            let index2 = 1;
+            for (let entitasChild in child[0]) {
+                if(index2 !== 1) {
+                    col.push(moduleLibrary.ambilKata(entitasChild, '_', {without: [0]}));
+                    let value = `${child[0][entitasChild]}`;
+    
+                    if(index === 1) panjang.push([]);
+                    panjang[index2 - 2].push(value.length);
+    
+                    if(index2 == 4) total += parseInt(value);
+
+                    
+                    lembarKerja.cell((index + 1), (index2 - 1))
+                        .string(value)
+                        .style(style);
+                }
+    
+    
+                index2++
+            }
+            
+            index++
+        };
+
+        
+        col.forEach(function(e,i){
+            lembarKerja.cell(1, (i + 1))
+                .string(e)
+                .style(styleColumn);
+        })
+
+    
+        // Sesuaikan Panjang
+        // Beri Jarak bedasarkan panjang
+        panjang.forEach(function(e, i){
+            let max = e.sort((a,b) => a - b)[e.length - 1];
+            lembarKerja.column(i + 1).setWidth(max + 10)
+        });
+        
+        
+        let name = `Elbi-Library-${Date.now()}.xlsx`;
+        wb.write(name, function(err){
+            if(err) throw err
+            else {
+                res.download(`${path.resolve(__dirname, `../${name}`)}`, function(err){
+                    if(err) throw err
+                    fs.unlink(`${path.resolve(__dirname, `../${name}`)}`, function(err){
+                        if(err) throw err
+                    })  
+                });
+          } 
+       });
+
+        
+    } catch (err) {
+        next (err)
+    }
+
+});
 
 module.exports = Route
