@@ -13,6 +13,9 @@ Route.post('/', async function (req, res, next) {
     try {
         let { email, password: password2 } = req.body;
 
+        // Jika ga ada
+        if(!email || !password2) throw new respon2({message: 'email/password invalid', code: 200, alert: true})
+
         // Hashing
         password2 = moduleLibrary.hashing(password2);
     

@@ -16,14 +16,17 @@ Route.post('/', async function(req, res, next){
         const officer = tabel.officer;
         const forget = tabel.forget;
 
+        // Jika email tidak ada
+        if(!email) throw new respon({message: `email not found`, code: 200, alert: true})
+
         let resultOfficer = await officer.findOne({
             where: {
                 email
             }
-        })
+        });
 
         // Jika tidak ditemukan
-        if (!resultOfficer) throw new respon({message: 'not found', code: 200})
+        if (!resultOfficer) throw new respon({message: 'not found', code: 200, alert: true})
         
         // Buat string random dan gabungkan dengan url
         let random = moduleLibrary.randomString(15);
@@ -53,7 +56,7 @@ Route.post('/', async function(req, res, next){
             // Buat entitas forget
             await forget.create({token: random, tokenExp: waktu.getTime(), officer_id: resultOfficer.id})
             // Kirim Respon
-            res.json(new respon({message: 'success. please check your email', type: true}))
+            res.json(new respon({message: 'success. please check your email', type: true, alert: true}))
         });
         
 
@@ -95,6 +98,9 @@ Route.post('/update', async function(req, res, next){
         const token = req.body.token;
         const officer = tabel.officer;
         const forget = tabel.forget;
+
+        // Jika token ga ada
+        if(!token) throw new respon({message: 'token not found', code: 200, alert: true})
     
         //hash
         req.body.password = moduleLibrary.hashing(req.body.password)
@@ -110,14 +116,14 @@ Route.post('/update', async function(req, res, next){
         });
 
         // Check Jika token valid & check apakah token exp
-        if(!result) throw new respon ({message: 'token is invalid. please try again', code: 200, delay: 3, redirect: '/forget'})
+        if(!result) throw new respon ({message: 'token is invalid. please try again', code: 200, delay: 3, redirect: '/forget', alert:true})
 
         // Ambil data officer terkait
         const resultOfficer = await result.getOfficer({
             raw: true,
             attributes: ['email']
         })
-        if(waktu.getTime() > result.tokenExp) throw new respon ({message: 'token has expired, please resend. The page will be redirected in ', code: 200, delay: 5, redirect: '/forget'});
+        if(waktu.getTime() > result.tokenExp) throw new respon ({message: 'token has expired, please resend. The page will be redirected in ', code: 200, delay: 5, redirect: '/forget', alert: true});
         
         
         // Update
@@ -149,7 +155,7 @@ Route.post('/update', async function(req, res, next){
             console.log(`email sent ${info.response}`)
             
             // Kirim Respon
-            res.json(new respon({message: 'success. will redirect in ', delay: 3, redirect: '/login', type: true}))
+            res.json(new respon({message: 'success. will redirect in ', delay: 3, redirect: '/login', type: true, alert: true}))
         });
         
     } catch (err) {

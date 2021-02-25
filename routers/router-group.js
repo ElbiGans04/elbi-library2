@@ -92,6 +92,10 @@ module.exports = function (model, name) {
             // Import Model
             let model = await this.db;
             
+
+            // If Name not found
+            if(!req.body.name) throw new respon({message: 'invalid'})
+
             // Check Jika sudah ada
             let validate = await model[this.model].count({
                 where: {

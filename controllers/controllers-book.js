@@ -29,7 +29,7 @@ module.exports = {
 
             
             // Jika tidak ditemukan
-            if(!result) throw new respon({message: 'book not found', code: 200});
+            if(!result) throw new respon({message: 'book not found', code: 200, alert: true});
 
             // Jika ditemukan convert image ke base 64
             result.dataValues.book_image = result.dataValues.book_image.toString('base64')
@@ -164,6 +164,7 @@ module.exports = {
 
 
             // Verification
+            if(!req.body.book_title || !usercategory) throw new respon({message: 'title/ category cannot null', code: 200, alert: true})
             // check apakah buku dengan title tsb sudah ada
             let validation = await book.count({
                 where : {
@@ -175,18 +176,18 @@ module.exports = {
             });
             
             // Jika Ada
-            if (validation > 0) throw new respon({code: 200, message: 'book already'});
+            if (validation > 0) throw new respon({code: 200, message: 'book already', alert: true});
 
             // Pisahkan format launching
             let {book_launching} = req.body
-            if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid'});
+            if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid', alert: true});
             req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
 
 
 
             // Buat File Format
             if(!req.file) {
-                throw new respon({code: 200, message: 'please insert image'})
+                throw new respon({code: 200, message: 'please insert image' ,alert: true})
             } else {
                 let format = path.extname(req.file.originalname);
                 format = format.split('.')[1];
@@ -204,7 +205,7 @@ module.exports = {
             });
 
             // Jika tidak ada
-            if(!resultCategory) throw new respon({message: 'category is invalid', code: 200});
+            if(!resultCategory) throw new respon({message: 'category is invalid', code: 200, alert: true});
 
             // Check apakah 
             let resultPublisher = await publisher.findOne({
@@ -214,14 +215,14 @@ module.exports = {
             });
 
             // Jika tidak ada
-            if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200});
+            if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200, alert: true});
             
             // Buat
             let book1 = await book.create(req.body);
             await book1.setPublishers(resultPublisher);
             await book1.setCategories(resultCategory);
             // Beri respone
-            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true}));
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: '/books'}));
 
         } catch (err) {
             next(err);
@@ -239,6 +240,7 @@ module.exports = {
             
             // Verify
             // Validation
+            if(!req.body.book_title || !usercategory) throw new respon({message: 'title/ category cannot null', code:200, alert: true})
             let validation = await book.findOne({
                 where: {
                     id: entitasId
@@ -246,7 +248,7 @@ module.exports = {
             });
     
             // Jika book tidak ditemukan
-            if(!validation) throw new respon({message: 'book not found', code: 200})
+            if(!validation) throw new respon({message: 'book not found', code: 200, alert: true})
 
             
             // Tambahkan File, Karena file berada direq.file
@@ -263,7 +265,7 @@ module.exports = {
             
             // Pisahkan format launching
             let {book_launching} = req.body
-            if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid'});
+            if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid', alert: true});
             req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
             
             // Check apakah 
@@ -274,7 +276,7 @@ module.exports = {
             });
             
             // Jika tidak ada
-            if(!resultCategory) throw new respon({message: 'category is invalid', code: 200});
+            if(!resultCategory) throw new respon({message: 'category is invalid', code: 200, alert: true});
             
             // Check apakah 
             let resultPublisher = await publisher.findOne({
@@ -284,7 +286,7 @@ module.exports = {
             });
 
             // Jika tidak ada
-            if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200});
+            if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200, alert: true});
 
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
@@ -298,7 +300,7 @@ module.exports = {
             await validation.setPublishers(resultPublisher)
     
     
-            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
+            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/books'}))
     
         } catch (err) {
             next(err)
@@ -320,7 +322,7 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation <= 0) throw new respon({message: 'book not found', code: 200});
+            if ( validation <= 0) throw new respon({message: 'book not found', code: 200, alert: true});
     
             // Hapus book
             await book.destroy({
@@ -331,7 +333,7 @@ module.exports = {
             
 
             // Kirim Respon
-            res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
+            res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true, redirect: '/books'}));
             
         } catch (err) {
             next(err)

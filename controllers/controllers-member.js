@@ -17,7 +17,7 @@ module.exports = {
                 }
             });
         
-            if(!result) throw new respon2({message: 'user not found', code: 200});
+            if(!result) throw new respon2({message: 'user not found', code: 200, alert: true});
     
             // Jika Ada maka Kirimkan
             res.json(new respon2({message: 'success',data: result, type: true, alert: true, code: 200, show: true}))
@@ -126,6 +126,8 @@ module.exports = {
     post: async function(req, res, next){
         try {
             // Vadidation 
+            if(!req.body.nisn || !req.body.class) throw new respon2({message: 'nisn/ class cannot null', code: 200, alert: true})
+
             // Check Apakah user dengan email terkait telah terdaftar
             let validation = await model.user.findOne({
                 where : {
@@ -134,7 +136,7 @@ module.exports = {
             });
             
             // Jika Ada
-            if (validation > 0) throw new respon2({code: 200, message: 'nisn already'});
+            if (validation > 0) throw new respon2({code: 200, message: 'nisn already', alert: true});
 
             let resultClass = await model.class.findOne({
                 where: {
@@ -142,14 +144,14 @@ module.exports = {
                 }
             });
 
-            if (!resultClass) throw new respon2({code: 200, message: 'invalid class'})
+            if (!resultClass) throw new respon2({code: 200, message: 'invalid class' ,alert: true})
 
             // // Buat User sesuai yang diinputkan
             let resultUser = await model.user.create(req.body, {});
             await resultUser.setClasses(resultClass);
             
             // Kirim Respon kepada user
-            res.json(new respon2({message: 'successfully added', type: true, alert: true, code: 200, show: true}))
+            res.json(new respon2({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: '/users'}))
     
         } catch (err) {
             next(err);
@@ -163,6 +165,7 @@ module.exports = {
             let entitasId = req.params.id;
     
             // Validation
+            if(!req.body.nisn || !req.body.class) throw new respon2({message: 'nisn/ class cannot null', code: 200, alert: true})
             // Check Apakah user dengan id terkait ditemukan
             let validation = await model.user.findOne({
                 where: {
@@ -171,7 +174,7 @@ module.exports = {
             });
 
             // Jika user tidak ditemukan maka lempar pesan
-            if(validation <= 0) throw new respon2({message: 'user not found', code: 200})
+            if(validation <= 0) throw new respon2({message: 'user not found', code: 200, alert: true})
 
             let resultClass = await model.class.findOne({
                 where: {
@@ -179,7 +182,7 @@ module.exports = {
                 }
             });
 
-            if (!resultClass) throw new respon2({code: 200, message: 'invalid class'})
+            if (!resultClass) throw new respon2({code: 200, message: 'invalid class', alert: true})
     
     
             // Jika Ditemukan maka lanjutkan
@@ -193,7 +196,7 @@ module.exports = {
     
             
             // Kirim Tanggapan
-            res.json(new respon2({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
+            res.json(new respon2({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/users'}))
     
         } catch (err) {
             next(err)
@@ -215,7 +218,7 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200});
+            if ( validation <= 0 ) throw new respon2({message: 'user not found', code: 200, alert: true});
     
             // Hapus user
             await model.user.destroy({
@@ -224,7 +227,7 @@ module.exports = {
                 }
             })
             
-            res.json(new respon2({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
+            res.json(new respon2({message: 'successfully deleted', type: true, alert: true, code: 200, show: true, redirect: '/users'}));
             
         } catch (err) {
             next()
@@ -250,7 +253,7 @@ module.exports = {
             });
             
             // Jika tidak ada
-            if(!result) throw new respon2({message: 'not found', code: 200});
+            if(!result) throw new respon2({message: 'not found', code: 200, alert: true});
 
             let resultClass = await result.getClasses({
                 raw: true,

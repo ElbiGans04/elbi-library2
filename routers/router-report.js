@@ -77,7 +77,7 @@ Route.get('/:id', async function(req,res, next){
 
         
         
-        res.json(new respon({message: 'success', code: 200, data: resultOrder, type: true}))
+        res.json(new respon({message: 'success', code: 200, data: resultOrder, type: true, alert: true}))
     } catch (err) {
         next(err)
     }
@@ -89,6 +89,7 @@ Route.post('/:id', async function(req, res, next){
         let id = req.params.id;
         const order = model.order;
         const report = model.report;
+
         
         const resultOrder = await order.findOne({
             where: {
@@ -104,7 +105,7 @@ Route.post('/:id', async function(req, res, next){
         let resultBook = await resultOrder.getBook();
         
         // Jika tidak ada
-        if(!resultOrder || !resultUser || !resultBook) throw new respon({message: 'order not found', code: 200});
+        if(!resultOrder || !resultUser || !resultBook) throw new respon({message: 'order not found', code: 200, alert: true});
         
         // Hitung Denda
         let waktu = new Date(parseInt(resultOrder.dataValues.order_date))

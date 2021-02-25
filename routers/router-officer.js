@@ -123,7 +123,7 @@ Route.get('/:id', async function(req, res, next){
         let result = req.user.role == 'admin' ? await roleAdmin.getOfficers(opsi) : await model.officer.findAll(opsi);
         result = result[0];
 
-        if(!result) throw new respon({message: 'user not found', code: 200});
+        if(!result) throw new respon({message: 'user not found', code: 200, alert: true});
     
         // Jika Ada maka Kirimkan
         res.json(new respon({message: 'success',data: result, type: true, alert: true, code: 200, show: true}))
@@ -135,6 +135,9 @@ Route.get('/:id', async function(req, res, next){
 Route.post('/', async function(req, res, next){
     try {
         const { email } = req.body;
+
+        // Jika email ga ada
+        if(!email) throw new respon({message: 'email not found', code: 200, alert: true})
         
         // Check
         const validate = await model.officer.count({
@@ -147,7 +150,7 @@ Route.post('/', async function(req, res, next){
         req.body.password = moduleLibrary.hashing(req.body.password);
         
         // Jika email sudah terdaftar
-        if(validate > 0) throw new respon({message: 'email already register', code: 200});
+        if(validate > 0) throw new respon({message: 'email already register', code: 200, alert: true});
 
         const validateRole = await model.role.findOne({
             where: {
@@ -156,10 +159,10 @@ Route.post('/', async function(req, res, next){
         });
 
         // Jika role undifined
-        if(!validateRole) throw new respon({message: 'role is invalid', code: 200});
+        if(!validateRole) throw new respon({message: 'role is invalid', code: 200, alert: true});
 
         // Jika admin menambahkan role librarian
-        if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200});
+        if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});
 
         // Tambahkan
         let result = await model.officer.create(req.body);
@@ -183,7 +186,7 @@ Route.put('/:id', async function(req, res, next){
         });
 
         // Validate 
-        if(validate < 0) throw new respon({message: 'not found', code: 200});
+        if(validate < 0) throw new respon({message: 'not found', code: 200, alert: true});
 
 
         // Check Role
@@ -194,10 +197,10 @@ Route.put('/:id', async function(req, res, next){
         });
         
         // Jika role undifined
-        if(!validateRole) throw new respon({message: 'role is invalid', code: 200});
+        if(!validateRole) throw new respon({message: 'role is invalid', code: 200, alert: true});
 
         // Jika admin menambahkan role librarian
-        if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200});    
+        if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
         
         // Hashing
         req.body.password = moduleLibrary.hashing(req.body.password);
@@ -231,10 +234,10 @@ Route.delete('/:id', async function(req, res, next){
         })
 
         // Jika user tidak ketemu
-        if(!result) throw new respon({message: 'not found', code: 200});
+        if(!result) throw new respon({message: 'not found', code: 200, alert: true});
 
         // Jika admin ingin menghapus librarian
-        if(req.user.role == 'admin' && resultRole[0].name == 'librarian') throw new respon({ message : 'you dont have permission', code: 200})
+        if(req.user.role == 'admin' && resultRole[0].name == 'librarian') throw new respon({ message : 'you dont have permission', code: 200, alert: true})
 
         await model.officer.destroy({
             where : {

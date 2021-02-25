@@ -156,13 +156,20 @@ Route.post("/", async function (req, res, next) {
     // Ambil TOken
     const {email} = req.user;
 
+    if(!email) throw new respon2({message: 'email not found', code: 200, alert: true})
+
     // Ambil data bedasarkan apa yang diinputkan user
     const { order_day, user_id, book_id } = req.body;
     const bookId = req.body.book_id;
 
+    if(!bookId || !user_id || !book_id) throw new respon2({message: 'book not found', code: 200, alert: true});
+
+
+
     // Import Model
     const order = model.order;
     const book = model.book;
+    const user = model.user;
     const about = model.about;
 
     const {fines} = await about.findOne({
@@ -184,11 +191,19 @@ Route.post("/", async function (req, res, next) {
 
     // Jika Tidak Ditemukan
     if (bookData == null)
-      throw new respon2({ message: "book not found", code: 200 });
+      throw new respon2({ message: "book not found", code: 200, alert: true });
 
     // Jika stok habis
     if (bookData.book_stock <= 0)
-      throw new respon2({ message: "out of stock", code: 200 });
+      throw new respon2({ message: "out of stock", code: 200, alert: true });
+
+    
+    // Check APakah user ada
+    let resultUser = await user.count({where: {
+      id: user_id
+    }});
+
+    if(resultUser == 0) throw new respon2({message: 'user not found', code:200, alert: true})
 
     // Masukan Nilai tambahan
     let waktu = new Date().getTime();
@@ -217,7 +232,7 @@ Route.post("/", async function (req, res, next) {
     );
 
     // Kirim Respon
-    res.json(new respon2({message: 'successfully added', type: true, alert: true, code: 200, show: true}))
+    res.json(new respon2({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: '/rent'}))
   } catch (err) {
     next(err)
   }
@@ -308,7 +323,7 @@ Route.get("/return/:id", async function (req, res, next) {
 
     // Jika Ga ada
     if (dataOrder.length <= 0)
-      throw new respon2({ message: "not found. Please check again" });
+      throw new respon2({ message: "not found. Please check again", alert: true });
 
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
@@ -328,7 +343,7 @@ Route.get("/return/:id", async function (req, res, next) {
     }
 
     // Kembalikan
-    res.json(new respon2({message: 'success', data: dataOrder,type: true, alert: true, code: 200, show: true}))
+    res.json(new respon2({message: 'success', data: dataOrder,type: true, alert: true, code: 200, show: true, redirect: '/rent'}))
   } catch (err) {
     next(err)
   }
@@ -342,6 +357,9 @@ Route.post("/return", async function (req, res, err) {
 
     // Ambil yang diinputkan user
     let { user, book : userBook, id_transaction } = req.body;
+
+    // Jika tidak dimasukan
+    if(!user || !userBook || !id_transaction) throw new respon2({message: 'user/book/id_transaction invalid', code: 200, alert: true})
 
     // Check Apakah Orderan tsb ada
     const resultOrder = await order.findAll({
@@ -357,7 +375,7 @@ Route.post("/return", async function (req, res, err) {
 
     // Jika Ga ada
     if (resultOrder.length <= 0)
-      throw new respon2({ message: "not found. Please check again" });
+      throw new respon2({ message: "not found. Please check again" , alert: true});
 
     // Check apakah buku ada
     let resultBook = await book.findOne({
@@ -368,11 +386,11 @@ Route.post("/return", async function (req, res, err) {
       attributes: ['book_stock']
     });
 
-    if(!resultBook) throw new respon2({message: 'book not found'});
+    if(!resultBook) throw new respon2({message: 'book not found', alert: true});
 
     // Update
     await order.update(
-      { return_status: true, order_officer_return: req.user.email, book },
+      { return_status: true, order_officer_return	: req.user.email, book },
       {
         where: {
           [Op.and]: {
@@ -394,7 +412,7 @@ Route.post("/return", async function (req, res, err) {
 
 
     // Kirim Respon
-    res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true}))
+    res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true, redirect: '/rent'}))
   } catch (err) {
     next(err)
   }
@@ -490,7 +508,11 @@ Route.post('/renew', async function(req, res, next){
     
     // Import
     const order = model.order;
-    if(day === undefined || day.length <= 0 || parseInt(day) > 10) throw new respon2({message: 'invalid day', code:200})
+    if(day === undefined || day.length <= 0 || parseInt(day) > 10) throw new respon2({message: 'invalid day', code:200, alert: true})
+
+    // Jika tidak ada
+    // Jika tidak dimasukan
+    if(!user_id || !bokk_id || !id_transaction) throw new respon2({message: 'user/book/id_transaction invalid', code: 200, alert: true})
 
     // Cari Apakah ada
     let validation = await order.findOne({
@@ -502,7 +524,7 @@ Route.post('/renew', async function(req, res, next){
     });
 
     // Jika tidak ada 
-    if(!validation) throw new respon2({message: 'not found', code: 200});
+    if(!validation) throw new respon2({message: 'not found', code: 200, alert: true});
 
     let newDate = parseInt(day) + parseInt(validation.dataValues.order_day)
 
@@ -510,7 +532,7 @@ Route.post('/renew', async function(req, res, next){
     // Check apakah orderan memiliki denda
     const dateNew = new Date(parseInt(validation.dataValues.order_date));
     dateNew.setDate(dateNew.getDate() + parseInt(validation.dataValues.order_day));    
-    if(dateNew.getTime() < Date.now()) throw new respon2({message: 'pay the fine in advance', code: 200})
+    if(dateNew.getTime() < Date.now()) throw new respon2({message: 'pay the fine in advance', code: 200, alert:true})
     
 
     // Jika ada
@@ -553,7 +575,7 @@ Route.get('/:id/detail', async function(req, res, next){
     column.push('Book');
 
     // Jika tidak ada
-    if(!result) throw new respon2({message: 'not found', code: 200});
+    if(!result) throw new respon2({message: 'not found', code: 200, alert: true});
 
     let resultUser = await result.getUser({
       raw: true,

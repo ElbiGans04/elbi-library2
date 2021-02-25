@@ -18,8 +18,8 @@ Route.post('/', async function(req, res, next){
     try {
         let {app, fines} = req.body;
         const about = model.about;
-        if(!app || !fines) throw new respon({message: 'app name / fines not found', code: 200});
-        if(req.user.role == 'admin') throw new respon({message: 'not have permission', code: 200});
+        if(!app || !fines) throw new respon({message: 'app name / fines not found', code: 200, alert: true});
+        if(req.user.role == 'admin') throw new respon({message: 'not have permission', code: 200, alert: true});
         
 
         // Lakukan 
@@ -28,7 +28,7 @@ Route.post('/', async function(req, res, next){
             id: 1
         }});
 
-        res.json(new respon({message: 'success', code: 200, type: true}))
+        res.json(new respon({message: 'success', code: 200, type: true, alert: true}))
         
     } catch (err) {
         next(err)
