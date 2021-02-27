@@ -5,22 +5,61 @@ const ModuleTemplate = require('../controllers/module');
 const  moduleLibrary = new ModuleTemplate();
 const respon = require('../controllers/respon');
 let url = require('url');
+const {Op} = require('sequelize');
 
 Route.get('/', async function(req, res, next){ 
     try {
-        // Cari role
-        let allClass = await model.role.findOne({
+        // Definisikan kekuatan role
+        let permission = {
+            admin: [],
+            librarian: ['admin'],
+            root: ['admin', 'librarian']
+        };
+        let actionPermission = [];
+
+        // Kondisi bedasarkan 3 role
+        let opsi;
+        if (req.user.role == 'librarian') opsi = ["librarian", "admin"];
+        else if (req.user.role == "admin") opsi = "admin";
+        else opsi = "root"
+
+             
+        // Definisikan allClass untuk mencari role, resultOfficer untuk menampung data, stdopsi untuk menampung kondisi pencarian
+        let allClass = await model.role.findAll({
             where: {
-                name: 'admin'
+                name: opsi
             }
         });
+        let resultOfficer;
+        let stdopsi = {
+            where: {
+                id: {
+                    [Op.not] : req.user.id
+                }
+            }
+        };
+        
 
         // Jika user sekarang mempunyai role admin maka tampilkan petugas dengan role admin
         // Jika dia mempunyai role librarian maka tampilkan semua
-        let resultOfficer;
         let {group} = url.parse(req.url, true).query;
-        if(group === undefined || group.toLowerCase() == "all") resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await model.officer.findAll();
-        else {
+        if(group === undefined || group.toLowerCase() == "all") {
+
+            // Jika user role root
+            if (req.user.role == 'root' ) resultOfficer = await model.officer.findAll(stdopsi);    
+            else {
+
+                // Jika role ditemukan
+                if(allClass) {
+                    // Check apakah role lebih dari satu
+                    resultOfficer = allClass.length === 1 ? await allClass[0].getOfficers(stdopsi) : [...await allClass[0].getOfficers(stdopsi), ...await allClass[1].getOfficers(stdopsi)];
+                } else {
+                    resultOfficer = []
+                }
+            };
+        } else {
+
+            // Cari ROle yang mau ditampilkan
             let resultOfClass = await model.role.findOne({
                 where: {
                     id: group
@@ -28,27 +67,63 @@ Route.get('/', async function(req, res, next){
             });
             
             // Jika tidak ketemu
-            if(!resultOfClass) resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers() : await model.officer.findAll();
+            if(!resultOfClass) {
+
+                // Jika user dengan role root
+                if (req.user.role == 'root' ) resultOfficer = await model.officer.findAll(stdopsi);    
+                else {
+                    if(allClass) {
+                        resultOfficer = allClass.length === 1 ? await allClass[0].getOfficers(stdopsi) : [...await allClass[0].getOfficers(stdopsi), ...await allClass[1].getOfficers(stdopsi)];
+                    } else {
+                        resultOfficer = []
+                    }
+                };
+            }
             else {
-                resultOfficer = req.user.role == 'admin' ? await allClass.getOfficers()  : await resultOfClass.getOfficers()
+                let name = resultOfClass.dataValues.name;
+                
+                // Jangan biarkan role librarian dan role admin mengakses role root
+                if((name == 'root' && (req.user.role == 'librarian' || req.user.role == 'admin')) || name == 'librarian' && req.user.role == 'admin') {
+                    if(allClass) {
+                        resultOfficer = allClass.length === 1 ? await allClass[0].getOfficers(stdopsi) : [...await allClass[0].getOfficers(stdopsi), ...await allClass[1].getOfficers(stdopsi)];
+                    } else {
+                        resultOfficer = []
+                    }
+                } else {
+                    resultOfficer = await resultOfClass.getOfficers(stdopsi)
+                }
             }
         };
 
-            // ambil name
-            let about = model.about;
-            let {appName} = await about.findOne({
-                raw: true,
-                attributes: ['appName']
-            });
+        // ambil name
+        let about = model.about;
+        let {appName} = await about.findOne({
+            raw: true,
+            attributes: ['appName']
+        });
         
         // ambil untuk modal 
-        let opt = req.user.role == 'admin' ? {name: `admin`} : {};
+        let opt = {};
+        if(req.user.role === 'root') opt = {};
+        else if(req.user.role === 'librarian') {
+            opt = {
+                name : {
+                    [Op.not] : `root`
+                }
+            }
+        } else {
+            opt = {
+                name : 'admin'
+            }
+        }
+
         let resultRole = await model.role.findAll({
             where: opt,
             raw: true,
             attributes: ['id', ['name', 'value']]
         });
 
+        // console.log(resultOfficer)
         // Ambil Nama dari assosiasi
         for (let el of resultOfficer) {
             let role = await el.getRoles({
@@ -56,8 +131,14 @@ Route.get('/', async function(req, res, next){
                 attributes: ['id', ['name', 'title']]
             });
 
-            el.dataValues.role = role[0]
-        }
+            el.dataValues.role = role[0];
+
+            // Looping
+            let action = moduleLibrary.termasuk(permission[req.user.role], role[0].title)
+            actionPermission.push(action);
+        };
+
+        
 
         
         // Ambil Column
@@ -92,6 +173,7 @@ Route.get('/', async function(req, res, next){
                 }
             },
             buttonAction: {
+                permission: actionPermission,
                 update: true,
                 delete: true
             }
@@ -162,7 +244,9 @@ Route.post('/', async function(req, res, next){
         if(!validateRole) throw new respon({message: 'role is invalid', code: 200, alert: true});
 
         // Jika admin menambahkan role librarian
+        if(req.user.role == 'admin' && validateRole.name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});
         if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});
+        if(req.user.role == 'librarian' && validateRole.name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});
 
         // Tambahkan
         let result = await model.officer.create(req.body);
@@ -199,8 +283,18 @@ Route.put('/:id', async function(req, res, next){
         // Jika role undifined
         if(!validateRole) throw new respon({message: 'role is invalid', code: 200, alert: true});
 
+
+        // ambil class sebelum
+        let resultRawClass = await validate.getRoles({
+            raw: true,
+        });
+        
         // Jika admin menambahkan role librarian
-        if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
+        if(req.user.role == 'admin' && resultRawClass[0].name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
+        if(req.user.role == 'admin' && resultRawClass[0].name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
+        if(req.user.role == 'admin' && resultRawClass[0].name == 'admin') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
+        if(req.user.role == 'librarian' && resultRawClass[0].name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
+        if(req.user.role == 'librarian' && resultRawClass[0].name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
         
         // Hashing
         req.body.password = moduleLibrary.hashing(req.body.password);
@@ -212,7 +306,7 @@ Route.put('/:id', async function(req, res, next){
         });
         await validate.setRoles(validateRole);
 
-        res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
+        res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/officers'}))
     
     } catch (err) {
         next(err)
@@ -237,7 +331,11 @@ Route.delete('/:id', async function(req, res, next){
         if(!result) throw new respon({message: 'not found', code: 200, alert: true});
 
         // Jika admin ingin menghapus librarian
+        if(req.user.role == 'admin' && resultRole[0].name == 'root') throw new respon({ message : 'you dont have permission', code: 200, alert: true})
         if(req.user.role == 'admin' && resultRole[0].name == 'librarian') throw new respon({ message : 'you dont have permission', code: 200, alert: true})
+        if(req.user.role == 'admin' && resultRole[0].name == 'admin') throw new respon({ message : 'you dont have permission', code: 200, alert: true})
+        if(req.user.role == 'librarian' && resultRole[0].name == 'librarian') throw new respon({ message : 'you dont have permission', code: 200, alert: true})
+        if(req.user.role == 'librarian' && resultRole[0].name == 'root') throw new respon({ message : 'you dont have permission', code: 200, alert: true})
 
         await model.officer.destroy({
             where : {
@@ -245,7 +343,7 @@ Route.delete('/:id', async function(req, res, next){
             }
         });
 
-        res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
+        res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true, redirect: '/officers'}));
     
     } catch (err) {
         next(err)

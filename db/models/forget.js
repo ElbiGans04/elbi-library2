@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     
     tokenExp: {
-        type: DataTypes.BIGINT(20)
+        type: DataTypes.INTEGER
     }
   }, {
     sequelize,

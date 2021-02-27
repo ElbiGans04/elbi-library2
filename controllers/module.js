@@ -36,7 +36,6 @@ module.exports = class {
     for (let j in withValue) {
       const kon = el === undefined ? withValue[j] : withValue[j][el];
       if (kon === i) {
-        console.log('i',i)
         if (el != undefined) return { value: withValue[j]["as"], kondisi: true };
         else return true;
       }

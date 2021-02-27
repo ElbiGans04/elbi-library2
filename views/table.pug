@@ -29,7 +29,7 @@ head
     // Divider
     hr.sidebar-divider
     .sidebar-heading Data
-    if(profile.role == 'librarian')
+    if(profile.role == 'librarian' || profile.role == 'root')
       include navBar.pug
     else if (profile.role == 'admin')
       include navBarAdmin.pug
@@ -110,6 +110,7 @@ head
                     if(buttonAction)
                       th Action
                 tbody
+                  -let i = 0;
                   each entri in data
                     tr(data-id=`${entri.dataValues.id}`)
                       td
@@ -129,18 +130,31 @@ head
                                 td(data-id=rows.id)=rows.title
                             else 
                               td(data-as=dataAs)= rows
+                      
                       if(buttonAction)
                         td(style="text-align: center")
-                          if(buttonAction.delete)
-                            button.buttonActionDelete.btn.btn-danger.btn-circle.btn-sm.mr-1(type="button" title="delete")
-                              i.fas.fa-trash
-                          if(buttonAction.update)
-                            button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" title="update" )
-                              i.fas.fa-edit
-                          if(buttonAction.print)
-                            button.buttonActionPrint.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" title="print/ view details")
-                              i.fas.fa-print
-
+                          if(buttonAction.permission) 
+                            if(buttonAction.permission[i])
+                              if(buttonAction.delete)
+                                button.buttonActionDelete.btn.btn-danger.btn-circle.btn-sm.mr-1(type="button" title="delete")
+                                  i.fas.fa-trash
+                              if(buttonAction.update)
+                                button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" title="update" )
+                                  i.fas.fa-edit
+                              if(buttonAction.print)
+                                button.buttonActionPrint.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" title="print/ view details")
+                                  i.fas.fa-print
+                          else 
+                            if(buttonAction.delete)
+                              button.buttonActionDelete.btn.btn-danger.btn-circle.btn-sm.mr-1(type="button" title="delete")
+                                i.fas.fa-trash
+                            if(buttonAction.update)
+                              button.buttonActionEdit.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" title="update" )
+                                i.fas.fa-edit
+                            if(buttonAction.print)
+                              button.buttonActionPrint.btn.btn-primary.btn-circle.btn-sm.mr-1(type="button" title="print/ view details")
+                                i.fas.fa-print
+                    - i++
 
 
 

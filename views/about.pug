@@ -28,7 +28,7 @@ head
     // Divider
     hr.sidebar-divider
     .sidebar-heading Data
-    if(profile.role == 'librarian')
+    if(profile.role == 'librarian' || profile.role == 'root')
       include navBar.pug
     else if (profile.role == 'admin')
       include navBarAdmin.pug
@@ -61,6 +61,7 @@ head
       
       
       .container-fluid 
+        .card-shadow
           .card-body
             .table-responsive
                 .col-sm-12 

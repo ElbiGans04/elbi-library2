@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     
     order_date: {
-      type: DataTypes.BIGINT(20),
+      type: DataTypes.INTEGER,
       allowNull: false,
       validate: {
         isNumeric: true

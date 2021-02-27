@@ -31,9 +31,9 @@ head
         span Dashboard
     hr.sidebar-divider
     .sidebar-heading Data
-    if(role == 'librarian')
+    if(profile.role == 'librarian' || profile.role == 'root')
       include navBar.pug
-    else if (role == 'admin')
+    else if (profile.role == 'admin')
       include navBarAdmin.pug
     // Divider
     hr.sidebar-divider.d-none.d-md-block
@@ -56,9 +56,9 @@ head
         ul.navbar-nav.ml-auto
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
-              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{name}
+              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{profile.email}
               .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
-                span !{name.slice(0,2)}
+                span !{profile.email.slice(0,2)}
             // Dropdown - User Information
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
               a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
@@ -72,7 +72,7 @@ head
           h1.h3.mb-0.text-gray-800 Dashboard
         // Content Row
         .row
-          if(role == 'librarian') 
+          if(profile.role == 'librarian' || profile.role == 'root') 
             .col-xl-3.col-md-6.mb-4
               .card.border-left-primary.shadow.h-100.py-2
                 .card-body
@@ -117,7 +117,7 @@ head
                       .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{orderDay} %
                     .col-auto
                       i.fas.fa-clipboard-list.fa-2x.text-gray-300
-          if ( role == 'librarian' || role == 'admin' )
+          if ( profile.role == 'librarian' || profile.role == 'admin' || profile.role == 'root' )
             .col-xl-3.col-md-6.mb-4
               .card.border-left-primary.shadow.h-100.py-2
                 .card-body

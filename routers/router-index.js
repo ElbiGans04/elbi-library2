@@ -6,7 +6,7 @@ let moduleLibrary = new Template();
 
 Route.get('/', async function(req, res, next){
   try {
-    let { role, id: userID } = req.user;    
+    let { id: userID } = req.user;    
     const order = model.order;
     const user = model.user;
     const officer = model.officer;
@@ -65,14 +65,13 @@ Route.get('/', async function(req, res, next){
     res.render('index', {
       module: moduleLibrary,
       appName,
-      role,
+      profile: req.user,
       resultActive: resultActive.length,
       allOlder: allOlder.length,
       lateToPay: lateToPay.length,
       orderDay,
       users: resultUser.length,
       officer: resultOfficer,
-      name: req.user.email,
     })
   } catch (err) {
     next(err)

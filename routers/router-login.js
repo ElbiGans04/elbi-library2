@@ -41,7 +41,6 @@ Route.post('/', async function (req, res, next) {
         let roles = result['roles.name']
         if(password !== password2) throw new respon2({message: 'password wrong', code: 200})
 
-        
         const token = jwt.sign({id, email: userEmail, role: roles}, process.env.APP_PRIVATE_KEY, {
             algorithm: 'RS256',
             expiresIn: '1d'
@@ -54,6 +53,7 @@ Route.post('/', async function (req, res, next) {
 
         // Kirim Respon
         res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
+        // res.json(new respon2({message: `success. the page will redirect in `, code: 200, delay: 3}))
         
     } catch (err) {
         next(err)

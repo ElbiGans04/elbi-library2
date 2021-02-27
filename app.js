@@ -118,7 +118,6 @@ async function auth(req, res, next) {
     if (!user) throw new Error("officer not found");
 
     req.user = tokenJwt;
-
     next();
   } catch (err) {
     console.log(err);
@@ -137,6 +136,7 @@ async function roleAuth(req, res, next) {
     let permission = {
       admin: ["/users", "/officer", "/class"],
       librarian: "*",
+      root: "*",
     };
 
     let url = req.originalUrl;

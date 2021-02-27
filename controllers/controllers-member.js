@@ -82,8 +82,7 @@ module.exports = {
 
             // Column yang tidak ingin ditampilkan
             const without = ['id', 'createdat', 'updatedat'];
-
-
+            
             // Render halaman
             res.render('table', {
                 appName,
