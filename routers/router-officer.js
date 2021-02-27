@@ -21,7 +21,7 @@ Route.get('/', async function(req, res, next){
         let opsi;
         if (req.user.role == 'librarian') opsi = ["librarian", "admin"];
         else if (req.user.role == "admin") opsi = "admin";
-        else opsi = "root"
+        else opsi = "root";
 
              
         // Definisikan allClass untuk mencari role, resultOfficer untuk menampung data, stdopsi untuk menampung kondisi pencarian
@@ -187,26 +187,31 @@ Route.get('/', async function(req, res, next){
 Route.get('/:id', async function(req, res, next){
     try {   
         const userID = req.params.id;
+        
+        // Definisikan kekuatan role
+        let permission = {
+            admin: [],
+            librarian: ['admin'],
+            root: ['admin', 'librarian']
+        };
+        let actionPermission = [];
 
         // Check
-        let roleAdmin = await model.role.findOne({
-            where: {
-                name: 'admin'
-            }
-        });
-
-        let opsi = {
+        let stdopsi = {
             where: {
                 id: userID
-            },
-            raw: true
+            }
         }
 
-        let result = req.user.role == 'admin' ? await roleAdmin.getOfficers(opsi) : await model.officer.findAll(opsi);
-        result = result[0];
-
+        let result = await model.officer.findOne(stdopsi);
+        
+        // Jika tidak ada
         if(!result) throw new respon({message: 'user not found', code: 200, alert: true});
-    
+
+        // Check Role
+        let resultRole = await result.getRoles({raw: true});
+        if(!moduleLibrary.termasuk(permission[req.user.role], resultRole[0].name)) throw new respon({message: 'you dont have permission', code: 200, alert: true});
+        
         // Jika Ada maka Kirimkan
         res.json(new respon({message: 'success',data: result, type: true, alert: true, code: 200, show: true}))
     } catch (err) {
