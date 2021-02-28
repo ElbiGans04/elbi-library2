@@ -21,6 +21,7 @@ const convertRoute = require("./routers/router-convert");
 const group = require("./routers/router-generate");
 const report = require('./routers/router-report');
 const about = require('./routers/router-about');
+const update = require('./routers/router-update');
 
 // // // Instalasi Project // // //
 app.use("/assets", express.static("./public"));
@@ -57,7 +58,7 @@ const respon2 = require("./controllers/respon");
     console.log("Cookie Telah Dihapus");
     res.redirect("/login");
   });
-
+  
   
   app.use("/forget", forgetRoute);
   app.use("/class", auth, roleAuth, group("class", "Class"));
@@ -67,7 +68,7 @@ const respon2 = require("./controllers/respon");
   app.use("/convert", auth, roleAuth, convertRoute);
   app.use("/about", auth, about);
   app.use("/report", auth, roleAuth, report)
-
+  app.use("/update", auth, update)
 
   // Handler
   app.get('*', (req, res) => res.redirect('/'));

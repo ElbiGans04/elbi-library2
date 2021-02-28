@@ -77,6 +77,9 @@ head
                             
                         // Dropdown - User Information
                         .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
+                            a.dropdown-item(href='/update')
+                                i.fas.fa-user-edit.fa-sm.fa-fw.mr-2.text-gray-400
+                                |                     Update                        
                             a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
                                 i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
                                 |                     Logout
@@ -134,7 +137,7 @@ a.scroll-to-top.rounded(href='#page-top')
             .modal-footer
                 button.btn.btn-secondary(type='button' data-dismiss='modal')
                     | Cancel
-                a.btn.btn-primary(href='login.html') Logout
+                a.btn.btn-primary(href='/logout') Logout
 .modal-custom(style=`position="fixed"; width: "100%"; height: "100%"; background-color: "#666"`)
     .spinner-border.text-primary(role="status")
       span.sr-only Loading...

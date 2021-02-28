@@ -9,6 +9,7 @@ const {Op} = require('sequelize');
 
 Route.get('/', async function(req, res, next){ 
     try {
+        
         // Definisikan kekuatan role
         let permission = {
             admin: [],
@@ -156,7 +157,7 @@ Route.get('/', async function(req, res, next){
             data: resultOfficer,
             profile: req.user,
             modalwithout: [...without],
-            without: [...without],
+            without: [...without, 'password'],
             title: 'Officer',
             module: moduleLibrary,
             as: [
@@ -249,15 +250,14 @@ Route.post('/', async function(req, res, next){
         if(!validateRole) throw new respon({message: 'role is invalid', code: 200, alert: true});
 
         // Jika admin menambahkan role librarian
-        if(req.user.role == 'admin' && validateRole.name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});
-        if(req.user.role == 'admin' && validateRole.name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});
+        if(req.user.role == 'admin' && (validateRole.name == 'root' || validateRole.name == 'librarian')) throw new respon({message: 'you dont have permission', code: 200, alert: true});
         if(req.user.role == 'librarian' && validateRole.name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});
 
         // Tambahkan
         let result = await model.officer.create(req.body);
         await result.setRoles(validateRole)
         
-        res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true}))
+        res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: '/officer'}))
     } catch (err) {
         next(err)
     }
@@ -266,7 +266,7 @@ Route.post('/', async function(req, res, next){
 Route.put('/:id', async function(req, res, next){
     try {
         const userId = req.params.id;
-
+        
         // Check
         const validate = await model.officer.findOne({
             where: {
@@ -279,6 +279,7 @@ Route.put('/:id', async function(req, res, next){
 
 
         // Check Role
+        if(!req.body.role) throw new respon({message: 'role not found', code: 200, alert: true});
         const validateRole = await model.role.findOne({
             where: {
                 id: req.body.role
@@ -295,23 +296,26 @@ Route.put('/:id', async function(req, res, next){
         });
         
         // Jika admin menambahkan role librarian
-        if(req.user.role == 'admin' && resultRawClass[0].name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
-        if(req.user.role == 'admin' && resultRawClass[0].name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
-        if(req.user.role == 'admin' && resultRawClass[0].name == 'admin') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
-        if(req.user.role == 'librarian' && resultRawClass[0].name == 'librarian') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
-        if(req.user.role == 'librarian' && resultRawClass[0].name == 'root') throw new respon({message: 'you dont have permission', code: 200, alert: true});    
+        // ValidateROle memastikan role ada atau tidak && resultRaw adalah class sebelumnya
+        if(
+            (req.user.role == 'admin' && (resultRawClass[0].name == 'root' || resultRawClass[0].name == 'librarian' || resultRawClass[0].name == 'admin')) ||
+            (req.user.role == 'librarian' && ((resultRawClass[0].name == 'root' || resultRawClass[0].name == 'librarian') || (validateRole.name == 'root')))
+            // (req.user.role == 'root' && resultRawClass[0].name == 'root' )
+        ) throw new respon({message: 'you dont have permission', code: 200, alert: true});    
         
         // Hashing
         req.body.password = moduleLibrary.hashing(req.body.password);
+        
 
-        await model.officer.update(req.body, {
-            where: {
-                id: userId
-            }
-        });
-        await validate.setRoles(validateRole);
+        // // Update
+        // await model.officer.update(req.body, {
+        //     where: {
+        //         id: userId
+        //     }
+        // });
+        // await validate.setRoles(validateRole);
 
-        res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/officers'}))
+        res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/officer'}))
     
     } catch (err) {
         next(err)
@@ -348,11 +352,11 @@ Route.delete('/:id', async function(req, res, next){
             }
         });
 
-        res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true, redirect: '/officers'}));
+        res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true, redirect: '/officer'}));
     
     } catch (err) {
         next(err)
     }
-})
+});
 
 module.exports = Route
