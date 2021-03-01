@@ -1,28 +1,22 @@
-const multer = require('multer');
+const multer = require("multer");
 const path = require('path');
 
-const disk = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, path.resolve(__dirname, '../tmp/img'));
-    }, 
-    filename: function (req, file, cb) {
-        cb(null, `elbiLibrary-${file.fieldname}-${Date.now()}`);
-    }
+const imageFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb("Please upload only images.", false);
+  }
+};
+
+var storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.resolve(__dirname, "../public/img/tmp"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-elbiLibrary-${file.originalname}`);
+  },
 });
 
-
-
-module.exports = {
-    multer: multer,
-    disk,
-    validasiMulter: function (req, file, callback) {
-        let ext = path.extname(file.originalname);
-        if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
-            return callback(new Error('Only images are allowed'))
-        }
-        callback(null, true)
-    },
-    limits:{
-        fileSize: 1024 * 1024
-    }
-}
+var uploadFile = multer({ storage: storage, fileFilter: imageFilter });
+module.exports = uploadFile;

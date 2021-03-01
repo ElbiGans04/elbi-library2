@@ -19,13 +19,9 @@ module.exports = (sequelize, DataTypes) => {
   };
   book.init({
     book_image: {
-      type: DataTypes.BLOB('long')
-  },
-  
-  book_type: {
       type: DataTypes.STRING,
       allowNull: false
-  },
+    },
   
   book_price: {
       type: DataTypes.INTEGER,

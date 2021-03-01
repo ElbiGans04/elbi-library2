@@ -12,7 +12,7 @@ Route.get('/', (req, res) => res.render('login'));
 Route.post('/', async function (req, res, next) {
     try {
         let { email, password: password2 } = req.body;
-
+        console.log(req.body)
         // Jika ga ada
         if(!email || !password2) throw new respon2({message: 'email/password invalid', code: 200, alert: true})
 

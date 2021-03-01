@@ -123,7 +123,7 @@ head
                           -let dataAs = dataModule.as || ''
                           if(dataModule.type == 'file')
                             td(data-as=dataAs)
-                              img.img-thumbnail.image-modal(src=`data:image/${entri.dataValues.book_type};base64,${rows.toString('base64')}`, alt="rows" style="width:100px; height: 100px")
+                              img.img-thumbnail.image-modal(src=rows, alt="rows" style="width:100px; height: 100px")
                           else
                             //- - console.log(rows)
                             if(typeof rows == 'object')

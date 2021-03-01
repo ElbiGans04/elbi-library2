@@ -31,8 +31,6 @@ module.exports = {
             // Jika tidak ditemukan
             if(!result) throw new respon({message: 'book not found', code: 200, alert: true});
 
-            // Jika ditemukan convert image ke base 64
-            result.dataValues.book_image = result.dataValues.book_image.toString('base64')
             
             // Ubah Tanggal
             let year = result.dataValues.book_launching.slice(0,4)
@@ -133,6 +131,10 @@ module.exports = {
                 as: [
                     moduleLibrary.as({target: 'book_image', type: 'file', without: [0]}),
                     moduleLibrary.as({target: 'book_title', as: 'identifer', without: [0]}),
+                    moduleLibrary.as({target: 'book_price', type: 'number', without: [0]}),
+                    moduleLibrary.as({target: 'book_stock', type: 'number', without: [0]}),
+                    moduleLibrary.as({target: 'book_page_thickness', type: 'number', without: [0]}),
+                    moduleLibrary.as({target: 'book_isbn', type: 'number', without: [0]}),
                     moduleLibrary.as({target: 'book_launching', type: 'date'}),
                     moduleLibrary.as({target: 'category',  type: 'select', value: resultCategory }),
                     moduleLibrary.as({target: 'publisher',  type: 'select', value: resultPublisher }),
@@ -183,20 +185,6 @@ module.exports = {
             if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid', alert: true});
             req.body.book_launching = moduleLibrary.ambilKata(book_launching, '-', {space: false, uppercase: false});
 
-
-
-            // Buat File Format
-            if(!req.file) {
-                throw new respon({code: 200, message: 'please insert image' ,alert: true})
-            } else {
-                let format = path.extname(req.file.originalname);
-                format = format.split('.')[1];
-                req.body.book_type = format
-    
-                // Tambahkan File, Karena file berada direq.file
-                req.body.book_image = req.file.buffer;
-            };
-
             // Check apakah 
             let resultCategory = await category.findOne({
                 where: {
@@ -216,13 +204,19 @@ module.exports = {
 
             // Jika tidak ada
             if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200, alert: true});
+
+            // Jika tidak ada
+            if(!req.file) throw new respon({message: 'please insert image', code: 200, alert: true});
+
+            // Isi nilai dengan nama file
+            req.body.book_image = `/assets/img/tmp/${req.file.filename}`;
             
             // Buat
             let book1 = await book.create(req.body);
             await book1.setPublishers(resultPublisher);
             await book1.setCategories(resultCategory);
             // Beri respone
-            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: '/books'}));
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: false}));
 
         } catch (err) {
             next(err);
@@ -235,12 +229,10 @@ module.exports = {
             const category = model.category;
             const publisher = model.publisher;
             let entitasId = req.params.id;
-            let { category: userCategory } = req.body; 
-
             
             // Verify
             // Validation
-            if(!req.body.book_title || !usercategory) throw new respon({message: 'title/ category cannot null', code:200, alert: true})
+            if(!req.body.book_title || !req.body.category) throw new respon({message: 'title/ category cannot null', code:200, alert: true})
             let validation = await book.findOne({
                 where: {
                     id: entitasId
@@ -251,18 +243,6 @@ module.exports = {
             if(!validation) throw new respon({message: 'book not found', code: 200, alert: true})
 
             
-            // Tambahkan File, Karena file berada direq.file
-            // Buat File Format
-            if(req.file) {
-                let format = path.extname(req.file.originalname);
-                format = format.split('.')[1];
-                req.body.book_type = format
-    
-                // Tambahkan File, Karena file berada direq.file
-                req.body.book_image = req.file.buffer;
-            };
-
-            
             // Pisahkan format launching
             let {book_launching} = req.body
             if ( book_launching.split('-').length != 3 ) throw new respon({code: 200, message: 'date is invalid', alert: true});
@@ -271,7 +251,7 @@ module.exports = {
             // Check apakah 
             let resultCategory = await category.findOne({
                 where: {
-                    id: userCategory
+                    id: req.body.category
                 }
             });
             
@@ -288,6 +268,11 @@ module.exports = {
             // Jika tidak ada
             if(!resultPublisher) throw new respon({message: 'publisher is invalid', code: 200, alert: true});
 
+
+            // Jika ada gambar
+            if(req.file) req.body.book_image = `/assets/img/tmp/${req.file.filename}`;
+            
+
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
                 where: {
@@ -300,7 +285,7 @@ module.exports = {
             await validation.setPublishers(resultPublisher)
     
     
-            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/books'}))
+            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: false}))
     
         } catch (err) {
             next(err)

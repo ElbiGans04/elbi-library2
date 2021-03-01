@@ -5,9 +5,13 @@ const dotenv = require("dotenv").config({ path: "./config/.env" });
 const cookie = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const port = process.env.APP_PORT || 3000;
-const { multer, validasiMulter, limits } = require("./middleware/multer");
-const model = require('./db/models/index')
-const respon = require('./controllers/respon');
+const multer = require("./middleware/multer");
+const morgan = require('morgan');
+const modelIndex = require("./db/models/index");
+const respon = require("./controllers/respon");
+
+
+
 
 // Router
 const memberRouter = require("./routers/router-member");
@@ -23,27 +27,27 @@ const report = require('./routers/router-report');
 const about = require('./routers/router-about');
 const update = require('./routers/router-update');
 
+
 // // // Instalasi Project // // //
 app.use("/assets", express.static("./public"));
 app.use("/bootstrap", express.static("./node_modules/bootstrap/dist/"));
 app.use("/jquery", express.static("./node_modules/jquery/dist/"));
-app.use(multer({ dest: multer.disk, fileFilter: validasiMulter, limits }).single("book_image"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookie());
 app.set("view engine", "pug");
 app.set("views", "./views");
+app.use(morgan('tiny'));
+app.use(multer.single("book_image"));
 
-const modelIndex = require("./db/models/index");
-const respon2 = require("./controllers/respon");
 
 (async function () {
   // await modelIndex.sequelize.sync({force: true});
   // await modelIndex.sequelize.drop()
-
+  
   app.get("/", auth, indexRoute);
   app.use("/users", auth,  memberRouter);
-  app.use("/books", auth, roleAuth, bookRouter);
+  app.use("/books", auth, roleAuth,bookRouter);
   app.use("/rent", auth, roleAuth, rentRoute);
   app.use("/login", login);
   app.get("/logout", function (req, res) {
@@ -127,7 +131,7 @@ async function auth(req, res, next) {
     } else {
       res
         .status(403)
-        .json(new respon2({ message: "you dont have permission" }));
+        .json(new respon({ message: "you dont have permission" }));
     }
   }
 }
