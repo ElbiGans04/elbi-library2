@@ -216,7 +216,7 @@ module.exports = {
             await book1.setPublishers(resultPublisher);
             await book1.setCategories(resultCategory);
             // Beri respone
-            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: false}));
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: `/books`}));
 
         } catch (err) {
             next(err);
@@ -285,7 +285,7 @@ module.exports = {
             await validation.setPublishers(resultPublisher)
     
     
-            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: false}))
+            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/books'}))
     
         } catch (err) {
             next(err)
