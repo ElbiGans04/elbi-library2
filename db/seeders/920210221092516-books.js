@@ -3,7 +3,7 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
       await queryInterface.bulkInsert('books', [{
-          book_image: '/assets/img/gambar1.jpg',
+          book_image: '/assets/img/tmp/1614588324846-elbiLibrary-gambar2.jpg',
           book_price: 3000,
           book_stock: 10,
           book_title: 'fael ganteng',

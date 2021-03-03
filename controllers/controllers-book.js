@@ -266,9 +266,13 @@ module.exports = {
             // Jika ada gambar
             if(req.file) {
                 req.body.book_image = `/assets/img/tmp/${req.file.filename}`;
+
+                // Hapus foto sebelumnya
+                let fileImage = validation.dataValues.book_image.split('/');
+                fs.unlinkSync(path.resolve(__dirname, `../public/img/tmp/${fileImage[fileImage.length - 1]}`));
             }
             
-
+            
             // Jika Ditemukan maka lanjutkan
             await book.update(req.body, {
                 where: {
