@@ -43,7 +43,7 @@ app.use(multer.single("book_image"));
 
 
 (async function () {
-  await modelIndex.sequelize.sync({force: true});
+  // await modelIndex.sequelize.sync({force: true});
   // await modelIndex.role.create({name: 'root'});
   // await modelIndex.officer.create({email: 'root@gmail.com', password: '123123', roleId: 1, role_id: 1});
   

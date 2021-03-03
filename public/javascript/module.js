@@ -127,19 +127,24 @@ export function validateDate(text) {
 export function getRows(all) {
   let thead = document.querySelectorAll('#tableUtama thead > tr > th');
   let tbody = document.querySelectorAll('#tableUtama tbody tr[data-id]');
-  let result = [];
+  let result = {};
   
   tbody.forEach(function(el, idx) {
+    // Ambil Coloumn pada rows
     let cell = Array.from(el.children);
     let newResult = {};
     
+    // Buat perulangan
     thead.forEach(function(ell, idxx){
+
+      // Ambil Bedasarkan column yang mempunyai name, dan bedasarkan cell pada body yang tidak mempunyai anak
       if(ell.getAttribute('name') && cell[idxx].children.length == 0) {
         newResult[ell.textContent] = cell[idxx].textContent
       }
     });
     
-    result.push(newResult);
+    // result.push(newResult);
+    result[el.getAttribute('data-id')] = newResult
   })
   
   return result

@@ -4,6 +4,7 @@ let model = require('../db/models/index')
 const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
 const url = require('url');
+const fs = require('fs');
 
 // Export
 module.exports = {
@@ -263,7 +264,9 @@ module.exports = {
 
 
             // Jika ada gambar
-            if(req.file) req.body.book_image = `/assets/img/tmp/${req.file.filename}`;
+            if(req.file) {
+                req.body.book_image = `/assets/img/tmp/${req.file.filename}`;
+            }
             
 
             // Jika Ditemukan maka lanjutkan

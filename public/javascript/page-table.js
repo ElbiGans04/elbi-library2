@@ -1,4 +1,4 @@
-import {check, check2, disableEnter, getIndex, getRows, navActive, validasi} from './module.js'
+import {check, check2, disableEnter, getRows, navActive, validasi} from './module.js'
 let url = window.location.pathname;
 const tableUtama = document.getElementById("tableUtama");
 const columnLength = tableUtama.children[0].children[0].children.length - 1;
@@ -42,7 +42,9 @@ if(active == 1) {
     // Ambil Rows saat ini
     let newRows = getRows()[i];
     
+    // Buat looping
     for(let idx in d[i]) {
+      // Cari cell yang belum ditampilkan
       if(!newRows[idx]) {
        result += `${idx}: ${d[i][idx]} <br>`
       }
@@ -82,7 +84,9 @@ if(active == 1) {
     var tr = $(this).closest('tr');
       // Mendapatkan Datatables API
       var row = dt.row( tr );
-      let index = getIndex(tr[0]);
+
+      // Ambil Index
+      let index = tr.attr('data-id');
       // Check Apakah baris sudah dibuka
       var idx = $.inArray( tr.attr('id'), detailRows );
       
