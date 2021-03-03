@@ -25,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     
     order_day: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       validate: {
         isNumeric: true
@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     
     order_date: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       validate: {
         isNumeric: true

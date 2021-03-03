@@ -19,13 +19,6 @@ module.exports = {
                     id
                 }
             });
-            
-            // ambil name
-            let about = model.about;
-            let {appName} = await about.findOne({
-                raw: true,
-                attributes: ['appName']
-            });
 
             
             // Jika tidak ditemukan
@@ -216,7 +209,7 @@ module.exports = {
             await book1.setPublishers(resultPublisher);
             await book1.setCategories(resultCategory);
             // Beri respone
-            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: `/books`}));
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: '/books'}));
 
         } catch (err) {
             next(err);

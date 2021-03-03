@@ -512,7 +512,7 @@ Route.post('/renew', async function(req, res, next){
 
     // Jika tidak ada
     // Jika tidak dimasukan
-    if(!user_id || !bokk_id || !id_transaction) throw new respon2({message: 'user/book/id_transaction invalid', code: 200, alert: true})
+    if(!user_id || !book_id || !id_transaction) throw new respon2({message: 'user/book/id_transaction invalid', code: 200, alert: true})
 
     // Cari Apakah ada
     let validation = await order.findOne({
@@ -546,7 +546,7 @@ Route.post('/renew', async function(req, res, next){
       }
     })
   
-    res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true}))
+    res.json(new respon2({message: 'success', type: true, alert: true, code: 200, show: true, redirect: '/rent/renew'}))
   } catch (err) {
     next(err)
   }

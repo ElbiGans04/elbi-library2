@@ -12,7 +12,7 @@ Route.get('/', (req, res) => res.render('login'));
 Route.post('/', async function (req, res, next) {
     try {
         let { email, password: password2 } = req.body;
-        console.log(req.body)
+
         // Jika ga ada
         if(!email || !password2) throw new respon2({message: 'email/password invalid', code: 200, alert: true})
 
@@ -38,7 +38,7 @@ Route.post('/', async function (req, res, next) {
         if(!result) throw new respon2({message: `accouunt not found`, code: 200});
 
         let {id, email: userEmail, password} = result;
-        let roles = result['roles.name']
+        let roles = result['roles.name'] || 'admin';
         if(password !== password2) throw new respon2({message: 'password wrong', code: 200})
 
         const token = jwt.sign({id, email: userEmail, role: roles}, process.env.APP_PRIVATE_KEY, {
@@ -47,7 +47,7 @@ Route.post('/', async function (req, res, next) {
         });
 
         res.cookie('token', token, {
-            maxAge: process.env.APP_MAX_AGE * 1000
+            maxAge: 3600 * 1000
         })
 
 

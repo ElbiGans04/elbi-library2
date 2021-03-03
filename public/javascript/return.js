@@ -43,6 +43,7 @@ if (action) {
       .then((result) => {
         if(result.type === true) {
           let option = ``;
+          result = result.data;
           // Perbaharui Select book
           result.forEach(function (e) {
             let { id, title } = e.book_id;

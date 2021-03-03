@@ -15,7 +15,7 @@ Route.get('/', async function(req, res, next){
     // Cari Orderan dengan 
     const resultActive = await order.findAll({
       where: {
-        return_status: 'has been returned'
+        return_status: false
       },
       attributes: [`id`],
       raw: true, 

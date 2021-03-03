@@ -48,6 +48,20 @@ Route.put('/:id', async function(req, res, next){
 
         // Jika tidak ditemukan
         if(!validate) throw new respon({message: 'officer not found', code: 200, alert: true});
+        
+        // Jika email sudah ada
+        let validate2 = await officer.findOne({
+            where: {
+                email : req.body.email,
+                id: {
+                    [Op.not] : id
+                }
+            }
+        });
+
+        // Jika tidak ditemukan
+        if(validate2) throw new respon({message: 'email already', code: 200, alert: true});
+
 
         // Check Apakah officer yang ditemukan sama dengan yang login sekarang
         if(validate.dataValues.id != req.user.id) throw new respon({message: 'invalid', code:200, alert: true});
@@ -57,13 +71,13 @@ Route.put('/:id', async function(req, res, next){
         req.body.password = moduleLibrary.hashing(`${req.body.password}`);
 
         // Update
-        await officer.update({password: req.body.password, email: validate.dataValues.email}, {
+        await officer.update({email: req.body.email, password: req.body.password}, {
             where: {
                 id
             }
         });
     
-        res.json(new respon({message: "successfully updated data", code: 200, type: true, alert: true, redirect: '/'}))
+        res.json(new respon({message: "successfully updated data", code: 200, type: true, alert: true, redirect: '/logout'}))
     } catch (err) {
         next(err)
     }

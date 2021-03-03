@@ -20,7 +20,7 @@ module.exports = function (model, name) {
                 }
             });
     
-            if(!result) throw new respon({message: 'not found'});
+            if(!result) throw new respon({message: 'not found', code: 200, alert: true});
     
             // Jika ada    
             res.json(new respon({message: 'success', data: result, type: true, alert: true, code: 200, show: true}));
@@ -94,7 +94,7 @@ module.exports = function (model, name) {
             
 
             // If Name not found
-            if(!req.body.name) throw new respon({message: 'invalid'})
+            if(!req.body.name) throw new respon({message: 'invalid', code: 200, alert: true})
 
             // Check Jika sudah ada
             let validate = await model[this.model].count({
@@ -103,13 +103,14 @@ module.exports = function (model, name) {
                 }
             });
         
-            if(validate > 0) throw new respon({message: 'already', code: 200});
+            if(validate > 0) throw new respon({message: 'already', code: 200, alert: true});
     
             // Buat 
             await model[this.model].create(req.body);
-    
+
             // Kirim Respon Jika berhasil
-            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true}));
+            let url = req.originalUrl.split('/')[1];
+            res.json(new respon({message: 'successfully added', type: true, alert: true, code: 200, show: true, redirect: `/${url}`}));
     
         } catch (err) {
             next(err)
@@ -133,7 +134,7 @@ module.exports = function (model, name) {
             });
     
             //  Jika ga ada
-            if(result < 0 ) throw new respon({message: 'not found', code: 200})
+            if(result < 0 ) throw new respon({message: 'not found', code: 200, alert: true})
     
             // Update
             await model[this.model].update(req.body, {
@@ -143,7 +144,8 @@ module.exports = function (model, name) {
             });
     
             // Kirim Respon
-            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true}))
+            let url = req.originalUrl.split('/')[1];
+            res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: `/${url}`}))
     
         } catch (err) {
             next(err)
@@ -167,15 +169,16 @@ module.exports = function (model, name) {
                     }
             }); 
             
-            if(result < 0) throw new respon({message: 'not found'});
+            if(result < 0) throw new respon({message: 'not found', alert: true, code: 200});
     
             await model[this.model].destroy({
                 where: {
                     id: paramID
                 }
             });
-    
-            res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true}));
+
+            let url = req.originalUrl.split('/')[1];
+            res.json(new respon({message: 'successfully deleted', type: true, alert: true, code: 200, show: true, redirect: `/${url}`}));
         } catch (err) {
             next(err)
         }

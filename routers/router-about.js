@@ -28,7 +28,7 @@ Route.post('/', async function(req, res, next){
             id: 1
         }});
 
-        res.json(new respon({message: 'success', code: 200, type: true, alert: true}))
+        res.json(new respon({message: 'success', code: 200, type: true, alert: true, redirect: '/about'}))
         
     } catch (err) {
         next(err)

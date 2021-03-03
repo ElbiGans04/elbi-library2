@@ -17,9 +17,6 @@ module.exports = (sequelize, DataTypes) => {
     appName: {
       type: DataTypes.STRING(1000),
       allowNull: false,
-      validate: {
-        isAlphanumeric: true
-      }
     },
     start: {
       type: DataTypes.STRING(1000),
@@ -32,30 +29,18 @@ module.exports = (sequelize, DataTypes) => {
     author: {
       type: DataTypes.STRING(1000),
       allowNull: false,
-      validate: {
-        isAlphanumeric: true
-      }
     },
     dbms: {
       type: DataTypes.STRING(1000),
       allowNull: false,
-      validate: {
-        isAlphanumeric: true
-      }
     },
     language: {
       type: DataTypes.STRING(1000),
       allowNull: false,
-      validate: {
-        isAlphanumeric: true
-      }
     },
     framework: {
       type: DataTypes.STRING(1000),
       allowNull: false,
-      validate: {
-        isAlphanumeric: true
-      }
     },
     fines: {
       type: DataTypes.INTEGER,

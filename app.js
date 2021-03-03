@@ -4,12 +4,13 @@ const app = express();
 const dotenv = require("dotenv").config({ path: "./config/.env" });
 const cookie = require("cookie-parser");
 const jwt = require("jsonwebtoken");
-const port = process.env.APP_PORT || 3000;
+const port = process.env.PORT || 3000;
 const multer = require("./middleware/multer");
 const morgan = require('morgan');
 const modelIndex = require("./db/models/index");
 const respon = require("./controllers/respon");
-
+const ModuleLibrary = require('./controllers/module');
+const moduleLibrary = new ModuleLibrary();
 
 
 
@@ -42,8 +43,9 @@ app.use(multer.single("book_image"));
 
 
 (async function () {
-  // await modelIndex.sequelize.sync({force: true});
-  // await modelIndex.sequelize.drop()
+  await modelIndex.sequelize.sync({force: true});
+  // await modelIndex.role.create({name: 'root'});
+  // await modelIndex.officer.create({email: 'root@gmail.com', password: '123123', roleId: 1, role_id: 1});
   
   app.get("/", auth, indexRoute);
   app.use("/users", auth,  memberRouter);
@@ -131,7 +133,7 @@ async function auth(req, res, next) {
     } else {
       res
         .status(403)
-        .json(new respon({ message: "you dont have permission" }));
+        .json(new respon({ message: "you dont have permission "}));
     }
   }
 }
@@ -145,8 +147,6 @@ async function roleAuth(req, res, next) {
     };
 
     let url = req.originalUrl;
-    // Import Model
-    let role = require('./models/model-role');
 
     // User
     let { role: userROLE } = req.user;

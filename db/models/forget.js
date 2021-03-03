@@ -15,11 +15,11 @@ module.exports = (sequelize, DataTypes) => {
   };
   forget.init({
     token: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING(200)
     },
     
     tokenExp: {
-        type: DataTypes.INTEGER
+        type: DataTypes.BIGINT
     }
   }, {
     sequelize,

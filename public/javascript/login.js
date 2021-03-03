@@ -69,7 +69,7 @@ submit.addEventListener('click', function(event){
 inputButton.forEach(function(e){
   let type = e.getAttribute('type');
   if(type !== 'checkbox') {
-    e.addEventListener('keypress', function(event){
+    e.addEventListener('keyup', function(event){
       if(validasi(inputButton) === true) {
         submit.removeAttribute('disabled')
       }

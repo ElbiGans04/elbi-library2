@@ -1,6 +1,5 @@
-node_module
-node_modules
-.env
-config
 .REST
 .pem
+.gitignore
+node_modules
+.env

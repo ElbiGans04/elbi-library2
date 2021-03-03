@@ -107,7 +107,7 @@ head
                           tr 
                             td Framework used
                             td #{module.decryptPriv(result.framework)}
-                if(profile.role == 'librarian')
+                if(profile.role == 'librarian' || profile.role == 'root')
                   .col-sm-12-mt-5 
                     button#action.btn.btn-primary(type="button") Update
 

@@ -1,5 +1,5 @@
 // Import
-import {navActive, check} from './module.js'
+import {navActive, check, check2} from './module.js'
 
 // beri kelas aktif pada nav sesuai dengan url sekarang
 navActive();
@@ -14,10 +14,7 @@ document.addEventListener('click', function(event){
         fetch(`${window.location.pathname}`, {
             method : 'post',
             body: form
-        }).then(result => check(result))
-          .then(result => {
-            alert(result);
-            if(result.type) window.location.reload()
-          })
+        }).then(check)
+          .then(check2)
     }
 });
