@@ -1,5 +1,5 @@
 .REST
 .pem
-.gitignore
+*.gitignore
 node_modules
 .env

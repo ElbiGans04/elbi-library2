@@ -94,7 +94,7 @@ app.use(multer.single("book_image"));
 
   app.listen(port, function (err) {
     if (err) throw err;
-    console.log(`Server telah dijalankan pada port ${port}`);
+    console.log(`web runs on the port ${port}`);
   });
 })();
 
