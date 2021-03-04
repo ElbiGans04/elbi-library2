@@ -9,8 +9,7 @@ const multer = require("./middleware/multer");
 const morgan = require('morgan');
 const modelIndex = require("./db/models/index");
 const respon = require("./controllers/respon");
-const ModuleLibrary = require('./controllers/module');
-const moduleLibrary = new ModuleLibrary();
+
 
 
 
@@ -77,7 +76,7 @@ app.use(multer.single("book_image"));
   app.use("/update", auth, update)
 
   // Handler
-  app.get('*', (req, res) => res.redirect('/'));
+  app.get('*', (req, res) => res.render('notfound'));
 
   // Error Handler
   app.use(function(err, req, res, next) {
