@@ -277,6 +277,20 @@ Route.put('/:id', async function(req, res, next){
         // Validate 
         if(validate < 0) throw new respon({message: 'not found', code: 200, alert: true});
 
+        
+        // Jika sudah ada
+        if(!req.body.email) throw new respon({message: 'email cannot be empty', code: 200, alert: true});
+        let validate2 = await model.officer.count({
+            where: {
+                email : req.body.email,
+                id: {
+                    [Op.not] : userId
+                }
+            }
+        });
+        
+        if(validate2 > 0) throw new respon({message: 'email already', code: 200, alert: true})
+
 
         // Check Role
         if(!req.body.role) throw new respon({message: 'role not found', code: 200, alert: true});
@@ -307,13 +321,13 @@ Route.put('/:id', async function(req, res, next){
         req.body.password = moduleLibrary.hashing(req.body.password);
         
 
-        // // Update
-        // await model.officer.update(req.body, {
-        //     where: {
-        //         id: userId
-        //     }
-        // });
-        // await validate.setRoles(validateRole);
+        // Update
+        await model.officer.update(req.body, {
+            where: {
+                id: userId
+            }
+        });
+        await validate.setRoles(validateRole);
 
         res.json(new respon({message: 'updated successfully', type: true, alert: true, code: 200, show: true, redirect: '/officer'}))
     

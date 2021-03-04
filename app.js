@@ -81,12 +81,12 @@ app.use(multer.single("book_image"));
 
   // Error Handler
   app.use(function(err, req, res, next) {
-    console.log(err);
+    console.log(err.message);
     if (res.headersSent) {
       return next(err)
     }
     
-    err = err instanceof respon === false ? new respon({message: err.message, alert: true}) : err;
+    err = err instanceof respon === false ? new respon({message: err.message, alert: true, code: 200}) : err;
     res.status(err.status || err.code || 200);
     res.json(err)
   });

@@ -2,6 +2,7 @@ module.exports = function (model, name) {
     const ModuleTemplate = require('../controllers/module');
     const  moduleLibrary = new ModuleTemplate();
     const respon = require('../controllers/respon');
+    const {Op} = require('sequelize');
 
 
     this.db = require('../db/models/index');
@@ -127,15 +128,33 @@ module.exports = function (model, name) {
             const model = await this.db;
             const paramID = req.params.id;
     
-            const result = await model[this.model].count({
+            const result = await model[this.model].findOne({
                 where: {
                     id: paramID
-                }
+                },
+                attributes: ['name'],
+                raw: true
             });
     
             //  Jika ga ada
-            if(result < 0 ) throw new respon({message: 'not found', code: 200, alert: true})
-    
+            if(!result) throw new respon({message: 'not found', code: 200, alert: true})
+
+
+            if(!req.body.name) throw new respon({message: 'name cannot be empty', code: 200, alert: true})
+            
+            // Cari apakah bedasarkan nama ada yang sama
+            let validate2 = await model[this.model].count({
+                where: {
+                    name: req.body.name,
+                    id: {
+                        [Op.not] : paramID
+                    }
+                }
+            });
+
+            // Jika sudah ada
+            if(validate2 > 0) throw new respon({message: 'already', code: 200, alert: true});
+
             // Update
             await model[this.model].update(req.body, {
                 where: {

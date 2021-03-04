@@ -5,6 +5,8 @@ const  moduleLibrary = new ModuleTemplate();
 const path = require('path');
 const url = require('url');
 const fs = require('fs');
+const {Op} = require('sequelize');
+
 
 // Export
 module.exports = {
@@ -234,7 +236,19 @@ module.exports = {
             });
     
             // Jika book tidak ditemukan
-            if(!validation) throw new respon({message: 'book not found', code: 200, alert: true})
+            if(!validation) throw new respon({message: 'book not found', code: 200, alert: true});
+
+            // Jika judul sudah ada
+            let validation2 = await book.count({
+                where: {
+                    book_title: req.body.book_title,
+                    id: {
+                        [Op.not] : entitasId
+                    }
+                }
+            });
+
+            if(validation2 > 0) throw new respon({message: 'book already', code: 200, alert: true})
 
             
             // Pisahkan format launching

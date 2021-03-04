@@ -3,6 +3,7 @@ const ModuleTemplate = require('./module');
 const  moduleLibrary = new ModuleTemplate();
 const respon2 = require('./respon')
 const url = require('url');
+const {Op} = require('sequelize');
 
 module.exports = {
     get : async function(req, res,next) {
@@ -128,10 +129,10 @@ module.exports = {
             if(!req.body.nisn || !req.body.class) throw new respon2({message: 'nisn/ class cannot null', code: 200, alert: true})
 
             // Check Apakah user dengan email terkait telah terdaftar
-            let validation = await model.user.findOne({
+            let validation = await model.user.count({
                 where : {
                     nisn : req.body.nisn
-                }
+                },
             });
             
             // Jika Ada
@@ -173,7 +174,19 @@ module.exports = {
             });
 
             // Jika user tidak ditemukan maka lempar pesan
-            if(validation <= 0) throw new respon2({message: 'user not found', code: 200, alert: true})
+            if(!validation) throw new respon2({message: 'user not found', code: 200, alert: true})
+
+            // Check apakah sudah ada
+            let validation2 = await model.user.count({
+                where: {
+                    nisn: req.body.nisn,
+                    id: {
+                        [Op.not] : entitasId
+                    }
+                }
+            });
+
+            if(validation2 > 0) throw new respon2({message: 'nisn already', code: 200, alert: true});
 
             let resultClass = await model.class.findOne({
                 where: {

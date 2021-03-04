@@ -51,8 +51,9 @@ Route.get('/', async function(req, res, next){
       if(days > 0) lateToPay.push(days)
 
       // Hitung rata rata orderan
-      if(allOlder.length > 0) orderDay += el.order_day
+      if(allOlder.length > 0) orderDay += parseInt(el.order_day)
     });
+    
 
     if(allOlder.length > 0) orderDay = Math.floor(orderDay / allOlder.length)
     
