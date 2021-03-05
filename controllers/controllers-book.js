@@ -323,7 +323,7 @@ module.exports = {
             
             // Verify
             // Validation
-            let validation = await book.count({
+            let validation = await book.findOne({
                 where: {
                     id
                 },
@@ -331,8 +331,22 @@ module.exports = {
             });
     
             // Jika TIdak terdapat user
-            if ( validation <= 0) throw new respon({message: 'book not found', code: 200, alert: true});
-    
+            if (!validation) throw new respon({message: 'book not found', code: 200, alert: true});
+
+            // ambil nama gambar
+            let urlIMG = validation.book_image.split('/');
+            urlIMG = path.resolve(__dirname, `../public/img/tmp/${urlIMG[urlIMG.length - 1]}`);
+            
+            // Hapus gambar
+            // Check apakah file ada
+            fs.stat(urlIMG, {}, function(err, sts){
+             if(!err) {
+                 fs.unlink(urlIMG, function(err){
+                     if(err) throw err
+                 })
+             }
+            })
+            
             // Hapus book
             await book.destroy({
                 where: {
