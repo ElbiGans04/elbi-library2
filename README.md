@@ -48,12 +48,18 @@ APP_DIALECT= [your dialect]
 APP_DATABASE= [your database name]
 APP_DB_PORT= [your dialect port]
 PORT=3000
-APP_PUBLIC_KEY="-----BEGIN RSA PUBLIC KEY-----\n[Replace this with your public key]\n-----END RSA PUBLIC KEY-----\n"
-APP_PRIVATE_KEY="-----BEGIN RSA PRIVATE KEY-----\n[replace this with your private key]\n-----END RSA PRIVATE KEY-----\n"
 ```
 
 and save it in the config folder `/elbi-library2/config/[here]`.
 
+
+##### The next step, please enter the command : 
+```
+node generatePrivAndPubKey.js 
+```
+
+This function is to add a private key and a public key to the .env file.
+**please run this command only once and make sure you have created an .env file in the config folder**
 
 ##### If the database has not been created, enter the command : 
 ```
