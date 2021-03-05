@@ -7,12 +7,16 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
+<<<<<<< HEAD
       },
         name: {
           type: Sequelize.STRING,
           allowNull: false
       },
       
+=======
+      },      
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
       email: {
           type: Sequelize.STRING,
           allowNull: false,
@@ -25,6 +29,12 @@ module.exports = {
           type: Sequelize.STRING,
           allowNull: false,
       }
+<<<<<<< HEAD
+=======
+    }, {
+      modelName: 'officer',
+      timestamps: false
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
     });
   },
   down: async (queryInterface, Sequelize) => {

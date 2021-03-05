@@ -82,7 +82,7 @@ module.exports = {
             coloumn.push('class')
 
             // Column yang tidak ingin ditampilkan
-            const without = ['id', 'createdat', 'updatedat'];
+            const without = ['id'];
             
             // Render halaman
             res.render('table', {

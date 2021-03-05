@@ -8,6 +8,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+<<<<<<< HEAD
       name: {
         type: Sequelize.STRING
       },
@@ -19,6 +20,13 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
     },
+=======
+
+      book_image: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
     
     book_price: {
         type: Sequelize.INTEGER,
@@ -72,6 +80,13 @@ module.exports = {
             isNumeric: true
         }
     }
+<<<<<<< HEAD
+=======
+     
+    }, {
+        modelName: 'book',
+        timestamps: false
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
     });
   },
   down: async (queryInterface, Sequelize) => {

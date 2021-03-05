@@ -16,14 +16,20 @@ module.exports = {
       await queryInterface.bulkInsert('book_category', [{
           bookId: 1,
           categoryId: 1,
+<<<<<<< HEAD
           updatedAt: new Date(),
           createdAt: new Date()
+=======
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
       }]);
 
       await queryInterface.bulkInsert('book_publisher', [{
           bookId: 1,
+<<<<<<< HEAD
           updatedAt: new Date(),
           createdAt: new Date(),
+=======
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
           publisherId: 1
       }]);
       

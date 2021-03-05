@@ -281,9 +281,19 @@ module.exports = {
             if(req.file) {
                 req.body.book_image = `/assets/img/tmp/${req.file.filename}`;
 
-                // Hapus foto sebelumnya
+                //  Hapus foto sebelumnya
                 let fileImage = validation.dataValues.book_image.split('/');
-                fs.unlinkSync(path.resolve(__dirname, `../public/img/tmp/${fileImage[fileImage.length - 1]}`));
+                let url = path.resolve(__dirname, `../public/img/tmp/${fileImage[fileImage.length - 1]}`);
+
+
+                // Check apakah file ada
+                fs.stat(url, {}, function(err, sts){
+                    if(!err) {
+                        fs.unlink(url, function(err){
+                            if(err) throw err
+                        })
+                    }
+                })
             }
             
             

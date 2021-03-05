@@ -12,6 +12,7 @@ module.exports = {
     port: process.env.APP_DB_PORT,
     dialect: process.env.APP_DIALECT,
     logging: false,
+    timestamps: false,
     dialectOptions: {
       bigNumberStrings: true
     },
@@ -27,6 +28,7 @@ module.exports = {
     password: process.env.CI_DB_PASSWORD,
     database: process.env.CI_DB_NAME,
     host: '127.0.0.1',
+    timestamps: false,
     port: 3306,
     dialect: 'mysql',
     dialectOptions: {
@@ -39,6 +41,7 @@ module.exports = {
     host: process.env.APP_HOST,
     database: process.env.APP_DATABASE,
     port: process.env.APP_DB_PORT,
+    timestamps: false,
     ssl: true,
     dialect: "postgres",
     dialectOptions: {

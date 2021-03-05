@@ -35,7 +35,6 @@ module.exports = (sequelize, DataTypes) => {
     order_price: {
       type: DataTypes.STRING,
       allowNull: false,
-      allowNull: false,
       validate: {
         isNumeric: true
       }

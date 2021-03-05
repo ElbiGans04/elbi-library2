@@ -20,20 +20,29 @@ module.exports = {
       {
         roleId: 1,
         officerId: 1,
+<<<<<<< HEAD
         createdAt: new Date(),
         updatedAt: new Date(),
+=======
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
       },
       {
         roleId: 2,
         officerId: 2,
+<<<<<<< HEAD
         createdAt: new Date(),
         updatedAt: new Date(),
+=======
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
       },
       {
         roleId: 3,
         officerId: 3,
+<<<<<<< HEAD
         createdAt: new Date(),
         updatedAt: new Date(),
+=======
+>>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
       },
     ]);
   },
