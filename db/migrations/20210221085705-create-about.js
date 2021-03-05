@@ -8,16 +8,6 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-<<<<<<< HEAD
-      appName: Sequelize.STRING,
-      start: Sequelize.STRING,
-      end: Sequelize.STRING,
-      author: Sequelize.STRING,
-      dbms: Sequelize.STRING,
-      language: Sequelize.STRING,
-      framework: Sequelize.STRING,
-      fines: Sequelize.INTEGER
-=======
       appName: {
         type: Sequelize.STRING(1000),
         allowNull: false,
@@ -56,7 +46,6 @@ module.exports = {
     }, {
       modelName: 'about',
       timestamps: false
->>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
     });
   },
   down: async (queryInterface, Sequelize) => {

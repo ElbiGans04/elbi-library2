@@ -9,14 +9,6 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       token: {
-<<<<<<< HEAD
-        type: Sequelize.STRING
-      },
-      
-      tokenExp: {
-          type: Sequelize.BIGINT(20)
-      }
-=======
         type: Sequelize.STRING(200)
       },
       
@@ -26,7 +18,6 @@ module.exports = {
     }, {
       modelName: 'forget',
       timestamps: false
->>>>>>> 64613cf (memperbaiki error saat menghapus foto dirouter book, mengubah file migrasi, memperbaharui readme, mengembalikan nilai seed pada about)
     });
   },
   down: async (queryInterface, Sequelize) => {
