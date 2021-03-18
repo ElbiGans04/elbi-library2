@@ -162,7 +162,7 @@ Route.post("/", async function (req, res, next) {
     const { order_day, user_id, book_id } = req.body;
     const bookId = req.body.book_id;
 
-    if(!bookId || !user_id || !book_id) throw new respon2({message: 'book not found', code: 200, alert: true});
+    if(!bookId || !user_id || !book_id) throw new respon2({message: 'book/user not found', code: 200, alert: true});
 
 
 
@@ -243,7 +243,7 @@ Route.post("/", async function (req, res, next) {
 ////////////////////////////////////////////////
 
 
-Route.get("/return", async function (req, res) {
+Route.get("/return", async function (req, res, next) {
   try {
     const order = model.order;
     const {fines} = await model.about.findOne({
@@ -274,7 +274,8 @@ Route.get("/return", async function (req, res) {
 
       element.dataValues.user_id = dataOrderMember;
       element.dataValues.book_id = dataOrderBook;
-      element.dataValues.book_id.fines = fines
+      element.dataValues.book_id.fines = element.dataValues.order_price
+      // element.dataValues.book_id.fines = fines
     };
     
     // ambil name
