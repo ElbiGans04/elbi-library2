@@ -54,6 +54,7 @@ Route.get('/:group', async function(req, res, next){
           for(let col in attributes) {
               let name = moduleLibrary.ambilKata(col, '_', {without: [0]});
               if(name.toLowerCase() === "id" && idx !== 1) name = `Name ${moduleLibrary.ambilKata(col, '_', {without: [1]})}`;
+
               lembarKerja
                 .cell(1, idx++)
                 .string(name)
@@ -90,7 +91,7 @@ Route.get('/:group', async function(req, res, next){
                 if (value) {
                     let value2 = typeof value !== 'object' ? `${value}` : `${value.title}`;
                     data[index2 - 1][index - 1] = value2.length;           
-                }
+                } else data[index2 - 1][index - 1] = 0;
 
                 if(element2 === 'order_price') {
                     const dayOrder = parseInt(element.dataValues['order_day']);
@@ -160,7 +161,7 @@ Route.get('/:group', async function(req, res, next){
         
 
 
-        // Beri Jarak bedasarkan panjang
+        // // Beri Jarak bedasarkan panjang
         data.forEach(function(e, i){
             let max = e.sort((a,b) => a - b)[e.length - 1];
             lembarKerja.column(i + 1).setWidth(max + 10)
