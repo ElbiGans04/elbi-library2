@@ -30,8 +30,6 @@ const update = require('./routers/router-update');
 
 // // // Instalasi Project // // //
 app.use("/assets", express.static("./public"));
-app.use("/bootstrap", express.static("./node_modules/bootstrap/dist/"));
-app.use("/jquery", express.static("./node_modules/jquery/dist/"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookie());
@@ -42,10 +40,6 @@ app.use(multer.single("book_image"));
 
 
 (async function () {
-  // await modelIndex.sequelize.sync({force: true});
-  // await modelIndex.role.create({name: 'root'});
-  // await modelIndex.officer.create({email: 'root@gmail.com', password: '123123', roleId: 1, role_id: 1});
-  
   app.get("/", auth, indexRoute);
   app.use("/users", auth,  memberRouter);
   app.use("/books", auth, roleAuth,bookRouter);

@@ -52,7 +52,7 @@ Route.post('/', async function (req, res, next) {
 
 
         // Kirim Respon
-        res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/users', code: 200, delay: 3}))
+        res.json(new respon2({message: `success. the page will redirect in `, type: true, redirect: '/', code: 200, delay: 3}))
         // res.json(new respon2({message: `success. the page will redirect in `, code: 200, delay: 3}))
         
     } catch (err) {
