@@ -48,7 +48,7 @@ module.exports = (sequelize, DataTypes) => {
       }
     },
     
-    order_officer_buy : {
+    order_officer_rent : {
       type: DataTypes.STRING
     },
     

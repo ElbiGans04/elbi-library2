@@ -42,7 +42,7 @@ module.exports = {
         }
       },
       
-      order_officer_buy : {
+      order_officer_rent : {
         type: Sequelize.STRING
       },
       

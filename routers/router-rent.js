@@ -22,16 +22,12 @@ Route.get("/", async function (req, res, next) {
     let {group} = url.parse(req.url, true).query;
     if(group === undefined || group.toLowerCase() == "all") allOlder = await order.findAll();
     else {
-        group = group == "1" ? true : false;
-        let resultOfOrder = await order.findAll({
-            where: {
-                return_status: group
-            }
-        });
-
-        // Jika tidak ada
-        if(resultOfOrder.length <= 0) allOlder = await order.findAll();  
-        else allOlder = resultOfOrder
+      group = parseInt(group)
+      allOlder = await order.findAll({
+        where: {
+          return_status: group
+        }
+      });
     };
 
 
