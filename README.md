@@ -92,3 +92,14 @@ npm start
 ```
 
 web is now up and running according to the port set in .env (default port 3000)
+
+##### Account 
+* email : root@gmail.com 
+  password : 123
+  role: root
+* email : rhafaelbijaksana04@gmail.com 
+  password : 123
+  role: librarian
+* email : admin@gmail.com
+  password: 123
+  role: admin
