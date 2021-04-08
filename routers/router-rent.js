@@ -93,7 +93,7 @@ Route.get("/", async function (req, res, next) {
         "id_transaction",
         `return_status`,
         "order_date",
-        `order_officer_buy`,
+        `order_officer_rent`,
         "order_officer_return",
       ],
       title: "Order list",
