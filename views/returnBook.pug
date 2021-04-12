@@ -76,7 +76,7 @@ head
                     li.nav-item.dropdown.no-arrow
                         a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
                             span.mr-2.d-none.d-lg-inline.text-gray-600.small !{name}
-                            .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
+                            .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #5a5c69`)
                                 span !{name.slice(0,2)}                            
                             
                         // Dropdown - User Information
@@ -160,10 +160,10 @@ head
                                                 strong.total.
                                                     RP. !{total}
 
-                                    button.btn-sm.btn.btn-primary#buttonAction.d-block Pay now
+                                    button.btn-sm.btn.btn-dark#buttonAction.d-block Pay now
                         else 
                             .col-sm-12 
-                                button.btn-sm.btn.btn-primary#buttonAction.d-block Extend Now
+                                button.btn-sm.btn.btn-dark#buttonAction.d-block Extend Now
         - function hello(value, without) {
             -   for (let e in without) {
             -       if(without[e].toLowerCase() == value.toLowerCase()) {
@@ -200,9 +200,9 @@ a.scroll-to-top.rounded(href='#page-top')
             .modal-footer
                 button.btn.btn-secondary(type='button' data-dismiss='modal')
                     | Cancel
-                a.btn.btn-primary(href='/logout') Logout
+                a.btn.btn-dark(href='/logout') Logout
 .modal-custom(style=`position="fixed"; width: "100%"; height: "100%"; background-color: "#666"`)
-    .spinner-border.text-primary(role="status")
+    .spinner-border.text-dark(role="status")
       span.sr-only Loading...
 
 

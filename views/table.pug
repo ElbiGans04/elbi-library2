@@ -52,7 +52,7 @@ head
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
               span.mr-2.d-none.d-lg-inline.text-gray-600.small !{profile.email}
-              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #5a5c69`)
                 span !{profile.email.slice(0,2)}
             
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
@@ -73,7 +73,7 @@ head
               .kumpulan-button
                 each val, index in buttonHeader
                   -index = module.ambilKata(index, '_', {space: true, uppercase: true})
-                  button.btn.btn-primary.btn-sm.mr-3(id=val.id, type="button")
+                  button.btn.btn-dark.btn-sm.mr-3(id=val.id, type="button")
                     i.mr-1(class=val.class)
                     | #{index}
             //- button.btn.btn-primary.btn-sm(type="button" data-toggle='modal' data-target='#addModal')
@@ -199,7 +199,7 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal')
           | Cancel
-        a.btn.btn-primary(href='/logout') Logout
+        a.btn.btn-dark(href='/logout') Logout
 // Modal Multiguna
 if(buttonAction)
   if(buttonAction.delete === true)
@@ -242,7 +242,7 @@ if(buttonAction)
 
           .modal-footer
             button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
-            button#EditButton.btn.btn-primary(type='button' aria-label='Edit button') Edit
+            button#EditButton.btn.btn-dark(type='button' aria-label='Edit button') Edit
 #addModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
   .modal-dialog(role='document')
     .modal-content
@@ -270,7 +270,7 @@ if(buttonAction)
                 small.form-text.text-danger.d-none
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
-        button#addButton.btn.btn-primary(type='button' aria-label='add button') Add
+        button#addButton.btn.btn-dark(type='button' aria-label='add button') Add
 
 #convertModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='alert' aria-hidden='true')
   .modal-dialog(role='document')
@@ -289,12 +289,12 @@ if(buttonAction)
               option(value="0") unfinished transactions
       .modal-footer 
         button.btn.btn-secondary(type='button' data-dismiss='modal' aria-label='Close') Close
-        button#convertButton.btn.btn-primary(type='button' aria-label='add button') Convert Now
+        button#convertButton.btn.btn-dark(type='button' aria-label='add button') Convert Now
 div#imageModal 
   img(src="", alt="")
   span.close &times;
 .modal-custom(style=`position="fixed"; width: "100%"; height: "100%"; background-color: "#666"`)
-    .spinner-border.text-primary(role="status")
+    .spinner-border.text-dark(role="status")
       span.sr-only Loading...
 if (additional) 
   .modal-collect !{additional}
