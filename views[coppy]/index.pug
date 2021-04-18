@@ -1,0 +1,181 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible' content='IE=edge')
+  meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
+  meta(name='description' content='')
+  meta(name='author' content='')
+  title #{module.decryptPriv(appName)} | Dashboard
+  // Custom fonts for this template
+  link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
+  link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
+  // Custom styles for this template
+  link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
+// Page Wrapper
+#wrapper
+  // Sidebar
+  ul#accordionSidebar.navbar-nav.bg-gradient-primary.sidebar.sidebar-dark.accordion
+    // Sidebar - Brand
+    a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='/')
+      .sidebar-brand-icon.rotate-n-15
+        i.fas.fa-book-open
+      .sidebar-brand-text.mx-3
+        | #{module.decryptPriv(appName).toUpperCase()}
+
+    // Divider
+    hr.sidebar-divider.my-0
+    // Nav Item - Dashboard
+    li.nav-item.active
+      a.nav-link(href='/')
+        i.fas.fa-fw.fa-tachometer-alt
+        span Dashboard
+    hr.sidebar-divider
+    .sidebar-heading Data
+    if(profile.role == 'librarian' || profile.role == 'root')
+      include navBar.pug
+    else if (profile.role == 'admin')
+      include navBarAdmin.pug
+    // Divider
+    hr.sidebar-divider.d-none.d-md-block
+    // Sidebar Toggler (Sidebar)
+    .text-center.d-none.d-md-inline
+      button#sidebarToggle.rounded-circle.border-0
+    // Sidebar Message
+
+  // End of Sidebar
+  // Content Wrapper
+  #content-wrapper.d-flex.flex-column
+    // Main Content
+    #content
+      // Topbar
+      nav.navbar.navbar-expand.navbar-light.bg-white.topbar.mb-4.static-top.shadow
+        // Sidebar Toggle (Topbar)
+        button#sidebarToggleTop.btn.btn-link.d-md-none.rounded-circle.mr-3
+          i.fa.fa-bars
+        // Topbar Navbar
+        ul.navbar-nav.ml-auto
+          li.nav-item.dropdown.no-arrow
+            a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
+              span.mr-2.d-none.d-lg-inline.text-gray-600.small !{profile.email}
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
+                span !{profile.email.slice(0,2)}
+            // Dropdown - User Information
+            .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
+              a.dropdown-item(href='/update')
+                i.fas.fa-user-edit.fa-sm.fa-fw.mr-2.text-gray-400
+                |                     Update
+              a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
+                i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
+                |                                     Logout
+      // End of Topbar
+      // Begin Page Content
+      .container-fluid
+        // Page Heading
+        .d-sm-flex.align-items-center.justify-content-between.mb-4
+          h1.h3.mb-0.text-gray-800 Dashboard
+        // Content Row
+        .row
+          if(profile.role == 'librarian' || profile.role == 'root') 
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-primary.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1
+                        | Active orders
+                      .h5.mb-0.font-weight-bold.text-gray-800.textActiveOrder #{resultActive}
+                    .col-auto
+                      i.fas.fa-calendar.fa-2x.text-gray-300
+            // Earnings (Monthly) Card Example
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-success.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-success.text-uppercase.mb-1
+                        | The total number of orders
+                      .h5.mb-0.font-weight-bold.text-gray-800.textTotalOrder #{allOlder}
+                    .col-auto
+                      i.fas.fa-dollar-sign.fa-2x.text-gray-300
+
+            // Pending Requests Card Example
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-danger.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-danger.text-uppercase.mb-1
+                        | late to pay
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{lateToPay}
+                    .col-auto
+                      i.fas.fa-clipboard-list.fa-2x.text-gray-300
+            // Pending Requests Card Example
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-success.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-success.text-uppercase.mb-1
+                        | average order
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{orderDay} %
+                    .col-auto
+                      i.fas.fa-clipboard-list.fa-2x.text-gray-300
+          if ( profile.role == 'librarian' || profile.role == 'admin' || profile.role == 'root' )
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-primary.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1
+                        | number of users
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{users}
+                    .col-auto
+                      i.fas.fa-users.fa-2x.text-gray-300
+            .col-xl-3.col-md-6.mb-4
+              .card.border-left-primary.shadow.h-100.py-2
+                .card-body
+                  .row.no-gutters.align-items-center
+                    .col.mr-2
+                      .text-xs.font-weight-bold.text-primary.text-uppercase.mb-1
+                        | number of officer
+                      .h5.mb-0.font-weight-bold.text-gray-800.lateToPay !{officer}
+                    .col-auto
+                      i.fas.fa-users.fa-2x.text-gray-300
+
+                    
+        // Content Row
+        .row
+
+      // /.container-fluid
+    // End of Main Content
+    // Footer
+    footer.sticky-footer.bg-white
+      .container.my-auto
+        .copyright.text-center.my-auto
+          span Copyright By #{module.decryptPriv(appName)} 2021 | made with love 
+            i.fas.fa-heart
+    // End of Footer
+  // End of Content Wrapper
+// End of Page Wrapper
+// Scroll to Top Button
+a.scroll-to-top.rounded(href='#page-top')
+  i.fas.fa-angle-up
+// Logout Modal
+#logoutModal.modal.fade(tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true')
+  .modal-dialog(role='document')
+    .modal-content
+      .modal-header
+        h5#exampleModalLabel.modal-title Ready to Leave?
+        button.close(type='button' data-dismiss='modal' aria-label='Close')
+          span(aria-hidden='true') &times;
+      .modal-body Select &quot;Logout&quot; below if you are ready to end your current session.
+      .modal-footer
+        button.btn.btn-secondary(type='button' data-dismiss='modal') Cancel
+        a.btn.btn-primary(href='/logout') Logout
+// Bootstrap core JavaScript
+script(src='/assets/template/vendor/jquery/jquery.min.js')
+script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')
+// Core plugin JavaScript
+script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
+// Custom scripts for all pages
+script(src='/assets/template/js/sb-admin-2.min.js')

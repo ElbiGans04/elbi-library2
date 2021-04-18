@@ -1,0 +1,14 @@
+li.nav-item(name="user")
+    a.nav-link.collapsed(href='/users', data-toggle='collapse', data-target='#member', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-users
+        span Master Data
+    #member.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Master Data
+            a.collapse-item(href='/users' data-show="1") Users
+            a.collapse-item(href='/officer' data-show="1") Officers
+            a.collapse-item(href='/class' data-show="1") Class
+li.nav-item(name="dashboard")
+    a.nav-link(href='/about')
+        i.fas.fa-address-card
+        span.ml-1 Application identity

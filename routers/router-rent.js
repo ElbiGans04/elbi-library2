@@ -22,7 +22,8 @@ Route.get("/", async function (req, res, next) {
     let {group} = url.parse(req.url, true).query;
     if(group === undefined || group.toLowerCase() == "all") allOlder = await order.findAll();
     else {
-      group = parseInt(group)
+      group = parseInt(group);
+      group = group === 2 ? null : group;
       allOlder = await order.findAll({
         where: {
           return_status: group
@@ -60,8 +61,23 @@ Route.get("/", async function (req, res, next) {
       let jam = new Date(parseInt(allOlder[value].dataValues.order_date));
       allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth() + 1}-${jam.getDate()}`
 
+      // Ubah Format waktu future
+      let jam2 = new Date(parseInt(allOlder[value].dataValues.order_finish));
+      allOlder[value].dataValues.order_finish = `${jam2.getFullYear()}-${jam2.getMonth() + 1}-${jam2.getDate()}`
+
       // Ubah status
-      allOlder[value].dataValues.return_status = allOlder[value].dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
+      let status = allOlder[value].dataValues.return_status;
+      switch (status) {
+        case null :
+          allOlder[value].dataValues.return_status = 'in the process';
+          break;
+        case true :
+          allOlder[value].dataValues.return_status = 'done';
+          break;
+        case false : 
+          allOlder[value].dataValues.return_status = 'in trouble';
+      }
+      // allOlder[value].dataValues.return_status = allOlder[value].dataValues.return_status === true ? "done" : "in the process";
 
 
       allOlder[value].dataValues.book_id = await allOlder[value].getBook({
@@ -77,7 +93,7 @@ Route.get("/", async function (req, res, next) {
     
     // Ambil Column dari model
     const coloumn = await Object.keys(order.rawAttributes);
-
+    
     // Definisikan modal
     const without = ["id", "createdat", "updatedat"];
 
@@ -93,6 +109,7 @@ Route.get("/", async function (req, res, next) {
         "id_transaction",
         `return_status`,
         "order_date",
+        "order_finish",
         `order_officer_rent`,
         "order_officer_return",
       ],
@@ -100,8 +117,9 @@ Route.get("/", async function (req, res, next) {
       module: moduleLibrary,
       profile: req.user,
       group: [
-        {id: 1, value:'has been returned'},
-        {id: 0, value:'not been restored'}
+        {id: 1, value:'done'},
+        {id: 2, value:'in the process'},
+        {id: 0, value:'in trouble'}
       ],
       buttonHeader: {
         add: {
@@ -131,6 +149,10 @@ Route.get("/", async function (req, res, next) {
         moduleLibrary.as({
           target: "order_date",
           showName: "Date Order"
+        }),
+        moduleLibrary.as({
+          target: "order_finish",
+          showName: "Date Finish"
         }),
         moduleLibrary.as({
           target: "order_day",
@@ -203,6 +225,8 @@ Route.post("/", async function (req, res, next) {
 
     // Masukan Nilai tambahan
     let waktu = new Date().getTime();
+    let waktu2 = new Date();
+    waktu2.setDate(waktu2.getDate() + parseInt(req.body.order_day));
     const codeTransaksi = moduleLibrary.randomString(26);
 
     // Masukan Data
@@ -213,7 +237,8 @@ Route.post("/", async function (req, res, next) {
       order_price: fines,
       order_day,
       order_date: waktu,
-      order_officer_buy: email,
+      order_finish: waktu2.getTime(),
+      order_officer_rent: email,
     });
 
 
@@ -242,18 +267,11 @@ Route.post("/", async function (req, res, next) {
 Route.get("/return", async function (req, res, next) {
   try {
     const order = model.order;
-    const {fines} = await model.about.findOne({
-      where: {
-        id: 1
-      },
-      raw: true,
-      attributes: ['fines']
-    });
 
     // Cari order yang belum dikembalikan
     const dataOrder = await order.findAll({
       where: {
-          return_status: false,
+          return_status: null,
       },
     });
 
@@ -300,27 +318,20 @@ Route.get("/return/:id", async function (req, res, next) {
   try {
     const paramId = req.params.id;
     const order = model.order;
-    const {fines} = await model.about.findOne({
-      where: {
-        id: 1
-      },
-      raw: true,
-      attributes: ['fines']
-    });
 
     // Cari bedasarkan yang diberi
     const dataOrder = await order.findAll({
       where: {
         [Op.and]: {
           user_id: paramId,
-          return_status: false,
+          return_status: null,
         },
       },
     });
 
     // Jika Ga ada
     if (dataOrder.length <= 0)
-      throw new respon2({ message: "not found. Please check again", alert: true });
+      throw new respon2({ message: "not found. Please check again", alert: true, code: 200 });
 
     // Ambil Data dari foreign Key
     for (let index in dataOrder) {
@@ -335,7 +346,7 @@ Route.get("/return/:id", async function (req, res, next) {
 
       dataOrder[index].dataValues.user_id = dataOrderUser;
       dataOrder[index].dataValues.book_id = dataOrderBook;
-      dataOrder[index].dataValues.book_id.fines = fines;
+      dataOrder[index].dataValues.book_id.fines = parseInt(dataOrder[index].dataValues.order_price);
 
     }
 
@@ -346,7 +357,7 @@ Route.get("/return/:id", async function (req, res, next) {
   }
 });
 
-Route.post("/return", async function (req, res, err) {
+Route.post("/return", async function (req, res, next) {
   try {
     // Import Model
     const order = model.order;
@@ -365,14 +376,14 @@ Route.post("/return", async function (req, res, err) {
           user_id: user,
           book_id: userBook,
           id_transaction,
-          return_status: false
+          return_status: null
         },
       },
     });
 
     // Jika Ga ada
     if (resultOrder.length <= 0)
-      throw new respon2({ message: "not found. Please check again" , alert: true});
+      throw new respon2({ message: "not found. Please check again" , alert: true, code: 200});
 
     // Check apakah buku ada
     let resultBook = await book.findOne({
@@ -383,7 +394,7 @@ Route.post("/return", async function (req, res, err) {
       attributes: ['book_stock']
     });
 
-    if(!resultBook) throw new respon2({message: 'book not found', alert: true});
+    if(!resultBook) throw new respon2({message: 'book not found', alert: true, code: 200});
 
     // Update
     await order.update(
@@ -435,17 +446,10 @@ Route.get('/renew', async function (req, res, next){
     const order = model.order;
     let orderNoLate = [], result = await order.findAll({
       where: {
-        return_status: false
+        return_status: null
       }
     });
-    const {fines} = await model.about.findOne({
-        where: {
-          id: 1
-        },
-        raw: true,
-        attributes: ['fines']
-    });
-    
+   
   
     for(let element of result) {
       let date = new Date(parseInt(element.dataValues.order_date));
@@ -516,7 +520,8 @@ Route.post('/renew', async function(req, res, next){
       where: {
         user_id,
         book_id,
-        id_transaction
+        id_transaction,
+        return_status: null
       }
     });
 
@@ -525,16 +530,19 @@ Route.post('/renew', async function(req, res, next){
 
     let newDate = parseInt(day) + parseInt(validation.dataValues.order_day)
 
-
     // Check apakah orderan memiliki denda
     const dateNew = new Date(parseInt(validation.dataValues.order_date));
     dateNew.setDate(dateNew.getDate() + parseInt(validation.dataValues.order_day));    
     if(dateNew.getTime() < Date.now()) throw new respon2({message: 'pay the fine in advance', code: 200, alert:true})
     
+    // Set ulang
+    const dateNew2 = new Date(parseInt(validation.dataValues.order_date));
+    dateNew2.setDate(dateNew2.getDate() + newDate)
 
     // Jika ada
     await order.update({
-      order_day: newDate
+      order_day: newDate,
+      order_finish: dateNew2.getTime()
     }, {
       where: {
         user_id,
@@ -594,6 +602,10 @@ Route.get('/:id/detail', async function(req, res, next){
     // Ubah 
     let waktu = new Date(parseInt(result.dataValues.order_date));
     result.dataValues.order_date = `${waktu.getFullYear()}/${waktu.getMonth() + 1}/${waktu.getDate()}`
+
+    // Ubah 
+    let waktu2 = new Date(parseInt(result.dataValues.order_finish));
+    result.dataValues.order_finish = `${waktu2.getFullYear()}/${waktu2.getMonth() + 1}/${waktu2.getDate()}`
 
 
     res.locals.column = column;

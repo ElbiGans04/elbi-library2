@@ -4,11 +4,11 @@ head
   meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
   meta(name='description' content='')
   meta(name='author' content='')
-  title #{module.decryptPriv(appName)} | Update Profile
+  title #{module.decryptPriv(result.appName)} | About
   link(href='/assets/template/vendor/fontawesome-free/css/all.min.css' rel='stylesheet' type='text/css')
   link(href='https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i' rel='stylesheet')
   link(href='/assets/template/css/sb-admin-2.min.css' rel='stylesheet')
-  link(rel="stylesheet", href="/assets/css/updateProfile.css")
+  link(href='/assets/template/vendor/datatables/dataTables.bootstrap4.min.css' rel='stylesheet')
 // Page Wrapper
 #wrapper
   // Sidebar
@@ -17,7 +17,7 @@ head
     a.sidebar-brand.d-flex.align-items-center.justify-content-center(href='index.html')
       .sidebar-brand-icon.rotate-n-15
         i.fas.fa-book-open
-      .sidebar-brand-text.mx-3 #{module.decryptPriv(appName).toUpperCase()}
+      .sidebar-brand-text.mx-3 #{module.decryptPriv(result.appName).toUpperCase()}
     // Divider
     hr.sidebar-divider.my-0
     // Nav Item - Dashboard
@@ -51,56 +51,66 @@ head
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
               span.mr-2.d-none.d-lg-inline.text-gray-600.small !{profile.email}
-              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #5a5c69`)
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
                 span !{profile.email.slice(0,2)}
             
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
               a.dropdown-item(href='/update')
                 i.fas.fa-user-edit.fa-sm.fa-fw.mr-2.text-gray-400
-                |                     Update
+                |                     Update            
               a.dropdown-item(href='/logout' data-toggle='modal' data-target='#logoutModal')
                 i.fas.fa-sign-out-alt.fa-sm.fa-fw.mr-2.text-gray-400
                 |                     Logout
       
       
       .container-fluid 
-        .row.justify-content-between.mb-4
-          .col-sm-4
-            h3.mb-4.text-gray-800 Update Profile
-        .card.shadow.mb-4
-            h6.m-0.font-weight-bold.text-primary
-            .card-body
-              .table-responsive
-                table#tableUtama.table.table-bordered.display(cellspacing="0" style="width:100%")
-                    tbody 
-                        form
-                            tr 
-                                td Email : 
-                                td 
-                                    input.form-control(autocomplate="off" name="email", type="email", value=result.email, required)
-                                    small.form-text.text-danger.d-none
-                            tr 
-                                td Password :
-                                td
-                                    input.form-control(value="", autocomplate="off", name="password", type="text", required)
-                                    small.form-text.text-danger.d-none
-                            tr
-                                td.text-right(colspan="2")
-                                    button#buttonAction.btn.btn-dark(disabled, data-id=result.id) Update
-                
+        .card-shadow
+          .card-body
+            .table-responsive
+                .col-sm-12 
+                    h1.diplay.text-center About Application
+                .col-sm-12.mt-5
+                  .table-responsive
+                    table.table.table-bordered.display(cellspacing="0" style="width:100%")
+                      tbody 
+                        form()
+                          tr 
+                            td Application name
+                            if(profile.role == 'admin')
+                              td #{module.decryptPriv(result.appName)}
+                            else 
+                              td 
+                                input.form-control(value=`${module.decryptPriv(result.appName)}` name="app")
+                          tr 
+                            td Fines
+                            if(profile.role == 'admin')
+                              td #{result.fines}
+                            else 
+                              td 
+                                input.form-control(value=`${result.fines}` name="fines")
+                          tr  
+                            td Start date of application creation
+                            td #{module.decryptPriv(result.start)}
+                          tr 
+                            td Date of completion of application creation
+                            td #{module.decryptPriv(result.end)}
+                          tr  
+                            td Original author
+                            td 
+                              a(href="http://elbi.vercel.app" target="_blank") #{module.decryptPriv(result.author)}
+                          tr  
+                            td Dbms used
+                            td #{module.decryptPriv(result.dbms)}
+                          tr 
+                            td Programming language used
+                            td #{module.decryptPriv(result.language)}
+                          tr 
+                            td Framework used
+                            td #{module.decryptPriv(result.framework)}
+                if(profile.role == 'librarian' || profile.role == 'root')
+                  .col-sm-12-mt-5 
+                    button#action.btn.btn-primary(type="button") Update
 
-
-
-      // /.container-fluid
-      // End of Main Content
-      // Footer
-      footer.sticky-footer.bg-white
-        .container.my-auto
-          .copyright.text-center.my-auto
-            span Copyright By #{module.decryptPriv(appName)} 2021 | made with love 
-              i.fas.fa-heart
-      // End of Footer
-      // End of Content Wrapper
 // End of Page Wrapper
 // Scroll to Top Button
 a.scroll-to-top.rounded(href='#page-top')
@@ -118,16 +128,13 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal')
           | Cancel
-        a.btn.btn-dark(href='/logout') Logout
-
-
-.modal-custom(style=`position="fixed"; width: "100%"; height: "100%"; background-color: "#666"`)
-    .spinner-border.text-primary(role="status")
-      span.sr-only Loading...
+        a.btn.btn-primary(href='/logout') Logout
 
 // Script Dasar
 script(src='/assets/template/vendor/jquery/jquery.min.js')
 script(src='/assets/template/vendor/bootstrap/js/bootstrap.bundle.min.js')
 script(src='/assets/template/vendor/jquery-easing/jquery.easing.min.js')
 script(src='/assets/template/js/sb-admin-2.min.js')
-script(src="/assets/javascript/updateProfile.js" type="module") 
+script(src="/assets/template/vendor/datatables/jquery.dataTables.min.js")
+script(src="/assets/template/vendor/datatables/dataTables.bootstrap4.min.js")
+script(type="module" src="/assets/javascript/about.js")

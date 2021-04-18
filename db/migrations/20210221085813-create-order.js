@@ -15,7 +15,6 @@ module.exports = {
       
       return_status: {
         type: Sequelize.BOOLEAN,
-        defaultValue: false
       },
       
       order_day: {
@@ -41,7 +40,15 @@ module.exports = {
           isNumeric: true
         }
       },
-      
+
+      order_finish: {
+        type: Sequelize.BIGINT,
+        allowNull: false,
+        validate: {
+          isNumeric: true
+        }
+      },
+       
       order_officer_rent : {
         type: Sequelize.STRING
       },

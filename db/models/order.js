@@ -21,7 +21,6 @@ module.exports = (sequelize, DataTypes) => {
     
     return_status: {
       type: DataTypes.BOOLEAN,
-      defaultValue: false,
     },
     
     order_day: {
@@ -41,6 +40,14 @@ module.exports = (sequelize, DataTypes) => {
     },
     
     order_date: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      validate: {
+        isNumeric: true
+      }
+    },
+
+    order_finish: {
       type: DataTypes.BIGINT,
       allowNull: false,
       validate: {

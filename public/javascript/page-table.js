@@ -53,7 +53,7 @@ if(active == 1) {
     
     return result
   }
-  let targets = active == 2 ? [3,7,8,9,10] : [3, 4, 6, 7];
+  let targets = active == 2 ? [3,7,8,9,10] : [3,4,7,8];
 
   var dt = $('#tableUtama').DataTable( {
     columnDefs: [
@@ -334,17 +334,22 @@ modal.children[1].addEventListener('click', function(event){
 
 // Event Convert To Excell
 $(document).on('click', '#convertToExcel', function(event){
-  fetch(`/convert/${$('#convert').val()}`)
-  .then(result => result.blob())
-  .then(blob => {
-          var url = window.URL.createObjectURL(blob);
-          var a = document.createElement('a');
-          a.href = url;
-          a.download = `ElbiLibrary-${Date.now()}.xlsx`;
-          document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
-          a.click();    
-          a.remove(); 
-    })
+  $('#convertModal').modal('show')
+})
+
+$(document).on('click', '#convertButton', function(){
+    fetch(`/convert/${$('#convert').val()}`)
+      .then(result => result.blob())
+      .then(blob => {
+              let url = window.URL.createObjectURL(blob);
+              let a = document.createElement('a');
+              let appName = document.querySelector('#accordionSidebar > a > div.sidebar-brand-text.mx-3').textContent.split(' ')[0];
+              a.href = url;
+              a.download = `${appName}-${Date.now()}.xlsx`;
+              document.body.appendChild(a); // we need to append the element to the dom -> otherwise it will not work in firefox
+              a.click();    
+              a.remove(); 
+        })
 })
 
 

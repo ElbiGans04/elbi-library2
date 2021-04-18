@@ -51,7 +51,7 @@ head
           li.nav-item.dropdown.no-arrow
             a#userDropdown.nav-link.dropdown-toggle(href='#' role='button' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false')
               span.mr-2.d-none.d-lg-inline.text-gray-600.small !{profile.email}
-              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #5a5c69`)
+              .img-profile.rounded-circle.d-flex.justify-content-center.align-items-center(style=`background-color: #4e73df`)
                 span !{profile.email.slice(0,2)}
             
             .dropdown-menu.dropdown-menu-right.shadow.animated--grow-in(aria-labelledby='userDropdown')
@@ -86,7 +86,7 @@ head
                                     small.form-text.text-danger.d-none
                             tr
                                 td.text-right(colspan="2")
-                                    button#buttonAction.btn.btn-dark(disabled, data-id=result.id) Update
+                                    button#buttonAction.btn.btn-primary(disabled, data-id=result.id) Update
                 
 
 
@@ -118,7 +118,7 @@ a.scroll-to-top.rounded(href='#page-top')
       .modal-footer
         button.btn.btn-secondary(type='button' data-dismiss='modal')
           | Cancel
-        a.btn.btn-dark(href='/logout') Logout
+        a.btn.btn-primary(href='/logout') Logout
 
 
 .modal-custom(style=`position="fixed"; width: "100%"; height: "100%"; background-color: "#666"`)

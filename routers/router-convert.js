@@ -10,16 +10,28 @@ const fs = require('fs');
 
 Route.get('/:group', async function(req, res, next){
     try {
-        let group = parseInt(req.params.group);
         const order = model.order;
+        let group = parseInt(req.params.group);
         let allOlder;
         let wb = new excel.Workbook({author: 'Elbi Library'});
         let lembarKerja = wb.addWorksheet('Sheet 1');
+        let harga = [];
         
         // Sesuaikan dengan kondisi
-        if(group === 1) allOlder = await order.findAll({where: {return_status: true}});
-        else if(group === 0) allOlder = await order.findAll({where: {return_status: false}})
-        else allOlder = await order.findAll();
+        switch (group) {
+            case 1: 
+                allOlder = await order.findAll({where: {return_status: true}});
+                break;
+            case 0: 
+                allOlder = allOlder = await order.findAll({where: {return_status: false}});
+                break;
+            case 2: 
+                allOlder = allOlder = await order.findAll({where: {return_status: null}});
+                break;
+            default: 
+                allOlder = await order.findAll();
+                break;
+        }
 
 
         // Ambil Attribute
@@ -32,14 +44,27 @@ Route.get('/:group', async function(req, res, next){
             // Ubah Format waktu
             let jam = new Date(parseInt(allOlder[value].dataValues.order_date));
             allOlder[value].dataValues.order_date = `${jam.getFullYear()}-${jam.getMonth()}-${jam.getDate()}`
+
+            // Ubah Format waktu
+            let jam2 = new Date(parseInt(allOlder[value].dataValues.order_finish));
+            allOlder[value].dataValues.order_finish = `${jam2.getFullYear()}-${jam2.getMonth()}-${jam2.getDate()}`
       
             // Ubah status
-            allOlder[value].dataValues.return_status = allOlder[value].dataValues.return_status === true ? "the book has been returned" : "the book has not been returned";
-      
+            let status = allOlder[value].dataValues.return_status;
+            switch (status) {
+                case null :
+                    allOlder[value].dataValues.return_status = 'in the process';
+                    break;
+                case true :
+                    allOlder[value].dataValues.return_status = 'done';
+                    break;
+                case false : 
+                    allOlder[value].dataValues.return_status = 'in trouble';
+            };
       
             allOlder[value].dataValues.book_id = await allOlder[value].getBook({
               raw: true,
-              attributes: ["id", ["book_title", "title"]],
+              attributes: ["id", ["book_title", "title"], ['book_price', 'price']],
             });
             allOlder[value].dataValues.user_id = await allOlder[value].getUser({
               raw: true,
@@ -80,7 +105,7 @@ Route.get('/:group', async function(req, res, next){
           // Melooping entitas
           for(let element of allOlder) {
               let index2 = 1
-            
+              
               // Melooping field per entitas
               for (let element2 in element.dataValues) {
                 let value = element.dataValues[element2];
@@ -107,6 +132,9 @@ Route.get('/:group', async function(req, res, next){
                     let {days} = moduleLibrary.getTime(timeNow.getTime(), dayOrder);
                     let totalLate = price * days;
                     let total = (dayOrder * price) + totalLate;
+
+                    // Tambahkan harga buku jika 
+                    if(element.dataValues.return_status === `in trouble`) total += element.dataValues.book_id.price
                     formula += total;
 
                     // Masukan Ke baris kerja

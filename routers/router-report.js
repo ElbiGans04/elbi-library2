@@ -38,7 +38,7 @@ Route.get('/:id', async function(req,res, next){
         const resultOrder = await order.findOne({
             where: {
                 id_transaction: req.params.id,
-                return_status: false
+                return_status: null
             },
             attributes: ['book_id', 'user_id', ['order_date', 'order_rental_time'], 'order_price', ['order_day', 'order_duration']]
         });
@@ -94,7 +94,7 @@ Route.post('/:id', async function(req, res, next){
         const resultOrder = await order.findOne({
             where: {
                 id_transaction: id,
-                return_status: false
+                return_status: null
             },
         });
 
@@ -116,7 +116,7 @@ Route.post('/:id', async function(req, res, next){
         
         // Jika ada  
         await order.update({
-            return_status : true
+            return_status : false
         }, {
             where: {
                 id_transaction: id
@@ -125,9 +125,9 @@ Route.post('/:id', async function(req, res, next){
 
 
         // Report
-        let reportCreate = await report.create({id_transaction: id, date: waktuBaru, price: total});
-        await reportCreate.setUsers(resultUser);
-        await reportCreate.setBooks(resultBook);
+        // let reportCreate = await report.create({id_transaction: id, date: waktuBaru, price: total});
+        // await reportCreate.setUsers(resultUser);
+        // await reportCreate.setBooks(resultBook);
 
         res.json({message: 'success', type: true, alert: true, redirect: '/report'})
         
@@ -137,88 +137,5 @@ Route.post('/:id', async function(req, res, next){
 });
 
 
-// Covert
-Route.get('/:id/covert', async  function(req, res, next){
-    try {
-        const report = model.report;
-        let wb = new excel.Workbook({author: 'Elbi Library'});
-        let lembarKerja = wb.addWorksheet('Sheet 1');
-        let panjang = [];
-        let total = 0;
-        let col = [];
-        let result = await report.findAll();
-        
-    
-        let index = 1;
-        for(let element in result) {
-            let entitas = result[element];
-            let resultUser = await entitas.getUsers({raw: true, attributes: ['name']});
-            let resultBook = await entitas.getBooks({raw: true, attributes: [['book_title', 'name']]});
-            col = [];
-            entitas.dataValues.user = resultUser[0].name;
-            entitas.dataValues.book = resultBook[0].name;
-    
-    
-            // Logic
-            let child = Object.values(entitas);
-            let index2 = 1;
-            for (let entitasChild in child[0]) {
-                if(index2 !== 1) {
-                    col.push(moduleLibrary.ambilKata(entitasChild, '_', {without: [0]}));
-                    let value = `${child[0][entitasChild]}`;
-    
-                    if(index === 1) panjang.push([]);
-                    panjang[index2 - 2].push(value.length);
-    
-                    if(index2 == 4) total += parseInt(value);
-
-                    
-                    lembarKerja.cell((index + 1), (index2 - 1))
-                        .string(value)
-                        .style(style);
-                }
-    
-    
-                index2++
-            }
-            
-            index++
-        };
-
-        
-        col.forEach(function(e,i){
-            lembarKerja.cell(1, (i + 1))
-                .string(e)
-                .style(styleColumn);
-        })
-
-    
-        // Sesuaikan Panjang
-        // Beri Jarak bedasarkan panjang
-        panjang.forEach(function(e, i){
-            let max = e.sort((a,b) => a - b)[e.length - 1];
-            lembarKerja.column(i + 1).setWidth(max + 10)
-        });
-        
-        
-        let name = `Elbi-Library-${Date.now()}.xlsx`;
-        wb.write(name, function(err){
-            if(err) throw err
-            else {
-                res.download(`${path.resolve(__dirname, `../${name}`)}`, function(err){
-                    if(err) throw err
-                    fs.unlink(`${path.resolve(__dirname, `../${name}`)}`, function(err){
-                        if(err) throw err
-                    })  
-                });
-          } 
-       });
-
-        
-    } catch (err) {
-        next (err)
-    }
-
-});
 
 module.exports = Route

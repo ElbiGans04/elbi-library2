@@ -1,0 +1,42 @@
+li.nav-item(name="user")
+    a.nav-link.collapsed(href='/users', data-toggle='collapse', data-target='#member', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-users
+        span Master Data
+    #member.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Master Data
+            a.collapse-item(href='/users' data-show="1") Users
+            a.collapse-item(href='/officer' data-show="1") Officers
+            a.collapse-item(href='/class' data-show="1") Class
+li.nav-item(name="book")
+    a.nav-link.collapsed(href='/users', data-toggle='collapse', data-target='#book', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-book
+        span Book catalog
+    #book.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Book catalog
+            a.collapse-item(href='/books' data-show="2") Books
+            a.collapse-item(href='/category' data-show="1") Categories
+            a.collapse-item(href='/publisher' data-show="1") Publishers
+li.nav-item(name="order")
+    a.nav-link.collapsed(href='/order', data-toggle='collapse', data-target='#collapseUtilities', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-shopping-cart
+        span Transaction
+    #collapseUtilities.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Transaction
+            a.collapse-item(href='/rent' data-show="3") Rent 
+            a.collapse-item(href='/rent/return') Return 
+            a.collapse-item(href='/rent/renew') Renew
+li.nav-item(name="report")
+    a.nav-link.collapsed(href='/report', data-toggle='collapse', data-target='#problem', aria-expanded='true', aria-controls='collapseUtilities')
+        i.fas.fa-exclamation-triangle
+        span Problem
+    #problem.collapse(aria-labelledby='headingUtilities', data-parent='#accordionSidebar')
+        .bg-white.py-2.collapse-inner.rounded
+            h6.collapse-header Problem
+            a.collapse-item(href='/report' data-show="1") Damaged or lost books
+li.nav-item(name="dashboard")
+    a.nav-link(href='/about')
+        i.fas.fa-address-card
+        span.ml-1 Application identity
